@@ -4,7 +4,7 @@
 \name{ciRcus}
 \alias{ciRcus}
 \alias{ciRcus-package}
-\title{ciRcus: An R package for circRNAs}
+\title{ciRcus: An R package for circRNAs munging}
 \description{
 The foo package provides three categories of important functions:
 foo, bar and baz.

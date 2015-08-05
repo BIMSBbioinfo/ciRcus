@@ -1,4 +1,4 @@
-#' ciRcus: An R package for circRNAs
+#' ciRcus: An R package for circRNAs munging
 #'
 #' The foo package provides three categories of important functions:
 #' foo, bar and baz.
@@ -9,4 +9,8 @@
 #' @docType package
 #' @name ciRcus
 #' @import data.table
+#' @import DBI
+#' @import RMySQL
 NULL
+
+
