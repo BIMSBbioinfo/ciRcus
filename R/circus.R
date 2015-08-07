@@ -11,6 +11,11 @@
 #' @import data.table
 #' @import DBI
 #' @import RMySQL
+#' @import ensembldb
+#' @import EnsDb.Hsapiens.v75
+#' @import hash
+#' @import GenomicRanges
+#' @import IRanges
 # @import ensembldb
 # @import EnsDb.Hsapiens.v75
 NULL

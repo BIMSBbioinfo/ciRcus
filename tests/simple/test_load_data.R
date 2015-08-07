@@ -6,6 +6,11 @@
 all.sites.f <- readCircs(file = "/data/circrna/Human/Sy5y_diff/D0/Sy5y_D0_sites.bed", qualfilter = TRUE, n_uniq_thr = 2, keepCols = 1:19)
 circs.f <- circLinRatio(sites = all.sites.f[,.(chrom, start, end, name, n_reads, strand, n_uniq)])
 
+ptm <- proc.time()
+circs.fa <- annotateCircs(circs.f)
+proc.time() - ptm
+
+
 #source("/clusterhome/pglazar/bin/lib/little_helpers.R")
 
 
