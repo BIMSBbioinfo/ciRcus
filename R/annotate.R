@@ -60,17 +60,24 @@ annotateCircs <- function(circs) {
   #ptm <- proc.time()
   tmphits <- integer()
   tmpgenes <- integer()
+  host.candidates <- integer()
   for (circ in circs$id) {
     tmphits <- append(tmphits, sum(hs[[circ]] %in% he[[circ]]))
     tmpgenes <- append(tmpgenes, paste(hs[[circ]][hs[[circ]] %in% he[[circ]]], collapse=","))
+    host.candidates <- append(host.candidates, length(unique(c(hs[[circ]], he[[circ]]))))
   }
   #proc.time() - ptm
   circs$hitcnt <- tmphits
   circs$hitgenes <- tmpgenes
+  circs$host.candidates <- host.candidates
 
   circs$host[circs$hitcnt == 1] <- circs$hitgenes[circs$hitcnt == 1]
   circs$host[circs$hitcnt > 1]  <- "ambiguous"
-  circs$host[circs$hitcnt == 0] <- "intergenic" # TODO: actually, some of them may have a putative host gene within, I was only testing starts/ends
+  circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == FALSE] <- "intergenic" # TODO: actually, some of them may have a putative host gene within, I was only testing starts/ends
+  circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == TRUE]  <- "no_single_host"
+  circs$host[circs$hitcnt == 0 & xor(circs$start.hit, circs$end.hit) & circs$host.candidates > 1] <- "ambiguous"
+  circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == FALSE & circs$host.candidates == 1] <- circs$starts[circs$hitcnt == 0 & circs$start.hit == TRUE   & circs$end.hit == FALSE & circs$host.candidates == 1]
+  circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
 
   return(circs)
 }

@@ -10,6 +10,18 @@ ptm <- proc.time()
 circs.fa <- annotateCircs(circs.f)
 proc.time() - ptm
 
+ptm <- proc.time()
+circs.fag <- getIDs(circs.fa, "hsa", "hg19")
+proc.time() - ptm
+
+circs.fa.gr <- GRanges(seqnames = circs.fa$chrom,
+                       ranges   = IRanges(start = circs.fa$start, end=circs.fa$end),
+                       strand   = circs.fa$strand,
+                       id       = circs.fa$id,
+                       host     = circs.fa$host)
+circs.fa.gr <- circs.fa.gr[circs.fa.gr$host=="intergenic"]
+
+olaps <- findOverlaps(genes.gr, circs.fa.gr, type="any")
 
 #source("/clusterhome/pglazar/bin/lib/little_helpers.R")
 
