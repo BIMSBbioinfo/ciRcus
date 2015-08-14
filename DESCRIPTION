@@ -11,5 +11,9 @@ LazyData: TRUE
 Imports:
     data.table,
     DBI,
-    RMySQL
+    RMySQL,
+    GenomicFeatures,
+    GenomicRanges,
+    IRanges,
+    hash
 Suggests: testthat

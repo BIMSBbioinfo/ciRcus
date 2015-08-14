@@ -1,7 +1,3 @@
-# library(ensembldb)
-# library(EnsDb.Hsapiens.v75)
-# library(data.table)
-
 # ---------------------------------------------------------------------------- #
 #' title
 #'
@@ -12,14 +8,29 @@
 #' @param circs
 #'
 #' @export
-annotateCircs <- function(circs) {
+loadAnnotation <- function(txdb.file) {
 
-  require(GenomicRanges)
+  require(GenomicFeatures)
 
-  genes.gr <- genes(EnsDb.Hsapiens.v75)
-  genes.gr <- keepStandardChromosomes(genes.gr)
-  seqlevels(genes.gr) <- paste("chr", seqlevels(genes.gr), sep="")
-  seqlevels(genes.gr)[which(seqlevels(genes.gr) == "chrMT")] <- "chrM"
+  txdb <- loadDb(txdb.file)
+
+  return(txdb)
+}
+# ---------------------------------------------------------------------------- #
+#' title
+#'
+#' description
+#'
+#' details
+#'
+#' @param circs
+#'
+#' @export
+annotateCircs <- function(circs, txdb) {
+
+  require(GenomicFeatures)
+
+  genes.gr <- genes(txdb)
 
   # circs to GR
   circs.gr <- GRanges(seqnames=circs$chrom,
@@ -49,8 +60,8 @@ annotateCircs <- function(circs) {
   start.list <- lapply(split(matches.start, matches.start$id), function(x) x$gene)
   end.list   <- lapply(split(matches.end,   matches.end$id),   function(x) x$gene)
 
-  circs <- merge(circs, data.table(id=names(start.list), starts=start.list), by="id", all.x=T)
-  circs <- merge(circs, data.table(id=names(end.list), ends=end.list), by="id", all.x=T)
+  circs <- merge(circs, data.table(id=names(start.list), starts=sapply(start.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
+  circs <- merge(circs, data.table(id=names(end.list), ends=sapply(end.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
 
   hs <- hash(start.list)
   he <- hash(end.list)

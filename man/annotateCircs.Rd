@@ -4,7 +4,7 @@
 \alias{annotateCircs}
 \title{title}
 \usage{
-annotateCircs(circs)
+annotateCircs(circs, txdb)
 }
 \arguments{
 \item{circs}{}
