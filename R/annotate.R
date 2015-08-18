@@ -16,6 +16,7 @@ loadAnnotation <- function(txdb.file) {
 
   return(txdb)
 }
+
 # ---------------------------------------------------------------------------- #
 #' title
 #'
@@ -26,7 +27,7 @@ loadAnnotation <- function(txdb.file) {
 #' @param circs
 #'
 #' @export
-annotateCircs <- function(circs, txdb) {
+annotateHostGenes <- function(circs, txdb) {
 
   require(GenomicFeatures)
 
@@ -90,5 +91,72 @@ annotateCircs <- function(circs, txdb) {
   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == FALSE & circs$host.candidates == 1] <- circs$starts[circs$hitcnt == 0 & circs$start.hit == TRUE   & circs$end.hit == FALSE & circs$host.candidates == 1]
   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
 
-  return(circs)
+  #return(circs)
+  return(circs[, !c("id", "start.hit", "end.hit", "starts", "ends", "hit.ctrl", "hitcnt", "hitgenes", "host.candidates"), with=F])
 }
+
+# ---------------------------------------------------------------------------- #
+#' title
+#'
+#' description
+#'
+#'
+#' details
+#'
+#' @param circs
+#'
+#' @export
+annotateFlanks <- function(circs, txdb) {
+
+  return(1)
+}
+
+# ---------------------------------------------------------------------------- #
+#' title
+#'
+#' description
+#' annotates the ranges with the corresponding list
+#'
+#' details
+#'
+#' @param circs
+#'
+#' @export
+AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.fact = 'None', collapse.char=':') {
+
+  if(! class(r1) == 'GRanges')
+    stop('Ranges to be annotated need to be GRanges')
+
+  if(! all(sapply(l, class) == 'GRanges'))
+    stop('Annotating ranges need to be GRanges')
+
+  if(!type %in% c('precedence','all'))
+    stop('type may only be precedence and all')
+
+  require(data.table)
+  require(GenomicRanges)
+  cat('Overlapping...\n')
+  if(class(l) != 'GRangesList')
+    l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
+  a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand=ignore.strand))))
+  a$id = names(l)[a$subjectHits]
+  a$precedence = match(a$id,names(l))[a$subjectHits]
+  a = a[order(a$precedence)]
+
+  if(type == 'precedence'){
+    cat('precedence...\n')
+    a = a[!duplicated(a$queryHits)]
+    annot = rep(null.fact, length(r1))
+    annot[a$queryHits] = a$id
+  }
+  if(type == 'all'){
+    cat('all...\n')
+    a = a[,list(id=paste(unique(id),collapse=collapse.char)),by='queryHits']
+    annot = rep(null.fact, length(r1))
+    annot[a$queryHits] = a$id
+
+  }
+
+  return(annot)
+}
+

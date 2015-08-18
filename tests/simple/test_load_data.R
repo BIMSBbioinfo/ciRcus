@@ -7,7 +7,7 @@ system.time(
 )
 
 system.time(
-  circs.fa <- annotateCircs(circs = circs.f, txdb = txdb.ens75)
+  circs.fa <- annotateHostGenes(circs = circs.f, txdb = txdb.ens75)
 )
 
 
