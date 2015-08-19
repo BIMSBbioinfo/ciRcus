@@ -108,7 +108,41 @@ annotateHostGenes <- function(circs, txdb) {
 #' @export
 annotateFlanks <- function(circs, txdb) {
 
-  return(1)
+  require(data.table)
+  require(GenomicRanges)
+
+  cat('Munging input data...\n')
+  circs.gr <- GRanges(seqnames=circs$chrom,
+                      ranges=IRanges(start=circs$start,
+                                     end=circs$end),
+                      strand=circs$strand,
+                      id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+  circs.gr <- sort(circs.gr)
+
+  # GR with circ starts and ends only (left and right flanks, actually)
+  circ.starts.gr <- circs.gr
+  end(circ.starts.gr) <- start(circ.starts.gr)
+  circ.ends.gr <- circs.gr
+  start(circ.ends.gr) <- end(circ.ends.gr)
+
+  cat('Loading annotation...\n')
+  annot.list <- GRangesList(utr5   = reduce(unlist(fiveUTRsByTranscript(txdb))),
+                            utr3   = reduce(unlist(threeUTRsByTranscript(txdb))),
+                            cds    = reduce(cds(txdb)),
+                            intron = reduce(unlist(intronsByTranscript(txdb))))
+
+  cat('Annotating circRNAs...\n')
+  circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
+  circ.starts.gr$feat_start_all <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="all")
+  circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
+  circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
+
+  cat('Merging data')
+  circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+  circs <- merge(circs, data.table(as.data.frame(values(circ.starts.gr))), by="id")
+  circs <- merge(circs, data.table(as.data.frame(values(circ.ends.gr))), by="id")
+
+  return(circs)
 }
 
 # ---------------------------------------------------------------------------- #

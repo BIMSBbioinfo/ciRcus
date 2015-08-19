@@ -10,5 +10,7 @@ system.time(
   circs.fa <- annotateHostGenes(circs = circs.f, txdb = txdb.ens75)
 )
 
-
+system.time(
+  circs.faf <- annotateFlanks(circs = circs.fa, txdb = txdb.ens75)
+)
 
