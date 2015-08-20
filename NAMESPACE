@@ -3,6 +3,7 @@
 export(AnnotateRanges)
 export(annotateFlanks)
 export(annotateHostGenes)
+export(annotateJunctions)
 export(circLinRatio)
 export(getIDs)
 export(loadAnnotation)

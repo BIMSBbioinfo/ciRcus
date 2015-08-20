@@ -6,11 +6,33 @@ system.time(
   txdb.ens75 <- loadAnnotation(txdb.file = "data/hsa_GRCh37_ens75.sqlite")
 )
 
+circs.f$start <- circs.f$start + 1
+
 system.time(
   circs.fa <- annotateHostGenes(circs = circs.f, txdb = txdb.ens75)
 )
 
+ptm <- proc.time()
+  exns <- unique(exons(txdb.ens75))
+  junct.start <- exns
+  end(junct.start)   <- start(junct.start) + 2
+  start(junct.start) <- start(junct.start) - 2
+  junct.end <- exns
+  start(junct.end) <- end(junct.end) - 2
+  end(junct.end)  <- end(junct.end) + 2
+
+  gene.feats <- GRangesList(utr5   = reduce(unlist(fiveUTRsByTranscript(txdb.ens75))),
+                            utr3   = reduce(unlist(threeUTRsByTranscript(txdb.ens75))),
+                            cds    = reduce(cds(txdb.ens75)),
+                            intron = reduce(unlist(intronsByTranscript(txdb.ens75))))
+  junctions <- GRangesList(start = junct.start,
+                           end   = junct.end)
+proc.time() - ptm
+
 system.time(
-  circs.faf <- annotateFlanks(circs = circs.fa, txdb = txdb.ens75)
+  circs.faf <- annotateFlanks(circs = circs.fa, annot.list = gene.feats)
 )
 
+system.time(
+  circs.fafj <- annotateJunctions(circs = circs.fa, annot.list = junctions)
+)
