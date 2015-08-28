@@ -8,13 +8,14 @@
 #'
 #' @docType package
 #' @name ciRcus
+#' @import biomaRt
 #' @import data.table
 #' @import DBI
-#' @import RMySQL
 #' @import hash
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @import IRanges
+#' @import RMySQL
 NULL
 
 
@@ -24,7 +25,28 @@ NULL
     circbase.host = "localhost",
     circbase.user = "webuser",
     circbase.pass = "w3b_u5er",
-    circbase.db   = "circbase"
+    circbase.db   = "circbase",
+    ensembl.release = list("54"      = "may2009.archive.ensembl.org",
+                           "67"      = "may2012.archive.ensembl.org",
+                           "68"      = "jul2012.archive.ensembl.org",
+                           "69"      = "oct2012.archive.ensembl.org",
+                           "70"      = "jan2013.archive.ensembl.org",
+                           "71"      = "apr2013.archive.ensembl.org",
+                           "72"      = "jun2013.archive.ensembl.org",
+                           "73"      = "sep2013.archive.ensembl.org",
+                           "74"      = "dec2013.archive.ensembl.org",
+                           "75"      = "feb2014.archive.ensembl.org",
+                           "76"      = "aug2014.archive.ensembl.org",
+                           "77"      = "oct2014.archive.ensembl.org",
+                           "78"      = "dec2014.archive.ensembl.org",
+                           "79"      = "mar2015.archive.ensembl.org",
+                           "80"      = "may2015.archive.ensembl.org",
+                           "current" = "ensembl.org"
+                           ),
+    ensembl.organism = list("hsa" = "hsapiens",
+                            "mmu" = "mmusculus",
+                            "cel" = "celegans",
+                            "rno" = "rnorvegicus")
   )
   toset <- !(names(op.circus) %in% names(op))
   if(any(toset)) options(op.circus[toset])
