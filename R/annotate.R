@@ -243,10 +243,10 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
 #'
 ensg2name <- function(ensg, organism, release = "current") {
 
-  ensembl.host <- "ensembl.org"
+  ensembl.host <- getOption("ensembl.release")[[release]]
 
   ensembl = useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = ensembl.host)
-  ensembl = useDataset(dataset = paste(ensembl.organism[[organism]], "_gene_ensembl", sep=""), mart = ensembl)
+  ensembl = useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep=""), mart = ensembl)
 
   xrefs <- getBM(attributes = c("external_gene_id", "ensembl_gene_id"),
                  filter     = "ensembl_gene_id",

@@ -4,7 +4,7 @@
 \alias{ensg2name}
 \title{title}
 \usage{
-ensg2name(ensg, release = "current", organism)
+ensg2name(ensg, organism, release = "current")
 }
 \arguments{
 \item{ensg}{character vector of ensembl gene ids}
