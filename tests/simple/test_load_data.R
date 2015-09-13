@@ -1,5 +1,5 @@
 
-all.sites.f <- readCircs(file = "/data/circrna/Human/Sy5y_diff/D0/Sy5y_D0_sites.bed", qualfilter = TRUE, n_uniq_thr = 2, keepCols = 1:19)
+all.sites.f <- readCircs(file = "data/Sy5y_D0_sites.bed", qualfilter = TRUE, n_uniq_thr = 2, keepCols = 1:19)
 circs.f <- circLinRatio(sites = all.sites.f[,.(chrom, start, end, name, n_reads, strand, n_uniq)])
 circs.f <- getIDs(circs.f, "hsa", "hg19")
 
@@ -39,3 +39,8 @@ system.time(
 )
 
 circs.fafj$name <- ensg2name(circs.fafj$host, release = "75", organism = "hsa")
+
+circs.fafj <- circs.fafj[annotated_start_junction == TRUE & annotated_end_junction == TRUE]
+circs.gr <- GRanges(seqnames = circs.fafj$chrom, ranges = IRanges(start = circs.fafj$start, end = circs.fafj$end), strand=circs.fafj$strand)
+txbg <- transcriptsBy(x = txdb.ens75, by = "gene")
+exbt <- exonsBy(x = txdb.ens75, by = "tx", use.names=T)
