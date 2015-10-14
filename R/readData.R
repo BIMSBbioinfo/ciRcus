@@ -14,7 +14,9 @@
 #readCircs <- function(file, subs="all", qualfilter=TRUE, uniqthr=2, keepCols=1:19, one_anchor_uniq=FALSE) {
 readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:19, ...) {
 
-  DT <- fread(file, sep="\t", header = T) # maybe add colClasses later
+  suppressWarnings(
+    DT <- fread(file, sep="\t", header = T) # maybe add colClasses later
+  )
   setnames(DT, "# chrom", "chrom")
   DT <- DT[-grep("#", DT$chrom)]
 

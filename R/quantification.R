@@ -43,7 +43,7 @@ circLinRatio <- function(sites, label.circ="circ", label.norm="norm") {
   sites.circ[["n_right"]][is.na(sites.circ[["n_right"]])] <- 0
   sites.circ$max <- apply(sites.circ[, c("n_right", "n_left"), with=F], 1, max)
 
-  sites.circ$ratio <- sites.circ$n_reads / sites.circ$max
+  sites.circ$ratio <- round(sites.circ$n_reads / sites.circ$max, digits = 2)
 
   return(sites.circ[, !(names(sites.circ) %in% c("intron.start", "intron.end")), with=F])
 }

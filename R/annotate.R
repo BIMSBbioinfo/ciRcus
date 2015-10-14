@@ -8,9 +8,10 @@
 #' @param circs
 #'
 #' @export
+#' @importFrom AnnotationDbi loadDb
 loadAnnotation <- function(txdb.file) {
 
-  require(GenomicFeatures)
+  # require(GenomicFeatures)
 
   txdb <- loadDb(txdb.file)
 
@@ -29,7 +30,7 @@ loadAnnotation <- function(txdb.file) {
 #' @export
 annotateHostGenes <- function(circs, txdb) {
 
-  require(GenomicFeatures)
+  # require(GenomicFeatures)
 
   genes.gr <- genes(txdb)
 
@@ -177,6 +178,13 @@ annotateJunctions <- function(circs, annot.list) {
   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
 
+  circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
+  circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
+  circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
+  circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
+  circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
+  circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
+
   return(circs[, !"id", with = F])
 }
 
@@ -202,8 +210,8 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
   if(!type %in% c('precedence','all'))
     stop('type may only be precedence and all')
 
-  require(data.table)
-  require(GenomicRanges)
+  # require(data.table)
+  # require(GenomicRanges)
   cat('Overlapping...\n')
   if(class(l) != 'GRangesList')
     l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
