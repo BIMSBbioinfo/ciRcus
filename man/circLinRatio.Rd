@@ -4,7 +4,8 @@
 \alias{circLinRatio}
 \title{title}
 \usage{
-circLinRatio(sites, label.circ = "circ", label.norm = "norm")
+circLinRatio(sites, label.circ = "circ", label.norm = "norm",
+  return.readcounts = FALSE)
 }
 \arguments{
 \item{sites}{splice site candidates, as read from find_circ.py output by readCircs}

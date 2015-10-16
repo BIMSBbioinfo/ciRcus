@@ -124,17 +124,21 @@ annotateFlanks <- function(circs, annot.list) {
   start(circ.ends.gr) <- end(circ.ends.gr)
 
   cat('Annotating circRNAs...\n')
-  circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
-  circ.starts.gr$feat_start_all <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="all")
-  circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
-  circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
+  circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list,  null.fact = "intergenic", type="precedence")
+  # circ.starts.gr$feat_start_all <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="all")
+  circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list,  null.fact = "intergenic", type="precedence")
+  # circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
 
   cat('Merging data')
   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+  circs[, feature:=character(.N)]
+  circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
+  circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
+  circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
 
-  return(circs[, !"id", with = F])
+  return(circs[, !c("id", "feat_start", "feat_end"), with = F])
 }
 
 # ---------------------------------------------------------------------------- #
@@ -185,7 +189,7 @@ annotateJunctions <- function(circs, annot.list) {
   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
 
-  return(circs[, !"id", with = F])
+  return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
 }
 
 # ---------------------------------------------------------------------------- #

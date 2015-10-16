@@ -14,6 +14,7 @@
 #' @import hash
 #' @import GenomicRanges
 #' @import GenomicFeatures
+#' @import ggplot2
 #' @import IRanges
 #' @import RMySQL
 NULL
@@ -25,7 +26,11 @@ NULL
     circbase.host = "localhost",
     circbase.user = "webuser",
     circbase.pass = "w3b_u5er",
+    # circbase.host = "141.80.186.72",
+    # circbase.user = "circbaseuser",
+    # circbase.pass = "01circbaseuser",
     circbase.db   = "circbase",
+
     ensembl.release = list("54"      = "may2009.archive.ensembl.org",
                            "67"      = "may2012.archive.ensembl.org",
                            "68"      = "jul2012.archive.ensembl.org",

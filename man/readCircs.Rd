@@ -4,7 +4,7 @@
 \alias{readCircs}
 \title{read a tabular circRNA candidate list}
 \usage{
-readCircs(file, subs = "all", qualfilter = TRUE, keepCols = 1:19, ...)
+readCircs(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...)
 }
 \arguments{
 \item{file}{location of the input file, a character string such as:

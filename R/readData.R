@@ -12,7 +12,7 @@
 #'
 #' @export
 #readCircs <- function(file, subs="all", qualfilter=TRUE, uniqthr=2, keepCols=1:19, one_anchor_uniq=FALSE) {
-readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:19, ...) {
+readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
   suppressWarnings(
     DT <- fread(file, sep="\t", header = T) # maybe add colClasses later
@@ -39,5 +39,5 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:19, ...) {
   DT <- DT[, keepCols, with=F]
   DT$id <- paste(DT$chrom, ":", DT$start, "-", DT$end, sep="")
 
-  return(DT)
+  return(DT[, !"id", with=F])
 }

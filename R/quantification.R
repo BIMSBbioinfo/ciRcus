@@ -10,7 +10,7 @@
 #' @param label.norm a string, label used in the name column to distinguish linear from circular splice sites
 #'
 #' @export
-circLinRatio <- function(sites, label.circ="circ", label.norm="norm") {
+circLinRatio <- function(sites, label.circ="circ", label.norm="norm", return.readcounts=FALSE) {
 
   # split sites.bed into circular and linear subset
   sites.circ <- sites[grep(label.circ, sites$name)]
@@ -41,9 +41,25 @@ circLinRatio <- function(sites, label.circ="circ", label.norm="norm") {
 
   sites.circ[["n_left"]][is.na(sites.circ[["n_left"]])] <- 0
   sites.circ[["n_right"]][is.na(sites.circ[["n_right"]])] <- 0
-  sites.circ$max <- apply(sites.circ[, c("n_right", "n_left"), with=F], 1, max)
+  linear.counts.max <- apply(sites.circ[, c("n_right", "n_left"), with=F], 1, max)
+  sites.circ$ratio <- round(sites.circ$n_reads / linear.counts.max, digits = 2)
 
-  sites.circ$ratio <- round(sites.circ$n_reads / sites.circ$max, digits = 2)
+  if (return.readcounts == TRUE) {
 
-  return(sites.circ[, !(names(sites.circ) %in% c("intron.start", "intron.end")), with=F])
+    suppressWarnings(
+      sites.circ[, n_lin_5pr := integer(.N)]
+    )
+    suppressWarnings(
+      sites.circ[, n_lin_3pr := integer(.N)]
+    )
+    sites.circ$n_lin_5pr[sites.circ$strand == "+"] <- sites.circ$n_left[sites.circ$strand == "+"]
+    sites.circ$n_lin_5pr[sites.circ$strand == "-"] <- sites.circ$n_right[sites.circ$strand == "-"]
+    sites.circ$n_lin_3pr[sites.circ$strand == "+"] <- sites.circ$n_right[sites.circ$strand == "+"]
+    sites.circ$n_lin_3pr[sites.circ$strand == "-"] <- sites.circ$n_left[sites.circ$strand == "-"]
+
+  }
+
+
+
+  return(sites.circ[, !c("intron.start", "intron.end", "n_left", "n_right"), with=F])
 }
