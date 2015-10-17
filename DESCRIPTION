@@ -14,8 +14,11 @@ LazyLoad: yes
 Depends:
     R (>= 3.0.0)
 Imports:
+    AnnotationHub,
+    biomaRt,
     data.table,
     DBI,
+    hash,
     RMySQL,
     GenomicFeatures,
     GenomicRanges,
