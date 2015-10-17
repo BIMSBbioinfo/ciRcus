@@ -9,7 +9,6 @@
 #' @param start
 #' @param end
 #'
-#' @export
 #'
 getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end="end", strand="strand") {
 
@@ -47,8 +46,6 @@ getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end=
 #' @param chrom
 #' @param start
 #' @param end
-#'
-#' @export
 #'
 getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA) {
 
@@ -103,11 +100,3 @@ getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA
 
   return(out)
 }
-
-
-# getIDs(chrom="chr3", organism="mmu", assembly="mm9")
-# getIDs(chrom=circs.f$chrom, start=circs.f$start, end=circs.f$end, strand=circs.f$strand, organism="mmu", assembly="mm9")
-
-
-#all_cons <- dbListConnections(MySQL())
-#for(con in all_cons) dbDisconnect(con)

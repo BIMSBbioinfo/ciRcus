@@ -2,17 +2,15 @@
 % Please edit documentation in R/annotate.R
 \name{loadAnnotation}
 \alias{loadAnnotation}
-\title{title}
+\title{Load annotation and prepare a list of features for later}
 \usage{
 loadAnnotation(txdb.file)
 }
 \arguments{
-\item{circs}{}
+\item{txdb.file}{path to the TxDb gene annotation file saved as SQLite database}
 }
 \description{
-description
-}
-\details{
-details
+Loads a local .sqlite TxDb annotation file (e.g. created using \code{gtf2sqlite}),
+returns a list of features needed for circRNA annotation.
 }
 

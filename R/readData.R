@@ -10,8 +10,6 @@
 #' @param qualFilter a boolean, tells whether the quality filtering should be performed
 #' @param keepCols a vector of column numbers return
 #'
-#' @export
-#readCircs <- function(file, subs="all", qualfilter=TRUE, uniqthr=2, keepCols=1:19, one_anchor_uniq=FALSE) {
 readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
   suppressWarnings(

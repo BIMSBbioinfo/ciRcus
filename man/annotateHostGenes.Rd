@@ -4,7 +4,7 @@
 \alias{annotateHostGenes}
 \title{title}
 \usage{
-annotateHostGenes(circs, txdb)
+annotateHostGenes(circs, genes.gr)
 }
 \arguments{
 \item{circs}{}

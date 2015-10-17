@@ -1,21 +1,85 @@
 # ---------------------------------------------------------------------------- #
-#' title
+#' Build and save a TxDb object containing gene annotation
 #'
-#' description
+#' Loads the GTF file for the selected assembly, drops non-standard chromosomes,
+#' adds "chr" prefix to Ensembl chromosome names and saves the SQLite database
+#' to \code{db.file}
 #'
-#' details
 #'
-#' @param circs
+#' @param assembly abbreviation for one of the supported assemblies
+#' @param db.file a file to save SQLite database to
+#'
+#' @export
+#' @importFrom AnnotationDbi saveDb
+gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.file) {
+
+  ah <- AnnotationHub()
+  gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
+  gtf.gr <- keepStandardChromosomes(gtf.gr)
+  seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep="")
+  seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
+  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value="GRCh37"))
+  saveDb(txdb, file=db.file)
+
+}
+
+
+# ---------------------------------------------------------------------------- #
+#' Load annotation and prepare a list of features for later
+#'
+#' Loads a local .sqlite TxDb annotation file (e.g. created using \code{gtf2sqlite}),
+#' returns a list of features needed for circRNA annotation.
+#'
+#' @param txdb.file path to the TxDb gene annotation file saved as SQLite database
 #'
 #' @export
 #' @importFrom AnnotationDbi loadDb
 loadAnnotation <- function(txdb.file) {
 
-  # require(GenomicFeatures)
-
   txdb <- loadDb(txdb.file)
+  exns <- unique(exons(txdb))
+  junct.start <- exns
+  end(junct.start) <- start(junct.start)
+  junct.end <- exns
+  start(junct.end) <- end(junct.end)
 
-  return(txdb)
+  gene.feats <- GRangesList(utr5   = reduce(unlist(fiveUTRsByTranscript(txdb))),
+                            utr3   = reduce(unlist(threeUTRsByTranscript(txdb))),
+                            cds    = reduce(cds(txdb)),
+                            intron = reduce(unlist(intronsByTranscript(txdb))))
+  junctions <- GRangesList(start = junct.start,
+                           end   = junct.end)
+
+  genes <- genes(txdb)
+
+  return(list(genes = genes, gene.feats = gene.feats, junctions = junctions))
+}
+
+# ---------------------------------------------------------------------------- #
+#' Load and annotate a list of circRNA candidates
+#'
+#' Loads a list of splice junctions detected using \code{find_circ.py}
+#' (Memczak et al. 2013; www.circbase.org), applies quality filters,
+#' calculates circular-to-linear ratios, and extends the input with
+#' genomic features
+#'
+#' @param circs.bed a list of splice junctions (linear and circular), generated using \code{find_circ.py}.
+#' @param annot.list list of relevant genomic features generated using \code{loadAnnotation()}
+#' @param assembly what genome assembly the input data are coming from
+#'
+#' @export
+annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6")) {
+
+  DT <- readCircs(file = circs.bed)
+  DT <- circLinRatio(sites = DT)
+  #DT <- getIDs(DT, "hsa", "hg19")
+  DT$start <- DT$start + 1
+  DT <- annotateHostGenes(circs = DT, genes.gr = annot.list$genes)
+  DT <- annotateFlanks(circs = DT, annot.list = annot.list$gene.feats)
+  DT <- annotateJunctions(circs = DT, annot.list = annot.list$junctions)
+  DT$gene <- ensg2name(ensg = DT$host, organism = getOption("assembly2organism")[[assembly]], release = getOption("assembly2release")[[assembly]])
+
+  return(DT)
 }
 
 # ---------------------------------------------------------------------------- #
@@ -27,12 +91,7 @@ loadAnnotation <- function(txdb.file) {
 #'
 #' @param circs
 #'
-#' @export
-annotateHostGenes <- function(circs, txdb) {
-
-  # require(GenomicFeatures)
-
-  genes.gr <- genes(txdb)
+annotateHostGenes <- function(circs, genes.gr) {
 
   # circs to GR
   circs.gr <- GRanges(seqnames=circs$chrom,
@@ -106,10 +165,9 @@ annotateHostGenes <- function(circs, txdb) {
 #'
 #' @param circs
 #'
-#' @export
 annotateFlanks <- function(circs, annot.list) {
 
-  cat('Munging input data...\n')
+  # cat('Munging input data...\n')
   circs.gr <- GRanges(seqnames=circs$chrom,
                       ranges=IRanges(start=circs$start,
                                      end=circs$end),
@@ -123,13 +181,13 @@ annotateFlanks <- function(circs, annot.list) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  cat('Annotating circRNAs...\n')
+  # cat('Annotating circRNAs...\n')
   circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list,  null.fact = "intergenic", type="precedence")
   # circ.starts.gr$feat_start_all <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="all")
   circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list,  null.fact = "intergenic", type="precedence")
   # circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
 
-  cat('Merging data')
+  # cat('Merging data')
   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
@@ -151,10 +209,9 @@ annotateFlanks <- function(circs, annot.list) {
 #'
 #' @param circs
 #'
-#' @export
 annotateJunctions <- function(circs, annot.list) {
 
-  cat('Munging input data...\n')
+  # cat('Munging input data...\n')
   circs.gr <- GRanges(seqnames=circs$chrom,
                       ranges=IRanges(start=circs$start,
                                      end=circs$end),
@@ -168,11 +225,11 @@ annotateJunctions <- function(circs, annot.list) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  cat('Annotating circRNAs...\n')
+  # cat('Annotating circRNAs...\n')
   circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
   circ.ends.gr$annotated_end_junction <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
 
-  cat('Merging data')
+  # cat('Merging data')
   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
@@ -202,7 +259,6 @@ annotateJunctions <- function(circs, annot.list) {
 #'
 #' @param circs
 #'
-#' @export
 AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.fact = 'None', collapse.char=':') {
 
   if(! class(r1) == 'GRanges')
@@ -216,7 +272,7 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
 
   # require(data.table)
   # require(GenomicRanges)
-  cat('Overlapping...\n')
+  # cat('Overlapping...\n')
   if(class(l) != 'GRangesList')
     l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
   a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand=ignore.strand))))
@@ -225,13 +281,13 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
   a = a[order(a$precedence)]
 
   if(type == 'precedence'){
-    cat('precedence...\n')
+    # cat('precedence...\n')
     a = a[!duplicated(a$queryHits)]
     annot = rep(null.fact, length(r1))
     annot[a$queryHits] = a$id
   }
   if(type == 'all'){
-    cat('all...\n')
+    # cat('all...\n')
     a = a[,list(id=paste(unique(id),collapse=collapse.char)),by='queryHits']
     annot = rep(null.fact, length(r1))
     annot[a$queryHits] = a$id
@@ -250,8 +306,6 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
 #' details
 #'
 #' @param ensg character vector of ensembl gene ids
-#'
-#' @export
 #'
 ensg2name <- function(ensg, organism, release = "current") {
 

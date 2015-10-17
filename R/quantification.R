@@ -9,7 +9,6 @@
 #' @param label.circ a string, label used in the name column to distinguish circular from linear splice sites
 #' @param label.norm a string, label used in the name column to distinguish linear from circular splice sites
 #'
-#' @export
 circLinRatio <- function(sites, label.circ="circ", label.norm="norm", return.readcounts=FALSE) {
 
   # split sites.bed into circular and linear subset

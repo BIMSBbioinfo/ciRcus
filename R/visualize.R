@@ -1,11 +1,11 @@
 # ---------------------------------------------------------------------------- #
-#' title
+#' Plot a histogram of circRNA read counts
 #'
-#' description
+#' Histogram shows the read count distribution of input circRNAs.
 #'
-#' details
-#'
-#' @param circs
+#' @param circs a list of circRNA candidates, loaded and annotated using \code{annotateCircs()}
+#' @param binwidth argument for histogram
+#' @return ggplot2 histogram
 #'
 #' @export
 circHist <- function(circs, binwidth = 0.7) {
@@ -28,13 +28,17 @@ circHist <- function(circs, binwidth = 0.7) {
 }
 
 # ---------------------------------------------------------------------------- #
-#' title
+#' A piechart of gene features input circRNAs are spliced from
 #'
-#' description
+#' Describes proportions of circRNAs coming from particular gene features
+#' (coding sequence, UTRs, introns, intergenic regions, ...). Low-frequency
+#' features can be collapsed to "other".
 #'
-#' details
-#'
-#' @param circs
+#' @param circs a list of circRNA candidates, loaded and annotated using \code{annotateCircs()}
+#' @param other.threshold a minimum number of candidates feature should
+#'                        have to be present in the pie-chart. Can be expressed
+#'                        as fraction, or raw number.
+#' @return ggplot2 pie-chart
 #'
 #' @export
 #' @importFrom RColorBrewer brewer.pal
@@ -72,7 +76,6 @@ annotPie <- function(circs, other.threshold) {
 
   pie <- ggplot(tmpdf, aes(x = factor(1), fill = factor(feature))) +
           geom_bar(width = 1) +
-          #scale_fill_brewer(palette="Greens") +
           xlab("") +
           ylab("") +
           theme(	axis.line=element_blank(),

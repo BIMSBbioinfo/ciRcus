@@ -8,7 +8,6 @@
 #' @param sites splice site candidates, as read from find_circ.py output by readCircs
 #' @param n_uniq_thr minimal number of unique reads required for calling a splice site
 #'
-#' @export
 qualFilter <- function(sites, n_uniq_thr=2) {
 
   sites <- sites[!(grepl("circ", sites$name) & (sites$end - sites$start > 100000)),]
