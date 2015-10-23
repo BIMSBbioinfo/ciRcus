@@ -3,6 +3,7 @@
 export(annotPie)
 export(annotateCircs)
 export(circHist)
+export(getStudiesList)
 export(gtf2sqlite)
 export(loadAnnotation)
 import(AnnotationHub)

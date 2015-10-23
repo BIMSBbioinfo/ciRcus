@@ -72,7 +72,7 @@ annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "m
 
   DT <- readCircs(file = circs.bed)
   DT <- circLinRatio(sites = DT)
-  #DT <- getIDs(DT, "hsa", "hg19")
+  DT <- getIDs(DT, "hsa", "hg19")
   DT$start <- DT$start + 1
   DT <- annotateHostGenes(circs = DT, genes.gr = annot.list$genes)
   DT <- annotateFlanks(circs = DT, annot.list = annot.list$gene.feats)

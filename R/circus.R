@@ -24,12 +24,12 @@ NULL
 .onLoad <- function(libname, pkgname) {
   op <- options()
   op.circus <- list(
-    circbase.host = "localhost",
-    circbase.user = "webuser",
-    circbase.pass = "w3b_u5er",
-    # circbase.host = "141.80.186.72",
-    # circbase.user = "circbaseuser",
-    # circbase.pass = "01circbaseuser",
+    # circbase.host = "localhost",
+    # circbase.user = "webuser",
+    # circbase.pass = "w3b_u5er",
+    circbase.host = "141.80.181.74",
+    circbase.user = "circbase",
+    circbase.pass = "circbase",
     circbase.db   = "circbase",
 
     ensembl.release = list("54"      = "may2009.archive.ensembl.org",
