@@ -9,7 +9,7 @@
 #' @param db.file a file to save SQLite database to
 #'
 #' @export
-gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.file) {
+gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), db.file) {
 
   ah <- AnnotationHub()
   gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
@@ -69,7 +69,7 @@ loadAnnotation <- function(txdb.file) {
 setGeneric("annotateCircs",
            function(se,
                     annot.list,
-                    assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"),
+                    assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"),
                     fixCoordIndexing=TRUE,
                     ...)
              standardGeneric("annotateCircs"))
@@ -77,7 +77,7 @@ setGeneric("annotateCircs",
 #' @rdname summarizeCircs-methods
 #' @usage  \\S4method{annotateCircs}{character}(colData, annot.list, assembly, fixCoordIndexing, ...)
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
-          function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), fixCoordIndexing = TRUE, ...) {
+          function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...) {
 
             if (fixCoordIndexing == TRUE) {
               message('checking out coordinate indexing...')
