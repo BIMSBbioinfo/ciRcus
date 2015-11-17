@@ -11,14 +11,14 @@
 #'
 #' @export
 #' @importFrom AnnotationDbi saveDb
-gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.file) {
+gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), db.file) {
 
   ah <- AnnotationHub()
   gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
   gtf.gr <- keepStandardChromosomes(gtf.gr)
   seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep="")
   seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
-  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value="GRCh37"))
+  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value=assembly))
   saveDb(txdb, file=db.file)
 
 }
@@ -68,7 +68,7 @@ loadAnnotation <- function(txdb.file) {
 #' @param assembly what genome assembly the input data are coming from
 #'
 #' @export
-annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6")) {
+annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235")) {
 
   DT <- readCircs(file = circs.bed)
   DT <- circLinRatio(sites = DT)
