@@ -28,7 +28,7 @@ install_github("BIMSBbioinfo/ciRcus",build_vignettes=FALSE)
 
 # Using the package
 ### Build TxDb object with genomic features and save locally
-Load genomic features from Ensembl and build a database for later (re)use. Currently supported assemblies are hg19, hg38, mm10, rn5 and dm6. This needs to be done only once per assembly. 
+Load genomic features from Ensembl and build a database for later (re)use. Currently supported assemblies are hg19, hg38, mm10, rn5, dm6 and WBcel235. This needs to be done only once per assembly. 
 ```R
 gtf2sqlite(assembly = "hg19", db.file="data/human_hg19_ens75_txdb.sqlite")
 ```
