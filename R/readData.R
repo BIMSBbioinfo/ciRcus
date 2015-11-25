@@ -22,8 +22,13 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
   # ***due to find_circ.py logic of putting a header line
   #    in the middle of the output file, all columns are
   #    character after fread()
-  for (col in names(DT)[c(2,3,5,7,8,9,10,11,13,14,15,16)]){
+  # for (col in names(DT)[c(2,3,5,7,8,9,10,11,13,14,15,16)]){
+  for (col in c("start", "end", "n_reads", "n_uniq", "tiss_counts", "edits", "anchor_overlap", "breakpoints", names(DT)[grep("best_qual", names(DT))])) {
     set(DT, j=col, value=as.integer(DT[[col]]))
+  }
+
+  if ("uniq_bridges" %in% names(DT)) {
+    set(DT, j="uniq_bridges", value=as.integer(DT[["uniq_bridges"]]))
   }
 
   if (subs != "all") {

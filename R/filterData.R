@@ -16,7 +16,11 @@ qualFilter <- function(sites, n_uniq_thr=2) {
   sites <- sites[sites$edits <= 2,]
   sites <- sites[sites$chrom != "chrM",]
   sites <- sites[sites$n_uniq >= n_uniq_thr,]
-  sites <- sites[sites$best_qual_A >= 35 | sites$best_qual_B >= 35,]
+  if ("best_qual_left" %in% names(sites)) {
+    sites <- sites[sites$best_qual_left >= 35 | sites$best_qual_right >= 35,]
+  } else {
+    sites <- sites[sites$best_qual_A >= 35 | sites$best_qual_B >= 35,]
+  }
 
   return(sites)
 }

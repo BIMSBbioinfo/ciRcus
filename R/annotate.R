@@ -11,14 +11,14 @@
 #'
 #' @export
 #' @importFrom AnnotationDbi saveDb
-gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.file) {
+gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), db.file) {
 
   ah <- AnnotationHub()
   gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
   gtf.gr <- keepStandardChromosomes(gtf.gr)
   seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep="")
   seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
-  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value="GRCh37"))
+  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value=assembly))
   saveDb(txdb, file=db.file)
 
 }
@@ -68,7 +68,7 @@ loadAnnotation <- function(txdb.file) {
 #' @param assembly what genome assembly the input data are coming from
 #'
 #' @export
-annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6")) {
+annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235")) {
 
   DT <- readCircs(file = circs.bed)
   DT <- circLinRatio(sites = DT)
@@ -314,7 +314,13 @@ ensg2name <- function(ensg, organism, release = "current") {
   ensembl = useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = ensembl.host)
   ensembl = useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep=""), mart = ensembl)
 
-  xrefs <- getBM(attributes = c("external_gene_id", "ensembl_gene_id"),
+  if ("external_gene_name" %in% listAttributes(ensembl, page = "feature_page", what= "name")) {
+    extgeneid <- "external_gene_name"
+  } else {
+    extgeneid <- "external_gene_id"
+  }
+
+  xrefs <- getBM(attributes = c(extgeneid, "ensembl_gene_id"),
                  filter     = "ensembl_gene_id",
                  values     = ensg,
                  mart       = ensembl)
@@ -323,5 +329,5 @@ ensg2name <- function(ensg, organism, release = "current") {
   out.dt <- merge(out.dt, xrefs, by = "ensembl_gene_id", all.x = T)
   out.dt <- out.dt[match(ensg, out.dt$ensembl_gene_id)]
 
-  return(out.dt$external_gene_id)
+  return(out.dt[[extgeneid]])
 }
