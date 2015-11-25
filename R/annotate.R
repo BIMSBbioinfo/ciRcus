@@ -314,7 +314,13 @@ ensg2name <- function(ensg, organism, release = "current") {
   ensembl = useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = ensembl.host)
   ensembl = useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep=""), mart = ensembl)
 
-  xrefs <- getBM(attributes = c("external_gene_id", "ensembl_gene_id"),
+  if ("external_gene_name" %in% listAttributes(ensembl, page = "feature_page", what= "name")) {
+    extgeneid <- "external_gene_name"
+  } else {
+    extgeneid <- "external_gene_id"
+  }
+
+  xrefs <- getBM(attributes = c(extgeneid, "ensembl_gene_id"),
                  filter     = "ensembl_gene_id",
                  values     = ensg,
                  mart       = ensembl)
@@ -323,5 +329,5 @@ ensg2name <- function(ensg, organism, release = "current") {
   out.dt <- merge(out.dt, xrefs, by = "ensembl_gene_id", all.x = T)
   out.dt <- out.dt[match(ensg, out.dt$ensembl_gene_id)]
 
-  return(out.dt$external_gene_id)
+  return(out.dt[[extgeneid]])
 }

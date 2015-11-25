@@ -47,7 +47,7 @@ NULL
                            "78"      = "dec2014.archive.ensembl.org",
                            "79"      = "mar2015.archive.ensembl.org",
                            "80"      = "may2015.archive.ensembl.org",
-                           "81"      = "july2015.archive.ensembl.org",
+                           "81"      = "jul2015.archive.ensembl.org",
                            "current" = "ensembl.org"
                            ),
 
