@@ -5,6 +5,8 @@ export(annotateCircs)
 export(circHist)
 export(gtf2sqlite)
 export(loadAnnotation)
+export(readCircs)
+
 import(AnnotationHub)
 import(DBI)
 import(GenomicFeatures)

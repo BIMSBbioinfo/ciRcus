@@ -16,13 +16,14 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
     DT <- fread(file, sep="\t", header = T) # maybe add colClasses later
   )
   setnames(DT, "# chrom", "chrom")
-  DT <- DT[-grep("#", DT$chrom)]
+  DT <- DT[!grepl("#", DT$chrom)]
 
   # change column classes where needed
   # ***due to find_circ.py logic of putting a header line
   #    in the middle of the output file, all columns are
   #    character after fread()
-  for (col in names(DT)[c(2,3,5,7,8,9,10,11,13,14,15,16)]){
+  char.class = c('chrom','name','strand','tissues','signal','strandmatch','category')
+  for (col in setdiff(colnames(DT),char.class)){
     set(DT, j=col, value=as.integer(DT[[col]]))
   }
 
@@ -31,7 +32,7 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
   }
 
   if (qualfilter == TRUE) {
-    DT <- qualFilter(DT, ...)
+    DT <- qualFilter(DT)
   }
 
   DT <- DT[, keepCols, with=F]
