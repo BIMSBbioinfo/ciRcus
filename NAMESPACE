@@ -6,6 +6,7 @@ export(circHist)
 export(gtf2sqlite)
 export(loadAnnotation)
 export(readCircs)
+export(summarizeCircs)
 
 import(AnnotationHub)
 import(DBI)
