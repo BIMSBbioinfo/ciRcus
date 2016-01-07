@@ -47,6 +47,7 @@ getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end=
 #' @param start
 #' @param end
 #'
+#' @export
 getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA) {
 
   con <- dbConnect(drv    = dbDriver("MySQL"),
@@ -55,12 +56,11 @@ getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA
                    pass   = getOption("circbase.pass"),
                    dbname = getOption("circbase.db"))
 
-  if (is.na(organism) & is.na(assembly) & is.na(study) & is.na(sample)) {
-    tbls <- dbListTables(con)
-    tbls <- tbls[grep("stats", tbls)]
-    #select distinct expID, sample from hsa_hg19_circID_stats order by expID, sample;
-  }
+  # fetch all _stats tables
+  tbls <- dbListTables(con)
+  tbls <- tbls[grep("stats", tbls)]
 
+  # get all the orgn\assm\study\sample 4-mers
   out <- data.table(orgn = factor(), asm = factor(), stdy = factor(), smpl = factor())
   for (tbl in tbls) {
     ORGN <- strsplit(tbl, "_")[[1]][1]
@@ -79,6 +79,7 @@ getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA
   dbListTables(con)
   dbDisconnect(con)
 
+  # reduce to arguments
   if (!is.na(organism)) {
     out <- out[orgn %in% organism]
   }
