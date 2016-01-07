@@ -23,4 +23,6 @@ Imports:
     GenomicFeatures,
     GenomicRanges,
     IRanges,
-    hash
+    hash,
+    stringr,
+    SummarizedExperiment
