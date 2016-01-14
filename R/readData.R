@@ -87,7 +87,7 @@ setMethod("summarizeCircs",signature("character"),
             circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
             dcircs = rbindlist(circs)
             dcircs$type = ifelse(grepl('circ',dcircs$name),'circ','linear')
-            dcircs$set = sub('norm_.+','',sub('circ_.+','',dcircs$name))
+            dcircs$set = factor(sub('norm_.+','',sub('circ_.+','',dcircs$name)))
             dcircs = split(dcircs, dcircs$type)
 
             # -------------------------------------- #
@@ -110,11 +110,11 @@ setMethod("summarizeCircs",signature("character"),
             circ.ex = merge.fos[,c(1,4), with=FALSE]
             circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
             circ.ex$set = circ.gr$set[circ.ex$queryHits]
-            circ.ex.matrix = dcast.data.table(formula=fac~set, fun.aggregate=sum, fill=0, value.var='nreads', data=cfo)
+            circ.ex.matrix = dcast.data.table(formula=fac~set, fun.aggregate=sum, fill=0, value.var='nreads', data=circ.ex)
             assays = list()
             assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
 
-            if(keep.linear=TRUE){
+            if(keep.linear==TRUE){
                 message('Processing linear transcripts')
                 linear = ProcessLinear(dcircs, circ.gr.reduced, wobble)
                 assays = c(assays, linear)

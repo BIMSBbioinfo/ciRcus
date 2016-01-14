@@ -12,12 +12,15 @@
 #' @import biomaRt
 #' @import data.table
 #' @import DBI
-#' @import hash
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @import ggplot2
+#' @import hash
 #' @import IRanges
 #' @import RMySQL
+#' @import S4Vectors
+#' @import stringr
+#' @import SummarizedExperiment
 NULL
 
 
