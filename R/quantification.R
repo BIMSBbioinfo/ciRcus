@@ -32,9 +32,9 @@ circLinRatio <- function(sites, label.circ="circ", label.norm="norm", return.rea
   sites.starts  <- sites.norm[,.(intron.start, n_right)]
   sites.ends <- sites.norm[,.(intron.end, n_left)]
 
-  sites.circ <- merge(sites.circ, sites.starts, by="intron.start", all.x=T)
+  sites.circ <- merge(sites.circ, unique(sites.starts), by="intron.start", all.x=T)
   setkeyv(sites.circ, c("chrom", "start", "end"))
-  sites.circ <- merge(sites.circ, sites.ends, by="intron.end", all.x=T)
+  sites.circ <- merge(sites.circ, unique(sites.ends), by="intron.end", all.x=T)
   setkeyv(sites.circ, c("chrom", "start", "end"))
   sites.circ <- sites.circ[!duplicated(sites.circ)]
 

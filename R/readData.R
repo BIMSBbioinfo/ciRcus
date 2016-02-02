@@ -111,6 +111,7 @@ setMethod("summarizeCircs",signature("character"),
             circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
             circ.ex$set = circ.gr$set[circ.ex$queryHits]
             circ.ex.matrix = dcast.data.table(formula=fac~set, fun.aggregate=sum, fill=0, value.var='nreads', data=circ.ex)
+            circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced),circ.ex.matrix$fac)]
             assays = list()
             assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
 
@@ -147,11 +148,13 @@ ProcessLinear = function(dcircs, circ.gr.reduced, wobble){
     cfos$set = lin.gr$set[cfos$queryHits]
     cfos$queryHits = factor(cfos$subjectHits, levels=1:length(circ.gr.reduced))
     cfos.cast = dcast.data.table(formula=queryHits~set, fun.aggregate=sum,fill=0, value.var='nreads', data=cfos, drop=FALSE)
+    cfos.cast = cfos.cast[match(names(circ.gr.reduced),cfos.cast$queryHits)]
 
     cfoe$nreads = lin.gr$n_reads[cfoe$queryHits]
     cfoe$set = lin.gr$set[cfoe$queryHits]
     cfoe$queryHits = factor(cfoe$subjectHits, levels=1:length(circ.gr.reduced))
     cfoe.cast = dcast.data.table(formula=queryHits~set, fun.aggregate=sum,fill=0, value.var='nreads', data=cfoe, drop=FALSE)
+    cfoe.cast = cfoe.cast[match(names(circ.gr.reduced),cfoe.cast$queryHits)]
 
     return(list(linear.start = as.matrix(cfos.cast[,-1,with=FALSE]),
                 linear.end   = as.matrix(cfoe.cast[,-1,with=FALSE])))
