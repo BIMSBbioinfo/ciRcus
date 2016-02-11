@@ -9,7 +9,7 @@
 #' @param subs a character string, keep only lines containing it in the name column
 #' @param qualFilter a boolean, tells whether the quality filtering should be performed
 #' @param keepCols a vector of column numbers return
-#'
+#' @export
 readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
   suppressWarnings(
