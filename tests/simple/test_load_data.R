@@ -61,8 +61,8 @@ colData = NULL
 
 
   tmp <- GRanges(seqnames=rep("chr1", 2),
-                 ranges = IRanges(start=c(1000, 1000),
-                                  end = c(2000, 2000)),
+                 ranges = IRanges(start=c(1000000, 1000000),
+                                  end = c(1000100, 1000100)),
                  strand = c("+", "-"))
   #tmp <- shift(tmp, -99)
   #tmp <- resize(tmp, fix="start", width = 100)

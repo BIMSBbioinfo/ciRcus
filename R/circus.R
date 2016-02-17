@@ -69,12 +69,14 @@ NULL
     assembly2release = list("hg19" = "75",
                             "hg38" = "current",
                             "mm10" = "current",
+                            "mm9"  = "67",
                             "dm6"  = "current",
                             "rn5"  = "79"
                             ),
     assembly2organism = list("hg19" = "hsa",
                              "hg38" = "hsa",
                              "mm10" = "mmu",
+                             "mm9"  = "mmu",
                              "dm6"  = "dme"
                              )
 
