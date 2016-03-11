@@ -12,7 +12,11 @@ annotPie(circs.f, 0.02)
 
 library(data.table)
 library(GenomicRanges)
-se <- summarizeCircs(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], wobble=1)
+cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
+                    filename=basename(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))]))
+se <- summarizeCircs(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], wobble=1, colData = cdata)
+resTable(se)
+se <- circLinRatio(se)
 
 circs <- lapply(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], readCircs)
 circs <- lapply(circs, circLinRatio, return.readcounts=TRUE)
@@ -26,37 +30,6 @@ qualfilter = TRUE
 keepCols = 1:6
 colData = NULL
 
-
-  circs <- lapply(circ.files, readCircs)
-#linByCirc <- function(circs) {
-  #circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
-  dcircs = rbindlist(circs)
-  dcircs$type = ifelse(grepl('circ',dcircs$name),'circ','linear')
-  dcircs = unique(dcircs[,.(chrom, start, end, strand, type)])
-  dcircs = split(dcircs, dcircs$type)
-
-  circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['circ']]), keep.extra.columns=TRUE)
-  lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['linear']]), keep.extra.columns=TRUE)
-
-  circ.gr.s = resize(resize(circ.gr, fix='start', width=1), fix='center', width=wobble)
-  circ.gr.e = resize(resize(circ.gr, fix='end',   width=1), fix='center', width=wobble)
-
-  cfos = data.table(as.matrix(findOverlaps(resize(lin.gr, fix='start', width=1), circ.gr.e, ignore.strand=FALSE)))
-  cfoe = data.table(as.matrix(findOverlaps(resize(lin.gr, fix='end',   width=1), circ.gr.s, ignore.strand=FALSE)))
-
-  cfos <- merge(cfos, data.table(rno=1:length(circ.gr), circID=paste0(seqnames(circ.gr), ":", start(circ.gr), "-", end(circ.gr))), by.x="subjectHits", by.y="rno")
-  cfoe <- merge(cfoe, data.table(rno=1:length(circ.gr), circID=paste0(seqnames(circ.gr), ":", start(circ.gr), "-", end(circ.gr))), by.x="subjectHits", by.y="rno")
-
-  s <- split(lin.gr[cfos$queryHits], factor(cfos$subjectHits, levels=1:length(circ.gr)))
-  e <- split(lin.gr[cfoe$queryHits], factor(cfoe$subjectHits, levels=1:length(circ.gr)))
-
-  names(s) <- cfos$circID[ match(names(s), cfos$subjectHits)]
-  names(e) <- cfoe$circID[ match(names(e), cfoe$subjectHits)]
-
-  se <- mergeGRL(s, e)
-
-  circ.gr$circID <- paste0(seqnames(circ.gr), ":", start(circ.gr), "-", end(circ.gr))
-  circ.gr$lin <- se
 
 
 
