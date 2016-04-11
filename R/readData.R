@@ -60,7 +60,6 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #'        to have the same number of rows as the number of files
 #'
 #' @return returns a \code{SummarizedExperiment}
-#' @examples
 #'
 #'
 #' @docType methods
@@ -103,8 +102,8 @@ setMethod("summarizeCircs",signature("character"),
             merge.fos = merge(circ.fos, circ.foe, by='queryHits', all=TRUE)
             merge.fos$fac = with(merge.fos, as.numeric(factor(paste(subjectHits.x, subjectHits.y))))
 
-            circ.gr.reduced = sort(unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE)))
-
+            #circ.gr.reduced = sort(unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE)))
+            circ.gr.reduced = unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE))
             # -------------------------------------- #
             message('Fetching circular expression')
             circ.ex = merge.fos[,c(1,4), with=FALSE]

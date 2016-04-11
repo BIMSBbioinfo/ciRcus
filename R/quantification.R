@@ -67,10 +67,10 @@
 # ---------------------------------------------------------------------------- #
 #' circLinRatio
 #'
-#' @param
+#' @param bla
 #'
 #' @return returns a data.table
-#' @examples
+#'
 #'
 #'
 #' @docType methods

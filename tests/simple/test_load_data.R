@@ -15,8 +15,20 @@ library(GenomicRanges)
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
                     filename=basename(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))]))
 se <- summarizeCircs(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], wobble=1, colData = cdata)
+se <- annotateHostGenes(se, annot.list$genes)
 resTable(se)
 se <- circLinRatio(se)
+histogram(se)
+
+# SH-SY5Y test
+cdata <- data.frame(sample=c("D0"),
+                    filename="data/Sy5y_D0_sites.bed")
+se <- summarizeCircs(as.character(cdata$filename), wobble=1, colData = cdata)
+se <- annotateHostGenes(se, annot.list$genes)
+resTable(se)
+se <- circLinRatio(se)
+histogram(se)
+
 
 circs <- lapply(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], readCircs)
 circs <- lapply(circs, circLinRatio, return.readcounts=TRUE)

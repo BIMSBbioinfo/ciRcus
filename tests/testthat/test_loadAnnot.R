@@ -24,8 +24,15 @@ test_that("demo data are read properly", {
   # the total number of circRNA reads in FrontalCortex rep1 should be 1574
   expect_equal(sum(assays(se)$circ[,1]),  1574)
   # circ read counts
-  expect_equal(assays(se)$circ[[2,3]],     14892)
+  expect_equal(assays(se)$circ[[3,3]],     14892)
   expect_equal(apply(assays(se)$circ, 2, sum), c(1574, 757, 17266, 7221, 67, 93))
+  # lin read counts
+  expect_equal(assays(se)$linear.start[[3,3]], 2362)
+  # lin read count for a non-existing circRNA
+  expect_equal(assays(se)$linear.end[[2,1]], 90)
 
+  # resTable tests
+  #expect_equal(resTable(se[, se$sample=="FC1"])$FC1_lin.start[3], 449L)
+  expect_equal(dim(resTable(se)), c(4, 23))
   }
 )

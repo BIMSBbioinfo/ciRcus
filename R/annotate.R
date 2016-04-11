@@ -91,15 +91,12 @@ annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "m
 #'
 #' @param circs
 #'
-annotateHostGenes <- function(circs, genes.gr) {
+annotateHostGenes <- function(se, genes.gr) {
 
   # circs to GR
-  circs.gr <- GRanges(seqnames=circs$chrom,
-                      ranges=IRanges(start=circs$start,
-                                     end=circs$end),
-                      strand=circs$strand,
-                      id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-  circs.gr <- sort(circs.gr)
+  circs.gr <- rowRanges(se)
+  circs.gr$id <- paste0(seqnames(circs.gr), ":", start(circs.gr), "-", end(circs.gr))
+  # circs.gr <- sort(circs.gr)
 
 
   # GR with circ starts and ends only (left and right flanks, actually)
@@ -111,9 +108,11 @@ annotateHostGenes <- function(circs, genes.gr) {
   olap.start <- findOverlaps(circ.starts.gr, genes.gr, type="within")
   olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type="within")
 
-  circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-  circs$start.hit <- circs$id %in% circs.gr$id[queryHits(olap.start)]
-  circs$end.hit   <- circs$id %in% circs.gr$id[queryHits(olap.end)]
+  #circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+  circs <- data.table(start.hit = names(circs.gr) %in% queryHits(olap.start),
+                      end.hit   = names(circs.gr) %in% queryHits(olap.end),
+                      id        = circs.gr$id,
+                      ord       = 1:length(circs.gr))
 
   matches.start <- data.table(id=circs.gr$id[queryHits(olap.start)], gene=names(genes.gr)[subjectHits(olap.start)] )
   matches.end   <- data.table(id=circs.gr$id[queryHits(olap.end)],   gene=names(genes.gr)[subjectHits(olap.end)] )
@@ -152,8 +151,74 @@ annotateHostGenes <- function(circs, genes.gr) {
   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
 
   #return(circs)
-  return(circs[, !c("id", "start.hit", "end.hit", "starts", "ends", "hit.ctrl", "hitcnt", "hitgenes", "host.candidates"), with=F])
+  rowRanges(se)$host <- circs$host[order(circs$ord)]
+
+  return(se)
 }
+
+# annotateHostGenes <- function(circs, genes.gr) {
+#
+#   # circs to GR
+#   circs.gr <- GRanges(seqnames=circs$chrom,
+#                       ranges=IRanges(start=circs$start,
+#                                      end=circs$end),
+#                       strand=circs$strand,
+#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+#   circs.gr <- sort(circs.gr)
+#
+#
+#   # GR with circ starts and ends only (left and right flanks, actually)
+#   circ.starts.gr <- circs.gr
+#   end(circ.starts.gr) <- start(circ.starts.gr)
+#   circ.ends.gr <- circs.gr
+#   start(circ.ends.gr) <- end(circ.ends.gr)
+#
+#   olap.start <- findOverlaps(circ.starts.gr, genes.gr, type="within")
+#   olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type="within")
+#
+#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+#   circs$start.hit <- circs$id %in% circs.gr$id[queryHits(olap.start)]
+#   circs$end.hit   <- circs$id %in% circs.gr$id[queryHits(olap.end)]
+#
+#   matches.start <- data.table(id=circs.gr$id[queryHits(olap.start)], gene=names(genes.gr)[subjectHits(olap.start)] )
+#   matches.end   <- data.table(id=circs.gr$id[queryHits(olap.end)],   gene=names(genes.gr)[subjectHits(olap.end)] )
+#
+#   start.list <- lapply(split(matches.start, matches.start$id), function(x) x$gene)
+#   end.list   <- lapply(split(matches.end,   matches.end$id),   function(x) x$gene)
+#
+#   circs <- merge(circs, data.table(id=names(start.list), starts=sapply(start.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
+#   circs <- merge(circs, data.table(id=names(end.list), ends=sapply(end.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
+#
+#   hs <- hash(start.list)
+#   he <- hash(end.list)
+#
+#   circs$hit.ctrl <- circs$id %in% unique(c(keys(hs), keys(he)))
+#
+#   #ptm <- proc.time()
+#   tmphits <- integer()
+#   tmpgenes <- integer()
+#   host.candidates <- integer()
+#   for (circ in circs$id) {
+#     tmphits <- append(tmphits, sum(hs[[circ]] %in% he[[circ]]))
+#     tmpgenes <- append(tmpgenes, paste(hs[[circ]][hs[[circ]] %in% he[[circ]]], collapse=","))
+#     host.candidates <- append(host.candidates, length(unique(c(hs[[circ]], he[[circ]]))))
+#   }
+#   #proc.time() - ptm
+#   circs$hitcnt <- tmphits
+#   circs$hitgenes <- tmpgenes
+#   circs$host.candidates <- host.candidates
+#
+#   circs$host[circs$hitcnt == 1] <- circs$hitgenes[circs$hitcnt == 1]
+#   circs$host[circs$hitcnt > 1]  <- "ambiguous"
+#   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == FALSE] <- "intergenic" # TODO: actually, some of them may have a putative host gene within, I was only testing starts/ends
+#   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == TRUE]  <- "no_single_host"
+#   circs$host[circs$hitcnt == 0 & xor(circs$start.hit, circs$end.hit) & circs$host.candidates > 1] <- "ambiguous"
+#   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == FALSE & circs$host.candidates == 1] <- circs$starts[circs$hitcnt == 0 & circs$start.hit == TRUE   & circs$end.hit == FALSE & circs$host.candidates == 1]
+#   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
+#
+#   #return(circs)
+#   return(circs[, !c("id", "start.hit", "end.hit", "starts", "ends", "hit.ctrl", "hitcnt", "hitgenes", "host.candidates"), with=F])
+# }
 
 # ---------------------------------------------------------------------------- #
 #' title

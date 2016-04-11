@@ -28,6 +28,48 @@ circHist <- function(circs, binwidth = 0.7) {
 }
 
 # ---------------------------------------------------------------------------- #
+#' histogram
+#'
+#' histogram of SummarizedEXperiment read counts
+#'
+#'
+#'
+#' @return returns a ggplot2 object
+#'
+#'
+#' @docType methods
+#' @rdname visualizeCircs-methods
+#'
+#' @export
+#'
+setGeneric("histogram",
+           function(se, binwidth = 0.7,
+                    ...)
+             standardGeneric("histogram"))
+setMethod("histogram",
+          signature("RangedSummarizedExperiment"),
+          definition=function(se, binwidth = 0.7, ...) {
+            DT <- data.table(n_reads=rowSums(assays(se)$circ))
+
+            p <- ggplot(DT, aes(x = n_reads)) +
+                  geom_histogram(binwidth = binwidth) +
+                  coord_trans(y = "sqrt") +
+                  scale_x_sqrt(breaks = c(1, 10, 50, 100, 250, 500, 750)) +
+                  scale_y_continuous(breaks = c(0, 1, 10, 50, 100, 250, 500, 750, 1000, 2000, 3000)) +
+                  #scale_y_continuous(breaks=c(0, 10, 50, 100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000)) +
+                  xlab("#reads on head-to-tail splice junction") +
+                  ylab("#circRNAs") +
+                  theme(axis.title.y = element_text(size=20),
+                        axis.title.x = element_text(size=20),
+                        axis.text.x = element_text(size=16),
+                        axis.text.y = element_text(size=16))
+
+            return(p)
+
+          })
+
+
+# ---------------------------------------------------------------------------- #
 #' A piechart of gene features input circRNAs are spliced from
 #'
 #' Describes proportions of circRNAs coming from particular gene features

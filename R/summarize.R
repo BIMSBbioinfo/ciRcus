@@ -5,10 +5,8 @@
 #' SummarizedExperiment object
 #'
 #'
-#' @param
 #'
 #' @return returns a data.table
-#' @examples
 #'
 #'
 #' @docType methods
@@ -31,5 +29,3 @@ setMethod("resTable",
 
             return(DT)
           })
-
-resTable(se)
