@@ -21,7 +21,7 @@ setMethod("resTable",
           signature("RangedSummarizedExperiment"),
           definition=function(se, ...) {
             DT <- data.table(as.data.frame(rowRanges(se)))
-            setnames(DT, c("chr", "start", "end", "width", "strand"))
+            setnames(DT, "seqnames", "chr")
             for (i in 1:length(colData(se)$sample)) {
               DT <- cbind(DT, assays(se)$circ[,i], assays(se)$linear.start[,i], assays(se)$linear.end[,i])
               setnames(DT, c("V2", "V3", "V4"), paste0(colData(se)$sample[i], c("_circ", "_lin.start", "_lin.end")))

@@ -91,6 +91,7 @@ annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "m
 #'
 #' @param circs
 #'
+#' @export
 annotateHostGenes <- function(se, genes.gr) {
 
   # circs to GR
@@ -230,15 +231,17 @@ annotateHostGenes <- function(se, genes.gr) {
 #'
 #' @param circs
 #'
-annotateFlanks <- function(circs, annot.list) {
+#' @export
+annotateFlanks <- function(se, annot.list) {
 
   # cat('Munging input data...\n')
-  circs.gr <- GRanges(seqnames=circs$chrom,
-                      ranges=IRanges(start=circs$start,
-                                     end=circs$end),
-                      strand=circs$strand,
-                      id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-  circs.gr <- sort(circs.gr)
+  circs.gr <- rowRanges(se)
+#   circs.gr <- GRanges(seqnames=circs$chrom,
+#                       ranges=IRanges(start=circs$start,
+#                                      end=circs$end),
+#                       strand=circs$strand,
+#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+  #circs.gr <- sort(circs.gr)
 
   # GR with circ starts and ends only (left and right flanks, actually)
   circ.starts.gr <- circs.gr
@@ -253,16 +256,55 @@ annotateFlanks <- function(circs, annot.list) {
   # circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
 
   # cat('Merging data')
-  circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-  circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-  circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
-  circs[, feature:=character(.N)]
-  circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
-  circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
-  circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
+#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+#   circs[, feature:=character(.N)]
+#   circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
+#   circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
+#   circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
 
-  return(circs[, !c("id", "feat_start", "feat_end"), with = F])
+  rowRanges(se)$feature <- paste(circ.starts.gr$feat_start, circ.ends.gr$feat_end, sep=":")
+
+  return(se)
 }
+
+
+
+
+# annotateFlanks <- function(circs, annot.list) {
+#
+#   # cat('Munging input data...\n')
+#   circs.gr <- GRanges(seqnames=circs$chrom,
+#                       ranges=IRanges(start=circs$start,
+#                                      end=circs$end),
+#                       strand=circs$strand,
+#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+#   circs.gr <- sort(circs.gr)
+#
+#   # GR with circ starts and ends only (left and right flanks, actually)
+#   circ.starts.gr <- circs.gr
+#   end(circ.starts.gr) <- start(circ.starts.gr)
+#   circ.ends.gr <- circs.gr
+#   start(circ.ends.gr) <- end(circ.ends.gr)
+#
+#   # cat('Annotating circRNAs...\n')
+#   circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list,  null.fact = "intergenic", type="precedence")
+#   # circ.starts.gr$feat_start_all <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="all")
+#   circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list,  null.fact = "intergenic", type="precedence")
+#   # circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
+#
+#   # cat('Merging data')
+#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+#   circs[, feature:=character(.N)]
+#   circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
+#   circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
+#   circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
+#
+#   return(circs[, !c("id", "feat_start", "feat_end"), with = F])
+# }
 
 # ---------------------------------------------------------------------------- #
 #' title
