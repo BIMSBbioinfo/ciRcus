@@ -23,8 +23,10 @@ setMethod("resTable",
             DT <- data.table(as.data.frame(rowRanges(se)))
             setnames(DT, "seqnames", "chr")
             for (i in 1:length(colData(se)$sample)) {
-              DT <- cbind(DT, assays(se)$circ[,i], assays(se)$linear.start[,i], assays(se)$linear.end[,i])
-              setnames(DT, c("V2", "V3", "V4"), paste0(colData(se)$sample[i], c("_circ", "_lin.start", "_lin.end")))
+
+              DT <- cbind(DT, sapply(names(assays(se)), function(x) assays(se)[[x]][,i]))
+              setnames(DT, tail(names(DT), length(assays(se))), paste0(colData(se)$sample[i], "_", tail(names(DT), length(assays(se)))))
+
             }
 
             return(DT)

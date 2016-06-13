@@ -46,7 +46,8 @@ loadAnnotation <- function(txdb.file) {
   gene.feats <- GRangesList(utr5   = reduce(unlist(fiveUTRsByTranscript(txdb))),
                             utr3   = reduce(unlist(threeUTRsByTranscript(txdb))),
                             cds    = reduce(cds(txdb)),
-                            intron = reduce(unlist(intronsByTranscript(txdb))))
+                            intron = reduce(unlist(intronsByTranscript(txdb))),
+                            tx     = reduce(exns))
   junctions <- GRangesList(start = junct.start,
                            end   = junct.end)
 
@@ -316,15 +317,17 @@ annotateFlanks <- function(se, annot.list) {
 #'
 #' @param circs
 #'
-annotateJunctions <- function(circs, annot.list) {
+#' @export
+annotateJunctions <- function(se, annot.list) {
 
+  circs.gr <- rowRanges(se)
   # cat('Munging input data...\n')
-  circs.gr <- GRanges(seqnames=circs$chrom,
-                      ranges=IRanges(start=circs$start,
-                                     end=circs$end),
-                      strand=circs$strand,
-                      id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-  circs.gr <- sort(circs.gr)
+#   circs.gr <- GRanges(seqnames=circs$chrom,
+#                       ranges=IRanges(start=circs$start,
+#                                      end=circs$end),
+#                       strand=circs$strand,
+#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+#   circs.gr <- sort(circs.gr)
 
   # GR with circ starts and ends only (left and right flanks, actually)
   circ.starts.gr <- circs.gr
@@ -334,27 +337,83 @@ annotateJunctions <- function(circs, annot.list) {
 
   # cat('Annotating circRNAs...\n')
   circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
-  circ.ends.gr$annotated_end_junction <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
+  circ.ends.gr$annotated_end_junction     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
+
+
+  circ.starts.gr$annotated_start_junction <- ifelse(circ.starts.gr$annotated_start_junction == "None", FALSE, TRUE)
+  circ.ends.gr$annotated_end_junction     <- ifelse(circ.ends.gr$annotated_end_junction == "None", FALSE, TRUE)
+
+  junct.known <- rep("", length(circs.gr))
+  junct.known[circ.starts.gr$annotated_start_junction == TRUE  & circ.ends.gr$annotated_end_junction == TRUE] <- "both"
+  junct.known[circ.starts.gr$annotated_start_junction == FALSE & circ.ends.gr$annotated_end_junction == FALSE] <- "none"
+  junct.known[circ.starts.gr$annotated_start_junction == TRUE  & circ.ends.gr$annotated_end_junction == FALSE & as.logical(strand(circs.gr) == "+")] <- "5pr"
+  junct.known[circ.starts.gr$annotated_start_junction == TRUE  & circ.ends.gr$annotated_end_junction == FALSE & as.logical(strand(circs.gr) == "-")] <- "3pr"
+  junct.known[circ.starts.gr$annotated_start_junction == FALSE & circ.ends.gr$annotated_end_junction == TRUE  & as.logical(strand(circs.gr) == "+")] <- "3pr"
+  junct.known[circ.starts.gr$annotated_start_junction == FALSE & circ.ends.gr$annotated_end_junction == TRUE  & as.logical(strand(circs.gr) == "-")] <- "5pr"
 
   # cat('Merging data')
-  circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-  circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-  circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+#
+#   circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
+#   circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
+#   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
+#   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
+#
+#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
+#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
+#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
+#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
+#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
+#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
+#
+#   return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
 
-  circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
-  circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
-  circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
-  circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
+  rowRanges(se)$junct.known <- junct.known
 
-  circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
-  circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
-  circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
-  circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
-  circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
-  circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
-
-  return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
+  return(se)
 }
+
+# annotateJunctions <- function(circs, annot.list) {
+#
+#   # cat('Munging input data...\n')
+#   circs.gr <- GRanges(seqnames=circs$chrom,
+#                       ranges=IRanges(start=circs$start,
+#                                      end=circs$end),
+#                       strand=circs$strand,
+#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+#   circs.gr <- sort(circs.gr)
+#
+#   # GR with circ starts and ends only (left and right flanks, actually)
+#   circ.starts.gr <- circs.gr
+#   end(circ.starts.gr) <- start(circ.starts.gr)
+#   circ.ends.gr <- circs.gr
+#   start(circ.ends.gr) <- end(circ.ends.gr)
+#
+#   # cat('Annotating circRNAs...\n')
+#   circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
+#   circ.ends.gr$annotated_end_junction <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
+#
+#   # cat('Merging data')
+#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
+#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+#
+#   circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
+#   circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
+#   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
+#   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
+#
+#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
+#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
+#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
+#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
+#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
+#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
+#
+#   return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
+# }
 
 # ---------------------------------------------------------------------------- #
 #' title
@@ -366,6 +425,7 @@ annotateJunctions <- function(circs, annot.list) {
 #'
 #' @param circs
 #'
+#' @export
 AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.fact = 'None', collapse.char=':') {
 
   if(! class(r1) == 'GRanges')
@@ -384,7 +444,8 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
     l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
   a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand=ignore.strand))))
   a$id = names(l)[a$subjectHits]
-  a$precedence = match(a$id,names(l))[a$subjectHits]
+  # a$precedence = match(a$id,names(l))[a$subjectHits]
+  a$precedence = match(a$id,names(l)[a$subjectHits])
   a = a[order(a$precedence)]
 
   if(type == 'precedence'){

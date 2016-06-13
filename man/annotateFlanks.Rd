@@ -4,7 +4,7 @@
 \alias{annotateFlanks}
 \title{title}
 \usage{
-annotateFlanks(circs, annot.list)
+annotateFlanks(se, annot.list)
 }
 \arguments{
 \item{circs}{}

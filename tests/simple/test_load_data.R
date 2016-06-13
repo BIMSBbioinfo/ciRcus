@@ -22,7 +22,10 @@ se <- annotateHostGenes(se, annot.list$genes)
 resTable(se)
 se <- annotateFlanks(se, annot.list$gene.feats)
 resTable(se)
+se <- annotateJunctions(se, annot.list$junctions)
+resTable(se)
 se <- circLinRatio(se)
+resTable(se)
 histogram(se)
 
 # SH-SY5Y test
@@ -30,9 +33,19 @@ cdata <- data.frame(sample=c("D0"),
                     filename="data/Sy5y_D0_sites.bed")
 se <- summarizeCircs(as.character(cdata$filename), wobble=1, colData = cdata)
 se <- annotateHostGenes(se, annot.list$genes)
-resTable(se)
+se <- annotateFlanks(se, annot.list$gene.feats)
+se <- annotateJunctions(se, annot.list$junctions)
 se <- circLinRatio(se)
+DT <- resTable(se)
 histogram(se)
+
+
+circ.ends.gr <- rowRanges(se)
+start(circ.ends.gr) <- end(circ.ends.gr)
+
+AnnotateRanges(r1 = circ.ends.gr,         l = annot.list$gene.feats,  null.fact = "intergenic", type="precedence")[1547]
+AnnotateRanges(r1 = circ.ends.gr[1547],   l = annot.list$gene.feats,  null.fact = "intergenic", type="precedence")
+
 
 
 circs <- lapply(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], readCircs)

@@ -4,7 +4,7 @@
 \alias{annotateJunctions}
 \title{title}
 \usage{
-annotateJunctions(circs, annot.list)
+annotateJunctions(se, annot.list)
 }
 \arguments{
 \item{circs}{}
