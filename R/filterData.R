@@ -17,7 +17,7 @@ qualFilter <- function(sites, n_uniq_thr=2) {
   sites <- sites[sites$chrom != "chrM",]
   sites <- sites[sites$n_uniq >= n_uniq_thr,]
 
-  qual.ind = rowSums(sites[,grepl('best_qual',colnames(sites)),with=FALSE] > 35) > 0
+  qual.ind = rowSums(sites[,grepl('best_qual',colnames(sites)),with=FALSE] >= 35) > 0
   sites <- sites[qual.ind,]
 
   return(sites)
