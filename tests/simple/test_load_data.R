@@ -11,9 +11,9 @@ circHist(circs.f, 0.5)
 annotPie(circs.f, 0.02)
 
 # development
-library(data.table)
-library(GenomicRanges)
-library(hash)
+#library(data.table)
+#library(GenomicRanges)
+#library(hash)
 annot.list <- loadAnnotation("data/test.sqlite")
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
                     filename=basename(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))]))

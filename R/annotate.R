@@ -445,22 +445,20 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
   a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand=ignore.strand))))
   a$id = names(l)[a$subjectHits]
   # a$precedence = match(a$id,names(l))[a$subjectHits]
-  a$precedence = match(a$id,names(l)[a$subjectHits])
+  a$precedence = match(a$id,names(l))
   a = a[order(a$precedence)]
 
   if(type == 'precedence'){
     # cat('precedence...\n')
     a = a[!duplicated(a$queryHits)]
-    annot = rep(null.fact, length(r1))
-    annot[a$queryHits] = a$id
+
   }
   if(type == 'all'){
     # cat('all...\n')
     a = a[,list(id=paste(unique(id),collapse=collapse.char)),by='queryHits']
-    annot = rep(null.fact, length(r1))
-    annot[a$queryHits] = a$id
-
   }
+  annot = rep(null.fact, length(r1))
+  annot[a$queryHits] = a$id
 
   return(annot)
 }
