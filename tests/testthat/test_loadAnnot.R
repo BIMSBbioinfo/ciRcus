@@ -34,5 +34,17 @@ test_that("demo data are read properly", {
   # resTable tests
   #expect_equal(resTable(se[, se$sample=="FC1"])$FC1_lin.start[3], 449L)
   expect_equal(dim(resTable(se)), c(4, 23))
+
+  # annotation tests
+  annot.list <- loadAnnotation("../../data/test.sqlite")
+  se <- annotateHostGenes(se, annot.list$genes)
+  expect_equal(resTable(se)$host, c("ENSG00000183023", "ENSG00000183023", "ENSG00000183023", "ENSG00000180357"))
+  se <- annotateFlanks(se, annot.list$gene.feats)
+  expect_equal(resTable(se)$feature[2], "cds:utr5")
+  expect_equal(resTable(se)$feature[4], "utr5:cds")
+  se <- annotateJunctions(se, annot.list$junctions)
+  expect_equal(resTable(se)$junct.known, c("5pr", "5pr", "5pr", "both"))
+  se <- circLinRatio(se)
+  expect_equal(unname(assays(se)$ratio[3,4]), 4.03)
   }
 )
