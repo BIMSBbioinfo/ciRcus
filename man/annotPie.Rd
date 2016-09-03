@@ -4,14 +4,14 @@
 \alias{annotPie}
 \title{A piechart of gene features input circRNAs are spliced from}
 \usage{
-annotPie(circs, other.threshold)
+annotPie(se, other.threshold = 0.02, ...)
 }
 \arguments{
-\item{circs}{a list of circRNA candidates, loaded and annotated using \code{annotateCircs()}}
-
 \item{other.threshold}{a minimum number of candidates feature should
 have to be present in the pie-chart. Can be expressed
 as fraction, or raw number.}
+
+\item{circs}{a list of circRNA candidates, loaded and annotated using \code{annotateCircs()}}
 }
 \value{
 ggplot2 pie-chart

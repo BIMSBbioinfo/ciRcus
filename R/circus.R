@@ -34,6 +34,7 @@ NULL
     circbase.user = "circbase",
     circbase.pass = "circbase",
     circbase.db   = "circbase",
+    circbase.port = 3306,
 
     ensembl.release = list("54"      = "may2009.archive.ensembl.org",
                            "67"      = "may2012.archive.ensembl.org",

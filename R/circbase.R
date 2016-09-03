@@ -54,7 +54,8 @@ getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA
                    host   = getOption("circbase.host"),
                    user   = getOption("circbase.user"),
                    pass   = getOption("circbase.pass"),
-                   dbname = getOption("circbase.db"))
+                   dbname = getOption("circbase.db"),
+                   port   = getOption("circbase.port"))
 
   # fetch all _stats tables
   tbls <- dbListTables(con)

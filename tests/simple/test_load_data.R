@@ -27,6 +27,8 @@ resTable(se)
 se <- circLinRatio(se)
 resTable(se)
 histogram(se)
+annotPie(se)
+
 
 # SH-SY5Y test
 cdata <- data.frame(sample=c("D0"),
@@ -38,6 +40,20 @@ se <- annotateJunctions(se, annot.list$junctions)
 se <- circLinRatio(se)
 DT <- resTable(se)
 histogram(se)
+annotPie(se, 0.1)
+
+
+
+# connect to the public instance of circBase
+con <- dbConnect(drv    = dbDriver("MySQL"),
+                 host   = "141.80.181.75",
+                 user   = "circbase",
+                 pass   = "circbase",
+                 dbname = "circbase",
+                 port   = 3306)
+
+
+
 
 
 circ.ends.gr <- rowRanges(se)
