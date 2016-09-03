@@ -1,0 +1,18 @@
+---
+title: "ciRcus"
+author: "Petar Glazar; Vedran Franke"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+  fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
