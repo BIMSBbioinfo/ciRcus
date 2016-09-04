@@ -15,9 +15,14 @@
 #   expect_equal(median(circs.f$start), 69383524)
 #
 # })
-test_that("demo data are read properly", {
+test_that("summarizeCircs", {
 
-  se <- summarizeCircs(dir("../../data/demo/", full.names=T)[grep("sites", dir("../../data/demo/"))], wobble=1)
+
+  circ.files = list.files(system.file('extdata', package='ciRcus'),
+                          pattern='sites.bed',
+                          full.names=TRUE)
+  circ.files = circ.files[!grepl('Sy5y', circ.files)]
+  se <- summarizeCircs(circ.files, wobble=1)
 
   # score matrix should be 4 by 6 (4 circs, 6 samples)
   expect_equal(dim(assays(se)$circ),     c(4,6))
@@ -35,10 +40,26 @@ test_that("demo data are read properly", {
   #expect_equal(resTable(se[, se$sample=="FC1"])$FC1_lin.start[3], 449L)
   expect_equal(dim(resTable(se)), c(4, 23))
 
+})
+
+
+test_that('Annotation',{
+
+  circ.files = list.files(system.file('extdata', package='ciRcus'),
+                          pattern='sites.bed',
+                          full.names=TRUE)
+  circ.files = circ.files[!grepl('Sy5y', circ.files)]
+  se <- summarizeCircs(circ.files, wobble=1)
+
+
   # annotation tests
-  annot.list <- loadAnnotation("../../data/test.sqlite")
+  annot.file = system.file('extdata/hsa_ens75_minimal.sqlite', package='ciRcus')
+  annot.list <- suppressMessages(loadAnnotation(annot.file))
   se <- annotateHostGenes(se, annot.list$genes)
-  expect_equal(resTable(se)$gene_id, c("ENSG00000183023", "ENSG00000183023", "ENSG00000183023", "ENSG00000180357"))
+  expect_equal(resTable(se)$gene_id, c("ENSG00000183023",
+                                       "ENSG00000183023",
+                                       "ENSG00000183023",
+                                       "ENSG00000180357"))
   se <- annotateFlanks(se, annot.list$gene.feats)
   expect_equal(resTable(se)$feature[2], "cds:utr5")
   expect_equal(resTable(se)$feature[4], "utr5:cds")
@@ -46,5 +67,4 @@ test_that("demo data are read properly", {
   expect_equal(resTable(se)$junct.known, c("5pr", "5pr", "5pr", "both"))
   se <- circLinRatio(se)
   expect_equal(unname(assays(se)$ratio[3,4]), 4.03)
-  }
-)
+})

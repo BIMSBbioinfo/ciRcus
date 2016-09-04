@@ -95,7 +95,7 @@ setMethod("summarizeCircs",signature("data.frame"),
                             'is missing from colData')))
 
             # -------------------------------------- #
-            circ.files = coldata$filename
+            circ.files = as.character(colData$filename)
 
             # -------------------------------------- #
             if(!all(file.exists(circ.files)))
@@ -161,9 +161,10 @@ setMethod("summarizeCircs",signature("character"),
 
 
 
-            message('Constructing coldata...')
-            colData = DataFrame(sample = sub('.candidates.bed','',basename(circ.files)),
-                                filename=colData)
+            message('Constructing colData...')
+            colData = data.frame(sample = sub('.candidates.bed','',basename(colData)),
+                                filename=colData,
+                                stringsAsFactors=FALSE)
 
             summarizeCircs(colData=colData,
                            keep.linear=keep.linear,

@@ -15,7 +15,7 @@
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @import ggplot2
-#' @import hash
+#' @importFrom hash hash
 #' @import IRanges
 #' @import RMySQL
 #' @import S4Vectors

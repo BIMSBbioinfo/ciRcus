@@ -69,72 +69,19 @@ loadAnnotation <- function(txdb.file) {
 #' @param assembly what genome assembly the input data are coming from
 #'
 #' @export
-setGeneric("annotateCircs",
-function(se,
-         annot.list,
-         assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"),
-         fixCoordIndexing=TRUE,
-         ...)
-  standardGeneric("annotateCircs"))
+annotateCircs <- function(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6")) {
 
-#' @rdname summarizeCircs-methods
-#' @usage  \\S4method{annotateCircs}{character}(colData, annot.list, assembly, fixCoordIndexing, ...)
-setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
-          function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), fixCoordIndexing = TRUE, ...) {
+  DT <- readCircs(file = circs.bed)
+  DT <- circLinRatio(sites = DT)
+  DT <- getIDs(DT, "hsa", "hg19")
+  DT$start <- DT$start + 1
+  DT <- annotateHostGenes(circs = DT, genes.gr = annot.list$genes)
+  DT <- annotateFlanks(circs = DT, annot.list = annot.list$gene.feats)
+  DT <- annotateJunctions(circs = DT, annot.list = annot.list$junctions)
+  DT$gene <- ensg2name(ensg = DT$host, organism = getOption("assembly2organism")[[assembly]], release = getOption("assembly2release")[[assembly]])
 
-            if (fixCoordIndexing == TRUE) {
-              coordfix <- testCoordinateIndexing(rowRanges(se), annot.list$gene.feats$cds)
-              tophits <- sapply(coordfix, function(x) which(x/sum(x) > 0.9))
-              if (!is.na(max(coordfix[[1]][2:3]/sum(coordfix[[1]])) > 0.9) &
-                  max(coordfix[[1]][2:3]/sum(coordfix[[1]])) > 0.9) {
-                if (tophits[1] == 2) {
-                  start(se) <- start(se) + 1
-                } else if (tophits[1] == 3) {
-                  start(se) <- start(se) - 1
-                }
-                warning("start coordinates modified to match annotation.")
-              }
-
-              if (!is.na(max(coordfix[[2]][2:3]/sum(coordfix[[2]])) > 0.9) &
-                  max(coordfix[[2]][2:3]/sum(coordfix[[2]])) > 0.9) {
-                if (tophits[2] == 2) {
-                  end(se) <- end(se) + 1
-                } else if (tophits[2] == 3) {
-                  end(se) <- end(se) - 1
-                }
-                warning("end coordinates modified to match annotation.")
-              }
-            } else {
-              testCoordinateIndexing(rowRanges(se), annot.list$gene.feats$cds)
-              warning("input coordinates were not modified.")
-            }
-
-            se <- annotateHostGenes(se, annot.list$genes)
-            se <- annotateFlanks(se, annot.list$gene.feats)
-            se <- annotateJunctions(se, annot.list$junctions)
-            se <- circLinRatio(se)
-
-            return(se)
-
-            })
-# annotateCircs <- function(cdt, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), ...) {
-#
-#   se <- summarizeCircs(circ.files = as.character(cdt$filename), wobble=1, colData = cdt)
-#   se <- annotateHostGenes(se, annot.list$genes)
-#   se <- annotateFlanks(se, annot.list$gene.feats)
-#   se <- annotateJunctions(se, annot.list$junctions)
-#   se <- circLinRatio(se)
-# #   DT <- readCircs(file = circs.bed)
-# #   DT <- circLinRatio(sites = DT)
-# #   DT <- getIDs(DT, "hsa", "hg19")
-# #   DT$start <- DT$start + 1
-# #   DT <- annotateHostGenes(circs = DT, genes.gr = annot.list$genes)
-# #   DT <- annotateFlanks(circs = DT, annot.list = annot.list$gene.feats)
-# #   DT <- annotateJunctions(circs = DT, annot.list = annot.list$junctions)
-# #   DT$gene <- ensg2name(ensg = DT$host, organism = getOption("assembly2organism")[[assembly]], release = getOption("assembly2release")[[assembly]])
-#
-#   return(se)
-# }
+  return(DT)
+}
 
 # ---------------------------------------------------------------------------- #
 #' title
@@ -206,7 +153,7 @@ annotateHostGenes <- function(se, genes.gr) {
   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
 
   #return(circs)
-  rowRanges(se)$gene_id <- circs$host[order(circs$ord)]
+  rowRanges(se)$host <- circs$host[order(circs$ord)]
 
   return(se)
 }
