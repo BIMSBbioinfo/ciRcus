@@ -162,7 +162,8 @@ setMethod("summarizeCircs",signature("character"),
 
 
             message('Constructing coldata...')
-            colData = DataFrame(sample = sub('.candidates.bed','',basename(circ.files)))
+            colData = DataFrame(sample = sub('.candidates.bed','',basename(circ.files)),
+                                filename=colData)
 
             summarizeCircs(colData=colData,
                            keep.linear=keep.linear,

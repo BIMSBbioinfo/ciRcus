@@ -38,7 +38,7 @@ test_that("demo data are read properly", {
   # annotation tests
   annot.list <- loadAnnotation("../../data/test.sqlite")
   se <- annotateHostGenes(se, annot.list$genes)
-  expect_equal(resTable(se)$host, c("ENSG00000183023", "ENSG00000183023", "ENSG00000183023", "ENSG00000180357"))
+  expect_equal(resTable(se)$gene_id, c("ENSG00000183023", "ENSG00000183023", "ENSG00000183023", "ENSG00000180357"))
   se <- annotateFlanks(se, annot.list$gene.feats)
   expect_equal(resTable(se)$feature[2], "cds:utr5")
   expect_equal(resTable(se)$feature[4], "utr5:cds")
