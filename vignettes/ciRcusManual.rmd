@@ -10,7 +10,18 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# Introduction
+# Installation
 
+# Circ RNA detection
+
+# Summarize detected Circ RNAs
+
+# Annotate Circs
+
+# Explore results
+
+# Access to CircBase
 ```{r, fig.show='hold'}
 plot(1:10)
 plot(10:1)
