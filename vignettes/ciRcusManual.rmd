@@ -34,9 +34,18 @@ The function takes as input a data.frame which contains minimally 2 columns:
 Alternatively, the user can specify supply to the function just the paths
 to the files, and the coldata will be constructed automatically.
 
+```{r Load_Data, eval=FALSE, echo=TRUE}
+```
+
+
+
 ```{r Summarize_Circs, eval=FALSE, echo=TRUE}
 
-circ.files = list.files(sytem.files('extdata'), pattern='bed', full.names=TRUE)
+circ.files = list.files(system.file('extdata', package='ciRcus'),
+                          pattern='sites.bed',
+                          full.names=TRUE)
+circ.files = circ.files[!grepl('Sy5y', circ.files)]
+
 
 coldata = data.frame(sample = sub('.bed','',basename(circ.files)), 
                      file=circ.files)
