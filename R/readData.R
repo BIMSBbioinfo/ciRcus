@@ -43,7 +43,9 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
 # ---------------------------------------------------------------------------- #
 #' Function that reads multiple find_circ output files and returns a
-#' SummarizedExperiment object
+#' SummarizedExperiment object. The resulting object contains unified circ RNA
+#' coordinates as GRanges and counts of back-spliced and linearly spliced reads
+#' for each circ RNA in each sample
 #'
 #'
 #' @param circ.files a character vector of paths to find_circ output files
@@ -83,6 +85,15 @@ setMethod("summarizeCircs",signature("character"),
           function(circ.files, keep.linear, wobble, subs, qualfilter,keepCols, colData){
 
             # -------------------------------------- #
+            if(!all(file.exists(circ.files)))
+                stop('Supplied circ files do not exist')
+
+            if(!is.null(colData) && (!length(circ.files) == nrow(colData)))
+                stop('colData and circ.files do not have the same number of elements')
+
+
+
+            # -------------------------------------- #
             circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
             dcircs = rbindlist(circs)
             dcircs$type = ifelse(grepl('circ',dcircs$name),'circ','linear')
@@ -109,7 +120,11 @@ setMethod("summarizeCircs",signature("character"),
             circ.ex = merge.fos[,c(1,4), with=FALSE]
             circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
             circ.ex$set = circ.gr$set[circ.ex$queryHits]
-            circ.ex.matrix = dcast.data.table(formula=fac~set, fun.aggregate=sum, fill=0, value.var='nreads', data=circ.ex)
+            circ.ex.matrix = dcast.data.table(formula=fac~set,
+                                              fun.aggregate=sum,
+                                              fill=0,
+                                              value.var='nreads',
+                                              data=circ.ex)
             circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced),circ.ex.matrix$fac)]
             assays = list()
             assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
@@ -121,11 +136,14 @@ setMethod("summarizeCircs",signature("character"),
             }
 
 
-            if(is.null(colData))
+            if(is.null(colData)){
+              message('Constructing coldata...')
               colData = DataFrame(sample = sub('.candidates.bed','',basename(circ.files)))
+            }else{
 
-            if(class(colData) == 'data.frame')
-              colData = DataFrame(colData)
+              if(class(colData) == 'data.frame')
+                colData = DataFrame(colData)
+            }
 
             sex = SummarizedExperiment(assays=assays,
                                        rowRanges=circ.gr.reduced,
@@ -134,25 +152,35 @@ setMethod("summarizeCircs",signature("character"),
 
 })
 
+
+# ---------------------------------------------------------------------------- #
+# Function that extracts the linear splicing isoforms for each circ RNA
 ProcessLinear = function(dcircs, circ.gr.reduced, wobble){
 
-    lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['linear']]), keep.extra.columns=TRUE)
-    circ.gr.s = resize(resize(circ.gr.reduced, fix='start', width=1), fix='center', width=wobble)
-    circ.gr.e = resize(resize(circ.gr.reduced, fix='end',   width=1), fix='center', width=wobble)
+    lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['linear']]),
+                                       keep.extra.columns=TRUE)
+    circ.gr.s = resize(resize(circ.gr.reduced, fix='start', width=1),
+                       fix='center', width=wobble)
+    circ.gr.e = resize(resize(circ.gr.reduced, fix='end',   width=1),
+                       fix='center', width=wobble)
 
-    cfos = data.table(as.matrix(findOverlaps(resize(lin.gr, fix='start', width=1), circ.gr.e, ignore.strand=FALSE)))
-    cfoe = data.table(as.matrix(findOverlaps(resize(lin.gr, fix='end',   width=1), circ.gr.s, ignore.strand=FALSE)))
+    cfos = data.table(as.matrix(findOverlaps(resize(lin.gr, fix='start', width=1),
+                                             circ.gr.e, ignore.strand=FALSE)))
+    cfoe = data.table(as.matrix(findOverlaps(resize(lin.gr, fix='end',   width=1),
+                                             circ.gr.s, ignore.strand=FALSE)))
 
     cfos$nreads = lin.gr$n_reads[cfos$queryHits]
     cfos$set = lin.gr$set[cfos$queryHits]
     cfos$queryHits = factor(cfos$subjectHits, levels=1:length(circ.gr.reduced))
-    cfos.cast = dcast.data.table(formula=queryHits~set, fun.aggregate=sum,fill=0, value.var='nreads', data=cfos, drop=FALSE)
+    cfos.cast = dcast.data.table(formula=queryHits~set, fun.aggregate=sum,fill=0,
+                                 value.var='nreads', data=cfos, drop=FALSE)
     cfos.cast = cfos.cast[match(names(circ.gr.reduced),cfos.cast$queryHits)]
 
     cfoe$nreads = lin.gr$n_reads[cfoe$queryHits]
     cfoe$set = lin.gr$set[cfoe$queryHits]
     cfoe$queryHits = factor(cfoe$subjectHits, levels=1:length(circ.gr.reduced))
-    cfoe.cast = dcast.data.table(formula=queryHits~set, fun.aggregate=sum,fill=0, value.var='nreads', data=cfoe, drop=FALSE)
+    cfoe.cast = dcast.data.table(formula=queryHits~set, fun.aggregate=sum,fill=0,
+                                 value.var='nreads', data=cfoe, drop=FALSE)
     cfoe.cast = cfoe.cast[match(names(circ.gr.reduced),cfoe.cast$queryHits)]
 
     return(list(linear.start = as.matrix(cfos.cast[,-1,with=FALSE]),
