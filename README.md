@@ -42,8 +42,8 @@ annot.list <- loadAnnotation("data/human_hg19_ens75_txdb.sqlite")
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
                     filename=list.files(system.file('extdata', package='ciRcus'),                                           pattern='sites.bed',
                                         full.names=TRUE)[1:6])
-se  <- summarizeCircs(circ.files = as.character(cdata$filename), wobble=1, colData = cdata)
-se1 <- annotateCircs(se, annot.list=annot.list)
+se  <- summarizeCircs(colData=cdata, wobble=1)
+se <- annotateCircs(se, annot.list=annot.list)
 circs.se <- summarizeCircs()
 circs.f <- annotateCircs(circs.bed = "data/Sy5y_D0_sites.bed", annot.list = annot.list, assembly = "hg19")
 ```
