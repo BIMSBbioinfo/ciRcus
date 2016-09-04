@@ -21,7 +21,7 @@ biocLite(c("GenomicRanges","GenomicFeatures", "IRanges", "biomaRt", "AnnotationH
 
 #' install the package
 library(devtools)
-install_github("BIMSBbioinfo/ciRcus",build_vignettes=FALSE)
+install_github("BIMSBbioinfo/ciRcus", build_vignettes=FALSE)
 
 
 ```
@@ -39,6 +39,12 @@ annot.list <- loadAnnotation("data/human_hg19_ens75_txdb.sqlite")
 ```
 ### Load and annotate circRNAs
 ```R
+cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
+                    filename=list.files(system.file('extdata', package='ciRcus'),                                           pattern='sites.bed',
+                                        full.names=TRUE)[1:6])
+se  <- summarizeCircs(circ.files = as.character(cdata$filename), wobble=1, colData = cdata)
+se1 <- annotateCircs(se, annot.list=annot.list)
+circs.se <- summarizeCircs()
 circs.f <- annotateCircs(circs.bed = "data/Sy5y_D0_sites.bed", annot.list = annot.list, assembly = "hg19")
 ```
 ### Plot data
