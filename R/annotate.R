@@ -117,6 +117,24 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
             return(se)
 
           })
+# annotateCircs <- function(cdt, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), ...) {
+#
+#   se <- summarizeCircs(circ.files = as.character(cdt$filename), wobble=1, colData = cdt)
+#   se <- annotateHostGenes(se, annot.list$genes)
+#   se <- annotateFlanks(se, annot.list$gene.feats)
+#   se <- annotateJunctions(se, annot.list$junctions)
+#   se <- circLinRatio(se)
+# #   DT <- readCircs(file = circs.bed)
+# #   DT <- circLinRatio(sites = DT)
+# #   DT <- getIDs(DT, "hsa", "hg19")
+# #   DT$start <- DT$start + 1
+# #   DT <- annotateHostGenes(circs = DT, genes.gr = annot.list$genes)
+# #   DT <- annotateFlanks(circs = DT, annot.list = annot.list$gene.feats)
+# #   DT <- annotateJunctions(circs = DT, annot.list = annot.list$junctions)
+# #   DT$gene <- ensg2name(ensg = DT$host, organism = getOption("assembly2organism")[[assembly]], release = getOption("assembly2release")[[assembly]])
+#
+#   return(se)
+# }
 
 # ---------------------------------------------------------------------------- #
 #' title
@@ -188,7 +206,7 @@ annotateHostGenes <- function(se, genes.gr) {
   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
 
   #return(circs)
-  rowRanges(se)$host <- circs$host[order(circs$ord)]
+  rowRanges(se)$gene_id <- circs$host[order(circs$ord)]
 
   return(se)
 }
@@ -272,11 +290,11 @@ annotateFlanks <- function(se, annot.list) {
 
   # cat('Munging input data...\n')
   circs.gr <- rowRanges(se)
-#   circs.gr <- GRanges(seqnames=circs$chrom,
-#                       ranges=IRanges(start=circs$start,
-#                                      end=circs$end),
-#                       strand=circs$strand,
-#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+  #   circs.gr <- GRanges(seqnames=circs$chrom,
+  #                       ranges=IRanges(start=circs$start,
+  #                                      end=circs$end),
+  #                       strand=circs$strand,
+  #                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
   #circs.gr <- sort(circs.gr)
 
   # GR with circ starts and ends only (left and right flanks, actually)
@@ -292,13 +310,13 @@ annotateFlanks <- function(se, annot.list) {
   # circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
 
   # cat('Merging data')
-#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
-#   circs[, feature:=character(.N)]
-#   circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
-#   circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
-#   circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
+  #   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+  #   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
+  #   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+  #   circs[, feature:=character(.N)]
+  #   circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
+  #   circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
+  #   circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
 
   rowRanges(se)$feature <- paste(circ.starts.gr$feat_start, circ.ends.gr$feat_end, sep=":")
 
@@ -357,12 +375,12 @@ annotateJunctions <- function(se, annot.list) {
 
   circs.gr <- rowRanges(se)
   # cat('Munging input data...\n')
-#   circs.gr <- GRanges(seqnames=circs$chrom,
-#                       ranges=IRanges(start=circs$start,
-#                                      end=circs$end),
-#                       strand=circs$strand,
-#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-#   circs.gr <- sort(circs.gr)
+  #   circs.gr <- GRanges(seqnames=circs$chrom,
+  #                       ranges=IRanges(start=circs$start,
+  #                                      end=circs$end),
+  #                       strand=circs$strand,
+  #                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
+  #   circs.gr <- sort(circs.gr)
 
   # GR with circ starts and ends only (left and right flanks, actually)
   circ.starts.gr <- circs.gr
@@ -387,23 +405,23 @@ annotateJunctions <- function(se, annot.list) {
   junct.known[circ.starts.gr$annotated_start_junction == FALSE & circ.ends.gr$annotated_end_junction == TRUE  & as.logical(strand(circs.gr) == "-")] <- "5pr"
 
   # cat('Merging data')
-#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
-#
-#   circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
-#   circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
-#   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
-#   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
-#
-#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
-#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
-#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
-#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
-#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
-#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
-#
-#   return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
+  #   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
+  #   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
+  #   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
+  #
+  #   circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
+  #   circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
+  #   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
+  #   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
+  #
+  #   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
+  #   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
+  #   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
+  #   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
+  #   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
+  #   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
+  #
+  #   return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
 
   rowRanges(se)$junct.known <- junct.known
 

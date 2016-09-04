@@ -10,12 +10,12 @@
 #' @name ciRcus
 #' @import AnnotationHub
 #' @import biomaRt
-#' @importFrom data.table data.table
+#' @import data.table
 #' @import DBI
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @import ggplot2
-#' @importFrom hash hash
+#' @import hash
 #' @import IRanges
 #' @import RMySQL
 #' @import S4Vectors
