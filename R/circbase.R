@@ -5,10 +5,6 @@
 #'
 #' details
 #'
-#' @param chrom
-#' @param start
-#' @param end
-#'
 #'
 getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end="end", strand="strand") {
 
@@ -43,9 +39,6 @@ getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end=
 #'
 #' details
 #'
-#' @param chrom
-#' @param start
-#' @param end
 #'
 #' @export
 getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA) {

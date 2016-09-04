@@ -10,7 +10,7 @@
 #' @name ciRcus
 #' @import AnnotationHub
 #' @import biomaRt
-#' @import data.table
+#' @importFrom data.table data.table
 #' @import DBI
 #' @import GenomicRanges
 #' @import GenomicFeatures
