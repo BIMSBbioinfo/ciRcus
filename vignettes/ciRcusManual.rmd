@@ -1,0 +1,89 @@
+---
+title: "ciRcus"
+author: "Petar Glazar, Vedran Franke"
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteIndexEntry{Transcription factor binding site (TFBS) analysis with the "TFBSTools" package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::html_document
+---
+
+# Introduction
+
+ciRcus is a package for easy summarization and exploration of circ RNAs detected
+in multiple experiments.
+
+
+# Installation
+
+# Circ RNA detection
+
+# Summarize detected Circ RNAs
+
+```{r library, eval=FALSE, echo=TRUE}
+library(ciRcus)
+```
+
+The main summarization function in \code{ciRcus} is the  \code{summarizeCircs} function.
+The function takes as input a data.frame which contains minimally 2 columns:
+1. sample - sample designation for each file
+2. filename - a path to the detected Circ RNAs.
+
+Alternatively, the user can specify supply to the function just the paths
+to the files, and the coldata will be constructed automatically.
+
+```{r Load_Data, eval=FALSE, echo=TRUE}
+```
+
+
+
+```{r Summarize_Circs, eval=FALSE, echo=TRUE}
+
+circ.files = list.files(system.file('extdata', package='ciRcus'),
+                          pattern='sites.bed',
+                          full.names=TRUE)
+circ.files = circ.files[!grepl('Sy5y', circ.files)]
+
+
+coldata = data.frame(sample = sub('.bed','',basename(circ.files)), 
+                     file=circ.files)
+
+circs = summarizeCircs(coldata)
+
+circs
+
+```
+
+# Annotate Circs
+```{r Annotate_Circs, eval=FALSE, echo=TRUE}
+
+
+circs = AnnotatateCircs(circs)
+
+circs
+
+```
+
+
+
+# Explore results
+
+## Sample statistics
+
+
+## Circ statistics
+```{r annotPie, eval=FALSE, echo=TRUE}
+histogram(circs)
+```
+
+
+```{r histogram, eval=FALSE, echo=TRUE}
+histogram(circs)
+```
+
+
+# Access to CircBase
+
+

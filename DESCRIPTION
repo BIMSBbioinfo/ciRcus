@@ -10,8 +10,10 @@ Description: A package for annotation, analysis and visualization of circRNA
     they are spliced from, and discriminate between known and yet unknown splice
     junctions. Circular-to-linear ratios of circRNAs can be calculated, and a number
     of descriptive plots easily generated.
-License: MIT
+License: Artistic-2.0
 LazyLoad: yes
+VignetteBuilder: knitr
+biocViews: Annotation, HighThroughputSequencing, Visualization
 Depends:
     R (>= 3.0.0)
 Imports:
@@ -19,10 +21,16 @@ Imports:
     biomaRt,
     data.table,
     DBI,
-    hash,
-    RMySQL,
     GenomicFeatures,
     GenomicRanges,
+    ggplot2,
+    hash,
     IRanges,
-    hash
+    RMySQL,
+    S4Vectors,
+    stringr,
+    SummarizedExperiment
+Suggests:
+    testthat,
+    knitr
 RoxygenNote: 5.0.1

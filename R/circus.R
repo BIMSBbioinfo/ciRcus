@@ -10,27 +10,31 @@
 #' @name ciRcus
 #' @import AnnotationHub
 #' @import biomaRt
-#' @import data.table
+#' @importFrom data.table data.table
 #' @import DBI
-#' @import hash
 #' @import GenomicRanges
 #' @import GenomicFeatures
 #' @import ggplot2
+#' @importFrom hash hash
 #' @import IRanges
 #' @import RMySQL
+#' @import S4Vectors
+#' @import stringr
+#' @import SummarizedExperiment
 NULL
 
 
 .onLoad <- function(libname, pkgname) {
   op <- options()
   op.circus <- list(
-    circbase.host = "localhost",
-    circbase.user = "webuser",
-    circbase.pass = "w3b_u5er",
-    # circbase.host = "141.80.186.72",
-    # circbase.user = "circbaseuser",
-    # circbase.pass = "01circbaseuser",
+    # circbase.host = "localhost",
+    # circbase.user = "webuser",
+    # circbase.pass = "w3b_u5er",
+    circbase.host = "141.80.181.74",
+    circbase.user = "circbase",
+    circbase.pass = "circbase",
     circbase.db   = "circbase",
+    circbase.port = 3306,
 
     ensembl.release = list("54"      = "may2009.archive.ensembl.org",
                            "67"      = "may2012.archive.ensembl.org",
@@ -66,12 +70,14 @@ NULL
     assembly2release = list("hg19" = "75",
                             "hg38" = "current",
                             "mm10" = "current",
+                            "mm9"  = "67",
                             "dm6"  = "current",
                             "rn5"  = "79"
                             ),
     assembly2organism = list("hg19" = "hsa",
                              "hg38" = "hsa",
                              "mm10" = "mmu",
+                             "mm9"  = "mmu",
                              "dm6"  = "dme"
                              )
 

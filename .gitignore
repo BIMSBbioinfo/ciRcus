@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 data/hsa_GECh37_ens75.sqlite
+data/test.sqlite
+data/demo/demogen.sh
