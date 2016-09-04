@@ -11,19 +11,59 @@ vignette: >
 ---
 
 # Introduction
+
 # Installation
 
 # Circ RNA detection
 
 # Summarize detected Circ RNAs
 
+```{r library, eval=FALSE, echo=TRUE}
+library(ciRcus)
+```
+
+
+```{r Summarize_Circs, eval=FALSE, echo=TRUE}
+
+circ.files = list.files(sytem.files('extdata'), pattern='bed', full.names=TRUE)
+
+coldata = data.frame(sample = sub('.bed','',basename(circ.files)), 
+                     file=circ.files)
+
+circs = summarizeCircs(circ.files)
+
+circs
+
+```
+
 # Annotate Circs
+```{r Annotate_Circs, eval=FALSE, echo=TRUE}
+
+
+circs = AnnotatateCircs(circs)
+
+circs
+
+```
+
+
 
 # Explore results
 
-# Access to CircBase
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+## Sample statistics
+
+
+## Circ statistics
+```{r annotPie, eval=FALSE, echo=TRUE}
+histogram(circs)
 ```
+
+
+```{r histogram, eval=FALSE, echo=TRUE}
+histogram(circs)
+```
+
+
+# Access to CircBase
+
 
