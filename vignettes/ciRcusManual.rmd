@@ -12,6 +12,10 @@ vignette: >
 
 # Introduction
 
+ciRcus is a package for easy summarization and exploration of circ RNAs detected
+in multiple experiments.
+
+
 # Installation
 
 # Circ RNA detection
@@ -22,6 +26,13 @@ vignette: >
 library(ciRcus)
 ```
 
+The main summarization function in \code{ciRcus} is the  \code{summarizeCircs} function.
+The function takes as input a data.frame which contains minimally 2 columns:
+1. sample - sample designation for each file
+2. filename - a path to the detected Circ RNAs.
+
+Alternatively, the user can specify supply to the function just the paths
+to the files, and the coldata will be constructed automatically.
 
 ```{r Summarize_Circs, eval=FALSE, echo=TRUE}
 
@@ -30,7 +41,7 @@ circ.files = list.files(sytem.files('extdata'), pattern='bed', full.names=TRUE)
 coldata = data.frame(sample = sub('.bed','',basename(circ.files)), 
                      file=circ.files)
 
-circs = summarizeCircs(circ.files)
+circs = summarizeCircs(coldata)
 
 circs
 
