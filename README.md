@@ -43,7 +43,7 @@ annot.list <- loadAnnotation(system.file("~/human_hg19_ens75_txdb.sqlite",
 ### Load and annotate circRNAs
 ```R
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
-                    filename=list.files(system.file('extdata', package='ciRcus'),                                                                         pattern='sites.bed',
+                    filename=list.files(system.file('extdata', package='ciRcus'),                                            pattern='sites.bed',
                                         full.names=TRUE)[1:6])
 circs.se <- summarizeCircs(colData=cdata, wobble=1)
 circs.se <- annotateCircs(circs.se, annot.list=annot.list)
