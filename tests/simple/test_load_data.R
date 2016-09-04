@@ -15,6 +15,7 @@ annotPie(circs.f, 0.02)
 #library(GenomicRanges)
 #library(hash)
 annot.list <- loadAnnotation("data/test.sqlite")
+annot.list <- loadAnnotation("data/hsa_ens75_minimal.sqlite")
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
                     filename=basename(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))]))
 se <- summarizeCircs(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], wobble=1, colData = cdata)
@@ -43,6 +44,15 @@ histogram(se)
 annotPie(se, 0.1)
 
 
+# wrapper
+cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
+                    filename=dir("data/demo/", full.names=T))
+se  <- summarizeCircs(circ.files = as.character(cdata$filename), wobble=1, colData = cdata)
+se1 <- annotateCircs(se, annot.list=annot.list)
+cdata <- data.frame(sample=c("D0"),
+                    filename="data/Sy5y_D0_sites.bed")
+se  <- summarizeCircs(circ.files = as.character(cdata$filename), wobble=1, colData = cdata)
+se2 <- annotateCircs(se = se, annot.list=annot.list, fixCoordIndexing = TRUE)
 
 # connect to the public instance of circBase
 con <- dbConnect(drv    = dbDriver("MySQL"),
@@ -53,7 +63,14 @@ con <- dbConnect(drv    = dbDriver("MySQL"),
                  port   = 3306)
 
 
-
+ah <- AnnotationHub()
+gtf.gr <- ah[[getOption("assembly2annhub")[["hg19"]]]]
+gtf.gr <- keepStandardChromosomes(gtf.gr)
+seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep="")
+seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
+gtf.gr <- subsetByOverlaps(gtf.gr, rowRanges(se))
+txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value="GRCh37"))
+saveDb(txdb, file="../data/hsa_ens75_minimal.gtf")
 
 
 circ.ends.gr <- rowRanges(se)

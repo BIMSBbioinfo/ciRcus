@@ -4,15 +4,15 @@
 \alias{annotateCircs}
 \title{Load and annotate a list of circRNA candidates}
 \usage{
-annotateCircs(circs.bed, annot.list, assembly = c("hg19", "hg38", "mm10",
-  "rn5", "dm6"))
+annotateCircs(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5",
+  "dm6"), fixCoordIndexing = TRUE, ...)
 }
 \arguments{
-\item{circs.bed}{a list of splice junctions (linear and circular), generated using \code{find_circ.py}.}
-
 \item{annot.list}{list of relevant genomic features generated using \code{loadAnnotation()}}
 
 \item{assembly}{what genome assembly the input data are coming from}
+
+\item{circs.bed}{a list of splice junctions (linear and circular), generated using \code{find_circ.py}.}
 }
 \description{
 Loads a list of splice junctions detected using \code{find_circ.py}
