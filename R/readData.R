@@ -72,32 +72,35 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #' @rdname summarizeCircs-methods
 #' @export
 setGeneric("summarizeCircs",
-           function(circ.files,
+           function(colData=NULL,
                     keep.linear=TRUE,
                     wobble = 5,
                     subs = 'all',
                     qualfilter=TRUE,
                     keepCols=1:6,
-                    colData=NULL,
                     ...)
              standardGeneric("summarizeCircs"))
 
 
 #' @rdname summarizeCircs-methods
 #' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
-setMethod("summarizeCircs",signature("character"),
-          function(circ.files, keep.linear, wobble, subs, qualfilter,keepCols, colData){
+setMethod("summarizeCircs",signature("data.frame"),
+          function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
+
+
+            # -------------------------------------- #
+            coldata.cnams = c('sample','filename')
+            if(!all(coldata.cnams %in% colnames(colData)))
+               stop(paste(setdiff(coldata.cnams, colnames(colData),
+                            'is missing from colData')))
+
+            # -------------------------------------- #
+            circ.files = coldata$filename
 
             # -------------------------------------- #
             if(!all(file.exists(circ.files)))
-                stop('Supplied circ files do not exist')
+              stop('Supplied circ files do not exist')
 
-            if(!is.null(colData) && (!length(circ.files) == nrow(colData)))
-                stop('colData and circ.files do not have the same number of elements')
-
-
-
-            # -------------------------------------- #
             circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
             dcircs = rbindlist(circs)
             dcircs$type = ifelse(grepl('circ',dcircs$name),'circ','linear')
@@ -134,26 +137,39 @@ setMethod("summarizeCircs",signature("character"),
             assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
 
             if(keep.linear==TRUE){
-                message('Processing linear transcripts')
-                linear = ProcessLinear(dcircs, circ.gr.reduced, wobble)
-                assays = c(assays, linear)
+              message('Processing linear transcripts')
+              linear = ProcessLinear(dcircs, circ.gr.reduced, wobble)
+              assays = c(assays, linear)
             }
 
-
-            if(is.null(colData)){
-              message('Constructing coldata...')
-              colData = DataFrame(sample = sub('.candidates.bed','',basename(circ.files)))
-            }else{
-
-              if(class(colData) == 'data.frame')
+            if(class(colData) == 'data.frame')
                 colData = DataFrame(colData)
-            }
+
 
             sex = SummarizedExperiment(assays=assays,
                                        rowRanges=circ.gr.reduced,
                                        colData=colData)
             return(sex)
 
+
+})
+
+#' @rdname summarizeCircs-methods
+#' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
+setMethod("summarizeCircs",signature("character"),
+          function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
+
+
+
+            message('Constructing coldata...')
+            colData = DataFrame(sample = sub('.candidates.bed','',basename(circ.files)))
+
+            summarizeCircs(colData=colData,
+                           keep.linear=keep.linear,
+                           wobble=wobble,
+                           subs=subs,
+                           qualfilter=qualfilter,
+                           keepCols = keepCols)
 })
 
 
