@@ -32,7 +32,7 @@ Load genomic features from Ensembl and build a database for later (re)use. Curre
 ```R
 gtf2sqlite( assembly = "hg19",
             db.file  = system.file("~/human_hg19_ens75_txdb.sqlite",
-                                   package="ciRcus")
+                                   package="ciRcus"))
 ```
 ### Extract features from the database
 List of features returned by `loadAnnotation()` will be used to annotate circRNAs. Saving it as a separate object is a good practice once we start analyzing multiple circRNA libraries.

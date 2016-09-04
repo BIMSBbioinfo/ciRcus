@@ -5,7 +5,6 @@
 #' adds "chr" prefix to Ensembl chromosome names and saves the SQLite database
 #' to \code{db.file}
 #'
-#'
 #' @param assembly abbreviation for one of the supported assemblies
 #' @param db.file a file to save SQLite database to
 #'
