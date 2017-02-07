@@ -159,6 +159,7 @@ setMethod("summarizeCircs",signature("data.frame"),
 
             circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
             dcircs = rbindlist(circs)
+            #dcircs$name <- sub("_circ_", "_", dcircs$name) # TODO: add exception somewhere, if there is _circ_norm_ in names, boom
             dcircs$type = ifelse(grepl('circ',dcircs$name),'circ','linear')
             dcircs$set = factor(sub('norm_.+','',sub('circ_.+','',dcircs$name)))
             dcircs = split(dcircs, dcircs$type)

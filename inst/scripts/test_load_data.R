@@ -32,10 +32,15 @@ histogram(se)
 annotPie(se)
 
 # find_circ2
-#annot.list <- loadAnnotation("data/test.sqlite")
-annot.list <- loadAnnotation("inst/extdata/hsa_ens75_minimal.sqlite")
-cdata <- data.frame(sample=c("FC1"),
-                    filename="../data/fc2/FrontalCortex_rep1_circ_splice_sites.bed")
+annot.list <- loadAnnotation("data/test.sqlite")
+#annot.list <- loadAnnotation("inst/extdata/hsa_ens75_minimal.sqlite")
+#cdata <- data.frame(sample=c("FC1"),
+#                    filename="../data/fc2/FrontalCortex_rep1_circ_splice_sites.bed")
+cdata <- data.frame(sample=c("CB1", "CB2", "FC1", "FC2"),
+                    filename=c("../data/fc2_full/Cerebellum/rep1/circ_splice_sites.bed",
+                               "../data/fc2_full/Cerebellum/rep2/circ_splice_sites.bed",
+                               "../data/fc2_full/FrontalCortex/rep1/circ_splice_sites.bed",
+                               "../data/fc2_full/FrontalCortex/rep2/circ_splice_sites.bed"))
 #se <- summarizeCircs(dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))], wobble=1, colData = cdata)
 se <- summarizeCircs(colData = cdata, wobble=1)
 se <- annotateHostGenes(se, annot.list$genes)
