@@ -14,11 +14,12 @@ annotPie(circs.f, 0.02)
 #library(data.table)
 #library(GenomicRanges)
 #library(hash)
-annot.list <- loadAnnotation("data/test.sqlite")
-annot.list <- loadAnnotation("data/hsa_ens75_minimal.sqlite")
+#annot.list <- loadAnnotation("data/test.sqlite")
+annot.list <- loadAnnotation("inst/extdata/hsa_ens75_minimal.sqlite")
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
-                    filename=basename(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))]))
-se <- summarizeCircs(dir("data/demo/", full.names=T)[grep("sites", dir("data/demo/"))], wobble=1, colData = cdata)
+                    filename=dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))])
+#se <- summarizeCircs(dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))], wobble=1, colData = cdata)
+se <- summarizeCircs(colData = cdata, wobble=1)
 se <- annotateHostGenes(se, annot.list$genes)
 resTable(se)
 se <- annotateFlanks(se, annot.list$gene.feats)
@@ -29,6 +30,25 @@ se <- circLinRatio(se)
 resTable(se)
 histogram(se)
 annotPie(se)
+
+# find_circ2
+#annot.list <- loadAnnotation("data/test.sqlite")
+annot.list <- loadAnnotation("inst/extdata/hsa_ens75_minimal.sqlite")
+cdata <- data.frame(sample=c("FC1"),
+                    filename="../data/fc2/FrontalCortex_rep1_circ_splice_sites.bed")
+#se <- summarizeCircs(dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))], wobble=1, colData = cdata)
+se <- summarizeCircs(colData = cdata, wobble=1)
+se <- annotateHostGenes(se, annot.list$genes)
+resTable(se)
+se <- annotateFlanks(se, annot.list$gene.feats)
+resTable(se)
+se <- annotateJunctions(se, annot.list$junctions)
+resTable(se)
+se <- circLinRatio(se)
+resTable(se)
+histogram(se)
+annotPie(se)
+
 
 
 # SH-SY5Y test

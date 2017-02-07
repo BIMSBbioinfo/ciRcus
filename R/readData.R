@@ -54,19 +54,35 @@
 readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
   suppressWarnings(
-    DT <- fread(file, sep="\t", header = T) # maybe add colClasses later
+    DT <- fread(file, sep="\t", header=T) # maybe add colClasses later
   )
-  setnames(DT, "# chrom", "chrom")
-  DT <- DT[!grepl("#", DT$chrom)]
 
-  # change column classes where needed
-  # ***due to find_circ.py logic of putting a header line
-  #    in the middle of the output file, all columns are
-  #    character after fread()
-  char.class = c('chrom','name','strand','tissues','signal','strandmatch','category')
-  for (col in setdiff(colnames(DT),char.class)){
-    set(DT, j=col, value=as.integer(DT[[col]]))
+  # try to figure out what tool the data are coming from
+  if (ncol(DT) == 19 & names(DT)[1] == '# chrom') {
+    # read find_circ
+    setnames(DT, "# chrom", "chrom")
+    DT <- DT[!grepl("#", DT$chrom)]
+    # change column classes where needed
+    # ***due to find_circ.py logic of putting a header line
+    #    in the middle of the output file, all columns are
+    #    character after fread()
+    char.class = c('chrom','name','strand','tissues','signal','strandmatch','category')
+    for (col in setdiff(colnames(DT),char.class)){
+      set(DT, j=col, value=as.integer(DT[[col]]))
+    }
+
+  } else if (ncol(DT) == 21 & names(DT)[1] == '#chrom'){
+
+    DT.lin <- fread(sub("circ", "lin", file), sep="\t", header=T)
+    DT.lin$name <- sub("lin", "norm", DT.lin$name)
+    DT <- rbind(DT.lin, DT)
+
+    # read find_circ2
+    setnames(DT, "#chrom", "chrom")
+    setnames(DT, "counts", "n_reads")
+    DT <- DT[!grepl("#", DT$chrom)]
   }
+
 
   if (subs != "all") {
     DT <- DT[grep(subs, DT$name)]
@@ -77,9 +93,8 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
   }
 
   DT <- DT[, keepCols, with=F]
-  DT$id <- paste(DT$chrom, ":", DT$start, "-", DT$end, sep="")
 
-  return(DT[, !"id", with=F])
+  return(DT)
 }
 
 # ---------------------------------------------------------------------------- #
