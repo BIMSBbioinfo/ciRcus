@@ -66,8 +66,8 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
     # ***due to find_circ.py logic of putting a header line
     #    in the middle of the output file, all columns are
     #    character after fread()
-    char.class = c('chrom','name','strand','tissues','signal','strandmatch','category')
-    for (col in setdiff(colnames(DT),char.class)){
+    char.class = c('chrom', 'name', 'strand', 'tissues', 'signal', 'strandmatch', 'category')
+    for (col in setdiff(colnames(DT), char.class)){
       set(DT, j=col, value=as.integer(DT[[col]]))
     }
 
@@ -158,10 +158,17 @@ setMethod("summarizeCircs",signature("data.frame"),
               stop('Supplied circ files do not exist')
 
             circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
+            names(circs) <- colData$sample
+
             dcircs = rbindlist(circs)
-            #dcircs$name <- sub("_circ_", "_", dcircs$name) # TODO: add exception somewhere, if there is _circ_norm_ in names, boom
-            dcircs$type = ifelse(grepl('circ',dcircs$name),'circ','linear')
-            dcircs$set = factor(sub('norm_.+','',sub('circ_.+','',dcircs$name)))
+            if (grepl("_circ_norm_", dcircs$name[1]) | grepl("_circ_circ_", dcircs$name[1])) {
+              message('funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes')
+              dcircs$name <- sub("_circ_norm_", "_norm_", dcircs$name) # TODO: add exception somewhere, if there is _circ_norm_ in names, boom
+              dcircs$name <- sub("_circ_circ_", "_circ_", dcircs$name)
+            }
+            dcircs$type = ifelse(grepl('circ', dcircs$name), 'circ', 'linear')
+            #dcircs$set = factor(sub('norm_.+','',sub('circ_.+','',dcircs$name))) # old
+            dcircs$set = factor(rep(names(circs), sapply(circs, nrow)))
             dcircs = split(dcircs, dcircs$type)
 
             # -------------------------------------- #
