@@ -71,7 +71,7 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
       set(DT, j=col, value=as.integer(DT[[col]]))
     }
 
-  } else if (ncol(DT) == 21 & names(DT)[1] == '#chrom'){
+  } else if (ncol(DT) >= 21 & names(DT)[1] == '#chrom'){
 
     DT.lin <- fread(sub("circ", "lin", file), sep="\t", header=T)
     DT.lin$name <- sub("lin", "norm", DT.lin$name)
@@ -79,7 +79,8 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
     # read find_circ2
     setnames(DT, "#chrom", "chrom")
-    setnames(DT, "counts", "n_reads")
+    setnames(DT, names(DT)[5], "n_reads") # TODO: this is dirty af
+
     DT <- DT[!grepl("#", DT$chrom)]
   }
 
