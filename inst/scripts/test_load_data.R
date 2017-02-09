@@ -59,7 +59,10 @@ resTable(se)
 histogram(se)
 annotPie(se)
 
-
+se2 <- summarizeCircs(colData = cdata, wobble=1)
+se2 <- annotateCircs(se2, annot.list, "hg19")
+histogram(se2)
+annotPie(se2, other.threshold = 0.02)
 
 # SH-SY5Y test
 cdata <- data.frame(sample=c("D0"),

@@ -92,23 +92,16 @@ setMethod("annotPie",
           signature("RangedSummarizedExperiment"),
           definition=function(se, other.threshold = 0.02, ...) {
 
-            if (hasArg(other.threshold)) {
+            if (other.threshold < 1) {
 
-              if (other.threshold < 1) {
-
-                thresh <- round(other.threshold*nrow(se))
-
-              } else {
-
-                thresh <- other.threshold
-
-              }
+              thresh <- round(other.threshold*nrow(se))
 
             } else {
 
-              thresh <- 0
+              thresh <- other.threshold
 
             }
+
 
             collapse.to.other <- names(table(rowRanges(se)$feature)[table(rowRanges(se)$feature) < thresh])
 
