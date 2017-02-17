@@ -9,7 +9,6 @@
 #' @param db.file a file to save SQLite database to
 #'
 #' @export
-#' @importFrom AnnotationDbi saveDb
 gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.file) {
 
   ah <- AnnotationHub()
@@ -32,7 +31,6 @@ gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.fi
 #' @param txdb.file path to the TxDb gene annotation file saved as SQLite database
 #'
 #' @export
-#' @importFrom AnnotationDbi loadDb
 loadAnnotation <- function(txdb.file) {
 
   txdb <- loadDb(txdb.file)

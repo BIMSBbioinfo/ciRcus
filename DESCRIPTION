@@ -17,6 +17,7 @@ biocViews: Annotation, HighThroughputSequencing, Visualization
 Depends:
     R (>= 3.0.0)
 Imports:
+    AnnotationDbi,
     AnnotationHub,
     biomaRt,
     data.table,
@@ -26,6 +27,7 @@ Imports:
     ggplot2,
     hash,
     IRanges,
+    RColorBrewer,
     RMySQL,
     S4Vectors,
     stringr,

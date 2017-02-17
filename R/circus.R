@@ -8,15 +8,16 @@
 #'
 #' @docType package
 #' @name ciRcus
+#' @importFrom AnnotationDbi saveDb loadDb
 #' @import AnnotationHub
-#' @import biomaRt
-#' @import data.table
+#' @importFrom biomaRt useMart useDataset getBM
+#' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @import GenomicRanges
-#' @import GenomicFeatures
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize
+#' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
-#' @import hash
-#' @import IRanges
+#' @importFrom hash hash keys
+#' @importFrom IRanges findOverlaps
 #' @import RMySQL
 #' @import S4Vectors
 #' @import stringr

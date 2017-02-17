@@ -1,55 +1,24 @@
-# ---------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
 #' read a tabular circRNA candidate list
 #'
-#' description
+#' \code{readCircs} loads a list of circRNA candidates into a \code{data.table}.
+#' Currently supported input formats are find_circ.py and find_circ2.py.
 #'
-#' details
-#' @param file location of the input file, a character string such as:
-#'             "/home/user/find_circ_sites.bed"
-#' @param subs a character string, keep only lines containing it in the name column
-#' @param qualFilter a boolean, tells whether the quality filtering should be performed
-#' @param keepCols a vector of column numbers return
+#' Not intended to be used directly, but will stay exported for the time being.
+#' If find_circ2.py is used, fifth column will be renamed to \code{n_reads}
+#' (from \code{n_frags} or \code{counts}, depending on the find_circ2 release) for
+#' backwards compatibility and old time's sake. Will rename "lin" to "norm" in
+#' find_circ2 input name column for the same reason.
+#' Expects \code{<myproject>/fc2/circ_splice_sites.bed} as input, and assumes
+#' the existence of \code{<myproject>/fc2/lin_splice_sites.bed}.
 #'
-# readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
-#
-#   suppressWarnings(
-#     DT <- fread(file, sep="\t", header = T) # maybe add colClasses later
-#   )
-#   setnames(DT, "# chrom", "chrom")
-#   DT <- DT[-grep("#", DT$chrom)]
-#
-#   # change column classes where needed
-#   # ***due to find_circ.py logic of putting a header line
-#   #    in the middle of the output file, all columns are
-#   #    character after fread()
-#   for (col in names(DT)[c(2,3,5,7,8,9,10,11,13,14,15,16)]){
-#     set(DT, j=col, value=as.integer(DT[[col]]))
-#   }
-#
-#   if (subs != "all") {
-#     DT <- DT[grep(subs, DT$name)]
-#   }
-#
-#   if (qualfilter == TRUE) {
-#     DT <- qualFilter(DT, ...)
-#   }
-#
-#   DT <- DT[, keepCols, with=F]
-#   DT$id <- paste(DT$chrom, ":", DT$start, "-", DT$end, sep="")
-#
-#   return(DT[, !"id", with=F])
-# }
-# ---------------------------------------------------------------------------- #
-#' read a tabular circRNA candidate list
+#' @param file Input file location, a character string such as
+#'             \code{/home/user/my_circRNA_project/circ_splice_sites.bed}
+#' @param subs A character string, keep only lines containing it in the name column.
+#' @param qualFilter A boolean. Should quality filtering be performed?
+#' @param keepCols An integer vector. Which input columns should be returned?
+#' @return A data table.
 #'
-#' description
-#'
-#' details
-#' @param file location of the input file, a character string such as:
-#'             "/home/user/find_circ_sites.bed"
-#' @param subs a character string, keep only lines containing it in the name column
-#' @param qualFilter a boolean, tells whether the quality filtering should be performed
-#' @param keepCols a vector of column numbers return
 #' @export
 readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
@@ -98,27 +67,28 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
   return(DT)
 }
 
-# ---------------------------------------------------------------------------- #
-#' Function that reads multiple find_circ output files and returns a
+# --------------------------------------------------------------------------- #
+#' load circRNA detection output to a SummarizedExperiment object
+#'
+#' Function that reads an arbitrary number of circRNA lists and returns a
 #' SummarizedExperiment object. The resulting object contains unified circ RNA
 #' coordinates as GRanges and counts of back-spliced and linearly spliced reads
-#' for each circ RNA in each sample
+#' for each circRNA in each sample
 #'
 #'
-#' @param circ.files a character vector of paths to find_circ output files
-#' @param keep.linear a boolean indicating whether to keep the counts of
+#' @param circ.files A character vector of paths to find_circ output files
+#' @param keep.linear A boolean indicating whether to keep the counts of
 #'        linearly spliced transcripts
-#'
-#' @param wobble number of nucleotides around the splicing border that should be
+#' @param wobble Number of nucleotides around the splicing border that should be
 #'        considered when collapsing circular transcripts - helps with mapping
 #'        imprecision
-#' @param subs a character string, keep only lines containing it in the name column
-#' @param qualfilter a boolean, tells whether the quality filtering should be performed
-#' @param keepCols a vector of column numbers return
-#' @param colData a \code{DataFrame} object that contains the experiment data. It has
-#'        to have the same number of rows as the number of files
+#' @param subs A character string, keep only lines containing it in the name column
+#' @param qualfilter A boolean. Should quality filtering be performed?
+#' @param keepCols An integer vector. Which input columns should be returned?
+#' @param colData A \code{DataFrame} object that contains the input files
+#'        and sample names to be used for further analysis
 #'
-#' @return returns a \code{SummarizedExperiment}
+#' @return A \code{SummarizedExperiment} object.
 #'
 #'
 #' @examples
@@ -126,7 +96,8 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #' circs = summarizeCircs(circ.files)
 #'
 #' @docType methods
-#' @rdname summarizeCircs-methods
+#' @rdname summarizedCircs-methods
+#'
 #' @export
 setGeneric("summarizeCircs",
            function(colData=NULL,
@@ -138,11 +109,11 @@ setGeneric("summarizeCircs",
                     ...)
              standardGeneric("summarizeCircs"))
 
-
+#' @aliases summarizeCircs,data.frame-method
 #' @rdname summarizeCircs-methods
 #' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
-setMethod("summarizeCircs",signature("data.frame"),
-          function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
+setMethod("summarizeCircs", signature("data.frame"),
+          function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
 
 
             # -------------------------------------- #
@@ -219,12 +190,11 @@ setMethod("summarizeCircs",signature("data.frame"),
 
 })
 
+#' @aliases summarizeCircs,character-method
 #' @rdname summarizeCircs-methods
 #' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
-setMethod("summarizeCircs",signature("character"),
+setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
-
-
 
             message('Constructing colData...')
             colData = data.frame(sample = sub('.candidates.bed','',basename(colData)),
