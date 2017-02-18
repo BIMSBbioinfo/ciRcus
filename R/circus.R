@@ -13,7 +13,7 @@
 #' @importFrom biomaRt useMart useDataset getBM
 #' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @importFrom GenomicRanges makeGRangesFromDataFrame resize
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
 #' @importFrom hash hash keys

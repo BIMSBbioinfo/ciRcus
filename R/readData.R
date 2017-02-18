@@ -163,23 +163,27 @@ setMethod("summarizeCircs", signature("data.frame"),
             message('Fetching circular expression')
             # TODO: pull this out as a helper function that can go through all circ.gr metadata
             #       columns and assign them to assays
-            circ.ex = merge.fos[,.(queryHits, fac)]
-            circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
-            circ.ex$set = circ.gr$set[circ.ex$queryHits]
-            circ.ex.matrix = dcast.data.table(formula=fac~set,
-                                              fun.aggregate=sum,
-                                              fill=0,
-                                              value.var='nreads',
-                                              data=circ.ex)
-            circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
+            # circ.ex = merge.fos[,.(queryHits, fac)]
+            # circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
+            # circ.ex$set = circ.gr$set[circ.ex$queryHits]
+            # circ.ex.matrix = dcast.data.table(formula=fac~set,
+            #                                   fun.aggregate=sum,
+            #                                   fill=0,
+            #                                   value.var='nreads',
+            #                                   data=circ.ex)
+            # circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
+            n_reads.dt <- mungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
             assays = list()
-            assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
+            assays$circ = as.matrix(n_reads.dt[,-1,with=FALSE])
+            #assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
 
             if(keep.linear==TRUE){
               message('Processing linear transcripts')
               linear = ProcessLinear(dcircs, circ.gr.reduced, wobble)
               assays = c(assays, linear)
             }
+
+
 
             if(class(colData) == 'data.frame')
                 colData = DataFrame(colData)
@@ -213,6 +217,27 @@ setMethod("summarizeCircs", signature("character"),
 })
 
 
+#
+# Function that, based on circRNA candidate list and collapsed circRNA candidate list
+# summarizes a numeric input column into a matrix that can be hooked to SummarizedExperiment
+mungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
+
+  if (!(column.name %in% colnames(elementMetadata(circ.gr)))) {
+    stop('unknown column name: ', column.name)
+  }
+
+  circ.ex = merge.fos[,.(queryHits, fac)]
+  circ.ex$nreads = values(circ.gr)[[column.name]][circ.ex$queryHits]
+  circ.ex$set = circ.gr$set[circ.ex$queryHits]
+  circ.ex.matrix = dcast.data.table(formula=fac~set,
+                                    fun.aggregate=sum,
+                                    fill=0,
+                                    value.var='nreads',
+                                    data=circ.ex)
+  circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
+
+  return(circ.ex.matrix)
+}
 # ---------------------------------------------------------------------------- #
 # Function that extracts the linear splicing isoforms for each circ RNA
 ProcessLinear = function(dcircs, circ.gr.reduced, wobble){

@@ -20,6 +20,10 @@ cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
                     filename=dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))])
 #se <- summarizeCircs(dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))], wobble=1, colData = cdata)
 se <- summarizeCircs(colData = cdata, wobble=1)
+se <- annotateCircs(se, annot.list, "mm9", fixCoordIndexing = TRUE)
+tab <- resTable(se)
+tab
+
 se <- annotateHostGenes(se, annot.list$genes)
 resTable(se)
 se <- annotateFlanks(se, annot.list$gene.feats)
