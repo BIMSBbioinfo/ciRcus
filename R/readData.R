@@ -148,7 +148,7 @@ setMethod("summarizeCircs", signature("data.frame"),
             circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['circ']]), keep.extra.columns=TRUE)
 
             circ.gr.s = resize(resize(circ.gr, fix='start', width=1), fix='center', width=wobble)
-            circ.gr.e = resize(resize(circ.gr, fix='end', width=1), fix='center',   width=wobble)
+            circ.gr.e = resize(resize(circ.gr, fix='end',   width=1), fix='center', width=wobble)
 
             circ.fos = data.table(as.matrix(findOverlaps(circ.gr.s, reduce(circ.gr.s, ignore.strand=FALSE))))
             circ.foe = data.table(as.matrix(findOverlaps(circ.gr.e, reduce(circ.gr.e, ignore.strand=FALSE))))
@@ -157,10 +157,13 @@ setMethod("summarizeCircs", signature("data.frame"),
             merge.fos$fac = with(merge.fos, as.numeric(factor(paste(subjectHits.x, subjectHits.y))))
 
             #circ.gr.reduced = sort(unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE)))
+            # TODO: wobble logic is naive, should be improved to select the best expressed circRNA as a referent one
             circ.gr.reduced = unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE))
             # -------------------------------------- #
             message('Fetching circular expression')
-            circ.ex = merge.fos[,c(1,4), with=FALSE]
+            # TODO: pull this out as a helper function that can go through all circ.gr metadata
+            #       columns and assign them to assays
+            circ.ex = merge.fos[,.(queryHits, fac)]
             circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
             circ.ex$set = circ.gr$set[circ.ex$queryHits]
             circ.ex.matrix = dcast.data.table(formula=fac~set,
@@ -168,7 +171,7 @@ setMethod("summarizeCircs", signature("data.frame"),
                                               fill=0,
                                               value.var='nreads',
                                               data=circ.ex)
-            circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced),circ.ex.matrix$fac)]
+            circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
             assays = list()
             assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
 
