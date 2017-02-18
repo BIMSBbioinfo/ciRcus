@@ -173,8 +173,10 @@ setMethod("summarizeCircs", signature("data.frame"),
             #                                   data=circ.ex)
             # circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
             n_reads.dt <- mungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
+            n_uniq.dt  <- mungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
             assays = list()
-            assays$circ = as.matrix(n_reads.dt[,-1,with=FALSE])
+            assays$circ      = as.matrix(n_reads.dt[,-1,with=FALSE])
+            assays$circ.uniq = as.matrix( n_uniq.dt[,-1,with=FALSE])
             #assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
 
             if(keep.linear==TRUE){

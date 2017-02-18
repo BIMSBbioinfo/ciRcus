@@ -22,10 +22,12 @@ test_that("summarizeCircs", {
                           pattern='sites.bed',
                           full.names=TRUE)
   circ.files <- circ.files[!grepl('Sy5y', circ.files)]
-  se <- summarizeCircs(circ.files, wobble=1)
+  se <- summarizeCircs(circ.files, wobble=1, keepCols = c(1:7))
 
   # score matrix should be 4 by 6 (4 circs, 6 samples)
   expect_equal(dim(assays(se)$circ),     c(4,6))
+  # there should be 4 assays
+  expect_equal(length(assays(se)), 4)
   # the total number of circRNA reads in FrontalCortex rep1 should be 1574
   expect_equal(sum(assays(se)$circ[,1]),  1574)
   # circ read counts
@@ -35,9 +37,10 @@ test_that("summarizeCircs", {
   expect_equal(assays(se)$linear.start[[3,3]], 2362)
   # lin read count for a non-existing circRNA
   expect_equal(assays(se)$linear.end[[2,1]], 90)
-
+  # circular unique read counts
+  expect_equal(unname(rowSums(assays(se)$circ.uniq)), c(1105, 40, 4866, 218))
   # resTable tests
-  expect_equal(dim(resTable(se)), c(4, 23))
+  expect_equal(dim(resTable(se)), c(4, 29))
 
 })
 
@@ -48,7 +51,7 @@ test_that('Annotation',{
                           pattern='sites.bed',
                           full.names=TRUE)
   circ.files = circ.files[!grepl('Sy5y', circ.files)]
-  se <- summarizeCircs(circ.files, wobble=1)
+  se <- summarizeCircs(circ.files, wobble=1, keepCols = 1:7)
 
 
   # annotation tests
