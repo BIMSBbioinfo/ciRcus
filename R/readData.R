@@ -172,8 +172,8 @@ setMethod("summarizeCircs", signature("data.frame"),
             #                                   value.var='nreads',
             #                                   data=circ.ex)
             # circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
-            n_reads.dt <- mungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
-            n_uniq.dt  <- mungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
+            n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
+            n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
             assays = list()
             assays$circ      = as.matrix(n_reads.dt[,-1,with=FALSE])
             assays$circ.uniq = as.matrix( n_uniq.dt[,-1,with=FALSE])
@@ -222,7 +222,7 @@ setMethod("summarizeCircs", signature("character"),
 #
 # Function that, based on circRNA candidate list and collapsed circRNA candidate list
 # summarizes a numeric input column into a matrix that can be hooked to SummarizedExperiment
-mungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
+MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
 
   if (!(column.name %in% colnames(elementMetadata(circ.gr)))) {
     stop('unknown column name: ', column.name)
