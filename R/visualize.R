@@ -54,7 +54,6 @@ setMethod("histogram",
 #' @return ggplot2 pie-chart
 #'
 #' @export
-#' @importFrom RColorBrewer brewer.pal
 setGeneric("annotPie",
            function(se, other.threshold = 0.02,
                     ...)
@@ -96,8 +95,11 @@ setMethod("annotPie",
                      axis.ticks=element_blank(),
                      axis.title.x=element_blank(),
                      axis.title.y=element_blank(),
-                     panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-                     panel.grid.minor=element_blank(),plot.background=element_blank(),
+                     panel.background=element_blank(),
+                     panel.border=element_blank(),
+                     panel.grid.major=element_blank(),
+                     panel.grid.minor=element_blank(),
+                     plot.background=element_blank(),
                      legend.title=element_blank()) +
               coord_polar(theta = "y")
 
@@ -109,3 +111,52 @@ setMethod("annotPie",
 
           })
 
+
+# ---------------------------------------------------------------------------- #
+#' A scatterplot of total to unique reads supporting a head-to-tail junction
+#'
+#' Plots a total number of head-to-tail junction reads to log2-fold-change of
+#' total to unique reads ratio. Provies an insight into PCR duplication events.
+#'
+#' @param se A SummarizedExperiment object
+#' @param sample Which sample to plot?
+#' @return ggplot2 scatterplot
+#'
+#' @export
+setGeneric("uniqReadsQC",
+           function(se, sample)
+             standardGeneric("uniqReadsQC"))
+setMethod("uniqReadsQC",
+          signature("RangedSummarizedExperiment"),
+          definition=function(se, sample) {
+
+            if (sample != "all" & !(sample %in% colnames(se))) stop(sample, ' is not a valid sample.')
+
+            SMPL <- sample
+            if (sample == "all") {
+              totals <- rowSums(assays(circs.se)$circ)
+              uniqs  <- rowSums(assays(circs.se)$circ.uniq)
+            } else {
+              totals <- assays(circs.se)$circ[, SMPL]
+              uniqs  <- assays(circs.se)$circ.uniq[, SMPL]
+            }
+
+            tmp.dt <- data.table(totals = totals,
+                                 uniqs  = uniqs,
+                                 LFC    = log2(totals/uniqs))
+
+            p <- ggplot(tmp.dt, aes(x = totals, y = LFC)) +
+                  geom_point() +
+                  xlab("#reads, total") +
+                  ylab("log2(#reads_total / #reads_unique)") +
+                  ggtitle(SMPL) +
+                  theme(axis.title.y = element_text(size=20),
+                        axis.title.x = element_text(size=20),
+                        axis.text.x  = element_text(size=16),
+                        axis.text.y  = element_text(size=16),
+                        plot.title   = element_text(size=20, hjust=0.5))
+
+
+            return(p)
+
+          })
