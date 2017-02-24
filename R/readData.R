@@ -122,6 +122,7 @@ setMethod("summarizeCircs", signature("data.frame"),
                stop(paste(setdiff(coldata.cnams, colnames(colData),
                             'is missing from colData')))
 
+
             # -------------------------------------- #
             circ.files = as.character(colData$filename)
 
