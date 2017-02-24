@@ -107,6 +107,14 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
               warning("input coordinates were not modified.")
             }
 
+            # check seqlevel style, match input
+            if (!any(seqlevelsStyle(annot.list$genes) %in% seqlevelsStyle(se))) {
+              warning('nonmatching seqlevel styles, will fix automatically')
+              for (i in 1:length(annot.list)) {
+                seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
+              }
+            }
+
             message('annotating host genes...')
             se <- annotateHostGenes(se, annot.list$genes)
             message('annotating splice junctions...')

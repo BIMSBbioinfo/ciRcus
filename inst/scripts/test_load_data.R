@@ -1,11 +1,13 @@
 # find_circ2
 annot.list <- loadAnnotation("data/test.sqlite")
+
 cdata <- data.frame(sample=c("D0", "D2", "D4"),
                     filename=c("inst/extdata/Sy5y_D0_sites.bed",
                                "/data/circrna/Human/Sy5y_diff/D2/Sy5y_D2_sites.bed",
                                "/data/circrna/Human/Sy5y_diff/D4/Sy5y_D4_sites.bed"))
 
 circs.se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:19)
+
 circs.se <- annotateCircs(se = circs.se, annot.list = annot.list, assembly = "hg19", fixCoordIndexing = T)
 
 
