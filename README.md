@@ -4,11 +4,11 @@ ciRcus is a collection of functions for everyday munging of circRNA data.
 In its current, preliminary version, it can take lists of putative splice junctions generated using find_circ.py ([Memczak et al. 2013](http://www.nature.com/nature/journal/v495/n7441/full/nature11928.html), [circBase](http://www.circbase.org)) as input, and perform following annotation steps:
 
 * quality filtering
-* suggesting a host gene candidate was spliced from
-* calculating circular-to-linear ratio
-* describe gene features circRNA candidate was spliced from
-* report if circRNA's spliced junctions are already annotated as linear exon-intron junctions
-* generate read count histogram and gene feature pie-charts
+* suggest a host gene a circRNA candidate was spliced from
+* calculate circular-to-linear ratio
+* describe gene features a circRNA candidate was spliced from
+* report if a circRNA's splice junctions are already annotated as linear exon-intron junctions
+* generate read count histogram and gene features pie-charts
 
 # Installation
 
