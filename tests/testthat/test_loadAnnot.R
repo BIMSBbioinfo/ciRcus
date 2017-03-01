@@ -18,11 +18,11 @@
 test_that("summarizeCircs", {
 
 
-  circ.files <- list.files(system.file('extdata', package='ciRcus'),
-                          pattern='sites.bed',
-                          full.names=TRUE)
+  circ.files <- list.files(system.file('extdata', package = 'ciRcus'),
+                          pattern = 'sites.bed',
+                          full.names = TRUE)
   circ.files <- circ.files[!grepl('Sy5y', circ.files)]
-  se <- summarizeCircs(circ.files, wobble=1, keepCols = c(1:7))
+  se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
   # score matrix should be 4 by 6 (4 circs, 6 samples)
   expect_equal(dim(assays(se)$circ),     c(4,6))
@@ -73,4 +73,28 @@ test_that('Annotation',{
 
 # test_that('test_if_celegans_stuff_is_properly_loaded_and_annotated', {
 #
-# })
+# # })
+test_that('sample labels are robust upon resorting colData', {
+
+  circ.files = list.files(system.file('extdata', package='ciRcus'),
+                          pattern='sites.bed',
+                          full.names=TRUE)
+  circ.files = circ.files[!grepl('Sy5y', circ.files)]
+
+  se.sorted   <- summarizeCircs(circ.files,      wobble = 1, keepCols = 1:7)
+  se.unsorted <- summarizeCircs(rev(circ.files), wobble = 1, keepCols = 1:7)
+
+  # rownames should be equal to sample column
+  expect_equal(rownames(colData(se.sorted)),   colData(se.sorted)$sample)
+  expect_equal(rownames(colData(se.unsorted)), colData(se.unsorted)$sample)
+
+  # sorted vs. sorted
+  expect_equal(unname(assays(se.sorted)$circ[,'FrontalCortex_rep1_sites.bed']),   resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ)
+  # unsorted vs. unsorted
+  expect_equal(unname(assays(se.unsorted)$circ[,'FrontalCortex_rep1_sites.bed']), resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
+
+  # sorted vs. unsorted, assays()
+  expect_equal(assays(se.sorted)$circ[,'FrontalCortex_rep1_sites.bed'],   assays(se.unsorted)$circ[,'FrontalCortex_rep1_sites.bed'])
+  # sorted vs. unsorted, resTable()
+  expect_equal(resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ, resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
+})
