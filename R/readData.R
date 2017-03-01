@@ -141,7 +141,7 @@ setMethod("summarizeCircs", signature("data.frame"),
             }
             dcircs$type = ifelse(grepl('circ', dcircs$name), 'circ', 'linear')
             #dcircs$set = factor(sub('norm_.+','',sub('circ_.+','',dcircs$name))) # old
-            dcircs$set = factor(rep(names(circs), sapply(circs, nrow)))
+            dcircs$set = factor(rep(names(circs), sapply(circs, nrow)), levels=names(circs))
             dcircs = split(dcircs, dcircs$type)
 
             # -------------------------------------- #
