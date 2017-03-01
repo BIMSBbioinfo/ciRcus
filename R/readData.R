@@ -42,7 +42,7 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 
   } else if (ncol(DT) >= 21 & names(DT)[1] == '#chrom'){
 
-    DT.lin <- fread(sub("circ", "lin", file), sep="\t", header=T)
+    DT.lin <- fread(sub("circ_splice_sites.bed$", "lin_splice_sites.bed", file), sep="\t", header=T)
     DT.lin$name <- sub("lin", "norm", DT.lin$name)
     DT <- rbind(DT.lin, DT)
 
