@@ -71,9 +71,6 @@ test_that('Annotation',{
   expect_equal(unname(assays(se)$ratio[3,4]), 4.03)
 })
 
-# test_that('test_if_celegans_stuff_is_properly_loaded_and_annotated', {
-#
-# # })
 test_that('sample labels are robust upon resorting colData', {
 
   circ.files = list.files(system.file('extdata', package='ciRcus'),
