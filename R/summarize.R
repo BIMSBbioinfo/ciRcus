@@ -5,7 +5,6 @@
 #' SummarizedExperiment object
 #'
 #'
-#'
 #' @return returns a data.table
 #'
 #'
