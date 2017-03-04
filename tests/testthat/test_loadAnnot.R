@@ -1,20 +1,3 @@
-# test_that("annotation list loads properly", {
-#
-#   annot.list <- loadAnnotation("../../data/test.sqlite")
-#
-#   expect_equal(length(annot.list$genes),                 57773)
-#   expect_equal(length(annot.list$gene.feats$utr5),       58834)
-#   expect_equal(length(annot.list$gene.feats$cds),       209804)
-#   expect_equal(length(annot.list$junctions$start),      562242)
-#   expect_equal(mean(start(annot.list$junctions$end)), 74316829)
-#
-#   circs.f <- annotateCircs(circs.bed = "../../data/Sy5y_D0_sites.bed", annot.list = annot.list, assembly = "hg19")
-#
-#   expect_equal(nrow(circs.f),             2166)
-#   expect_equal(sum(circs.f$n_reads),      9182)
-#   expect_equal(median(circs.f$start), 69383524)
-#
-# })
 test_that("summarizeCircs", {
 
 
