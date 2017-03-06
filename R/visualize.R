@@ -13,7 +13,7 @@
 #'
 #'
 #' @docType methods
-#' @rdname visualizeCircs-methods
+#' @rdname histogram-methods
 #'
 #' @export
 #'
@@ -21,6 +21,9 @@ setGeneric("histogram",
            function(se, binwidth = 0.7,
                     ...)
              standardGeneric("histogram"))
+
+#' @aliases histogram,RangedSummarizedExperiment-method
+#' @rdname histogram-methods
 setMethod("histogram",
           signature("RangedSummarizedExperiment"),
           definition=function(se, binwidth = 0.7, ...) {
@@ -58,11 +61,17 @@ setMethod("histogram",
 #' @param ... other arguments
 #' @return ggplot2 pie-chart
 #'
+#' @docType methods
+#' @rdname annotPie-methods
+#'
 #' @export
 setGeneric("annotPie",
            function(se, other.threshold = 0.02,
                     ...)
              standardGeneric("annotPie"))
+
+#' @aliases annotPie,RangedSummarizedExperiment-method
+#' @rdname annotPie-methods
 setMethod("annotPie",
           signature("RangedSummarizedExperiment"),
           definition=function(se, other.threshold = 0.02, ...) {
@@ -128,10 +137,16 @@ setMethod("annotPie",
 #'
 #' @return ggplot2 scatterplot
 #'
+#' @docType methods
+#' @rdname uniqReadsQC-methods
+#'
 #' @export
 setGeneric("uniqReadsQC",
            function(se, sample)
              standardGeneric("uniqReadsQC"))
+
+#' @aliases uniqReadsQC,RangedSummarizedExperiment-method
+#' @rdname uniqReadsQC-methods
 setMethod("uniqReadsQC",
           signature("RangedSummarizedExperiment"),
           definition=function(se, sample) {

@@ -67,6 +67,8 @@ loadAnnotation <- function(txdb.file) {
 #' @param fixCoordIndexing check and fix genomic coordinate indexing?
 #' @param ... other arguments
 #'
+#' @docType methods
+#' @rdname annotateCircs-methods
 #' @export
 setGeneric("annotateCircs",
            function(se,
@@ -76,8 +78,8 @@ setGeneric("annotateCircs",
                     ...)
              standardGeneric("annotateCircs"))
 
-#' @rdname summarizeCircs-methods
-#' @usage  \\S4method{annotateCircs}{character}(colData, annot.list, assembly, fixCoordIndexing, ...)
+#' @aliases annotateCircs,RangedSummarizedExperiment-method
+#' @rdname annotateCircs-methods
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
           function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...) {
 

@@ -9,13 +9,16 @@
 #'
 #'
 #' @docType methods
-#' @rdname summarizeCircs-methods
+#' @rdname circLinRatio-methods
 #'
 #' @export
 setGeneric("circLinRatio",
            function(se,
                     ...)
              standardGeneric("circLinRatio"))
+
+#' @aliases circLinRatio,RangedSummarizedExperiment-method
+#' @rdname circLinRatio-methods
 setMethod("circLinRatio",
           signature("RangedSummarizedExperiment"),
           definition=function(se, ...) {

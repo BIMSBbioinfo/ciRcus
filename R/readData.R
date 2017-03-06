@@ -98,7 +98,7 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #' circs = summarizeCircs(circ.files)
 #'
 #' @docType methods
-#' @rdname summarizedCircs-methods
+#' @rdname summarizeCircs-methods
 #'
 #' @export
 setGeneric("summarizeCircs",
@@ -113,7 +113,6 @@ setGeneric("summarizeCircs",
 
 #' @aliases summarizeCircs,data.frame-method
 #' @rdname summarizeCircs-methods
-#' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
 setMethod("summarizeCircs", signature("data.frame"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
 
@@ -204,7 +203,6 @@ setMethod("summarizeCircs", signature("data.frame"),
 
 #' @aliases summarizeCircs,character-method
 #' @rdname summarizeCircs-methods
-#' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
 setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
 
