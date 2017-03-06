@@ -4,7 +4,16 @@
 # see the wiki:
 #   https://github.com/craigcitro/r-travis/wiki
 
+# See https://docs.travis-ci.com/user/languages/r/#Basic-configuration
 language: r
+cache: packages
+
+# See https://docs.travis-ci.com/user/languages/r/#R-Versions
+r:
+  - oldrel
+  - release
+  - devel
+
 sudo: required
 bioc_required: true
 
