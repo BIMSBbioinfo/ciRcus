@@ -15,8 +15,10 @@
 #' @param file Input file location, a character string such as
 #'             \code{/home/user/my_circRNA_project/circ_splice_sites.bed}
 #' @param subs A character string, keep only lines containing it in the name column.
-#' @param qualFilter A boolean. Should quality filtering be performed?
+#' @param qualfilter should quality filtering be performed?
 #' @param keepCols An integer vector. Which input columns should be returned?
+#' @param ... other arguments
+#'
 #' @return A data table.
 #'
 #' @export
@@ -76,7 +78,6 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #' for each circRNA in each sample
 #'
 #'
-#' @param circ.files A character vector of paths to find_circ output files
 #' @param keep.linear A boolean indicating whether to keep the counts of
 #'        linearly spliced transcripts
 #' @param wobble Number of nucleotides around the splicing border that should be
@@ -87,16 +88,13 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #' @param keepCols An integer vector. Which input columns should be returned?
 #' @param colData A \code{DataFrame} object that contains the input files
 #'        and sample names to be used for further analysis
+#' @param ... other arguments
 #'
 #' @return A \code{SummarizedExperiment} object.
 #'
 #'
-#' @examples
-#' circ.files = list.files(system.files('extdata'), full.names=TRUE, pattern=bed)
-#' circs = summarizeCircs(circ.files)
-#'
 #' @docType methods
-#' @rdname summarizedCircs-methods
+#' @rdname summarizeCircs-methods
 #'
 #' @export
 setGeneric("summarizeCircs",
@@ -111,7 +109,6 @@ setGeneric("summarizeCircs",
 
 #' @aliases summarizeCircs,data.frame-method
 #' @rdname summarizeCircs-methods
-#' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
 setMethod("summarizeCircs", signature("data.frame"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
 
@@ -202,7 +199,6 @@ setMethod("summarizeCircs", signature("data.frame"),
 
 #' @aliases summarizeCircs,character-method
 #' @rdname summarizeCircs-methods
-#' @usage  \\S4method{summarizeCircs}{character}(files, keep.linear, wobble, subs, qualfilter, keepCols,colData)
 setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
 
@@ -220,9 +216,18 @@ setMethod("summarizeCircs", signature("character"),
 })
 
 
-#
-# Function that, based on circRNA candidate list and collapsed circRNA candidate list
-# summarizes a numeric input column into a matrix that can be hooked to SummarizedExperiment
+#' Title
+#'
+#' Function that, based on circRNA candidate list and collapsed circRNA candidate list
+#' summarizes a numeric input column into a matrix that can be hooked to SummarizedExperiment
+#'
+#' @param merge.fos merge fos
+#' @param circ.gr circs
+#' @param circ.gr.reduced reduced circs
+#' @param column.name column to extract
+#'
+#' @return a matrix
+#' @export
 MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
 
   if (!(column.name %in% colnames(elementMetadata(circ.gr)))) {
@@ -242,7 +247,16 @@ MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
   return(circ.ex.matrix)
 }
 # ---------------------------------------------------------------------------- #
-# Function that extracts the linear splicing isoforms for each circ RNA
+#' Title
+#'
+#' Function that extracts the linear splicing isoforms for each circ RNA
+#'
+#' @param dcircs dcircs
+#' @param circ.gr.reduced reduced circs
+#' @param wobble how many nucleotides of wobble to tolerate?
+#'
+#' @return a list
+#' @export
 ProcessLinear = function(dcircs, circ.gr.reduced, wobble){
 
     lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['linear']]),

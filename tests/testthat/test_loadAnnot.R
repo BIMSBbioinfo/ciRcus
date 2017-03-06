@@ -1,7 +1,7 @@
 test_that("summarizeCircs", {
 
 
-  circ.files <- list.files(system.file('extdata', package = 'ciRcus'),
+  circ.files <- list.files(system.file('extdata/encode_demo_small', package = 'ciRcus'),
                           pattern = 'sites.bed',
                           full.names = TRUE)
   circ.files <- circ.files[!grepl('Sy5y', circ.files)]
@@ -30,7 +30,7 @@ test_that("summarizeCircs", {
 
 test_that('Annotation',{
 
-  circ.files = list.files(system.file('extdata', package='ciRcus'),
+  circ.files = list.files(system.file('extdata/encode_demo_small', package='ciRcus'),
                           pattern='sites.bed',
                           full.names=TRUE)
   circ.files = circ.files[!grepl('Sy5y', circ.files)]
@@ -38,7 +38,7 @@ test_that('Annotation',{
 
 
   # annotation tests
-  annot.file = system.file('extdata/hsa_ens75_minimal.sqlite', package='ciRcus')
+  annot.file = system.file('extdata/db/hsa_ens75_minimal.sqlite', package='ciRcus')
   annot.list <- suppressMessages(loadAnnotation(annot.file))
   se <- annotateHostGenes(se, annot.list$genes)
   expect_equal(resTable(se)$gene_id, c("ENSG00000183023",
@@ -56,7 +56,7 @@ test_that('Annotation',{
 
 test_that('sample labels are robust upon resorting colData', {
 
-  circ.files = list.files(system.file('extdata', package='ciRcus'),
+  circ.files = list.files(system.file('extdata/encode_demo_small', package='ciRcus'),
                           pattern='sites.bed',
                           full.names=TRUE)
   circ.files = circ.files[!grepl('Sy5y', circ.files)]

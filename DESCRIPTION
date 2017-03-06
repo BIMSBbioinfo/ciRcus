@@ -15,7 +15,8 @@ LazyLoad: yes
 VignetteBuilder: knitr
 biocViews: Annotation, HighThroughputSequencing, Visualization
 Depends:
-    R (>= 3.0.0)
+    R (>= 3.0.0),
+    methods
 Imports:
     AnnotationDbi,
     AnnotationHub,

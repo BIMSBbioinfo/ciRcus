@@ -5,11 +5,15 @@
 #'
 #'
 #'
+#' @param se a SummarizedExperiment object
+#' @param binwidth bin width
+#' @param ... other arguments
+#'
 #' @return returns a ggplot2 object
 #'
 #'
 #' @docType methods
-#' @rdname visualizeCircs-methods
+#' @rdname histogram-methods
 #'
 #' @export
 #'
@@ -17,6 +21,9 @@ setGeneric("histogram",
            function(se, binwidth = 0.7,
                     ...)
              standardGeneric("histogram"))
+
+#' @aliases histogram,RangedSummarizedExperiment-method
+#' @rdname histogram-methods
 setMethod("histogram",
           signature("RangedSummarizedExperiment"),
           definition=function(se, binwidth = 0.7, ...) {
@@ -47,17 +54,24 @@ setMethod("histogram",
 #' (coding sequence, UTRs, introns, intergenic regions, ...). Low-frequency
 #' features can be collapsed to "other".
 #'
-#' @param circs a list of circRNA candidates, loaded and annotated using \code{annotateCircs()}
+#' @param se a SummarizedExperiment object
 #' @param other.threshold a minimum number of candidates feature should
 #'                        have to be present in the pie-chart. Can be expressed
 #'                        as fraction, or raw number.
+#' @param ... other arguments
 #' @return ggplot2 pie-chart
+#'
+#' @docType methods
+#' @rdname annotPie-methods
 #'
 #' @export
 setGeneric("annotPie",
            function(se, other.threshold = 0.02,
                     ...)
              standardGeneric("annotPie"))
+
+#' @aliases annotPie,RangedSummarizedExperiment-method
+#' @rdname annotPie-methods
 setMethod("annotPie",
           signature("RangedSummarizedExperiment"),
           definition=function(se, other.threshold = 0.02, ...) {
@@ -120,12 +134,19 @@ setMethod("annotPie",
 #'
 #' @param se A SummarizedExperiment object
 #' @param sample Which sample to plot?
+#'
 #' @return ggplot2 scatterplot
+#'
+#' @docType methods
+#' @rdname uniqReadsQC-methods
 #'
 #' @export
 setGeneric("uniqReadsQC",
            function(se, sample)
              standardGeneric("uniqReadsQC"))
+
+#' @aliases uniqReadsQC,RangedSummarizedExperiment-method
+#' @rdname uniqReadsQC-methods
 setMethod("uniqReadsQC",
           signature("RangedSummarizedExperiment"),
           definition=function(se, sample) {
