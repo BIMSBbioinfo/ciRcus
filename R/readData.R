@@ -93,10 +93,6 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
 #' @return A \code{SummarizedExperiment} object.
 #'
 #'
-#' @examples
-#' circ.files = list.files(system.files('extdata'), full.names=TRUE, pattern=bed)
-#' circs = summarizeCircs(circ.files)
-#'
 #' @docType methods
 #' @rdname summarizeCircs-methods
 #'
