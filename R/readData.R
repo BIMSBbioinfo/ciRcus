@@ -15,7 +15,7 @@
 #' @param file Input file location, a character string such as
 #'             \code{/home/user/my_circRNA_project/circ_splice_sites.bed}
 #' @param subs A character string, keep only lines containing it in the name column.
-#' @param qualfilter
+#' @param qualfilter should quality filtering be performed?
 #' @param keepCols An integer vector. Which input columns should be returned?
 #' @param ... other arguments
 #'
@@ -261,10 +261,8 @@ MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
 #' @param circ.gr.reduced reduced circs
 #' @param wobble how many nucleotides of wobble to tolerate?
 #'
-#' @return
+#' @return a list
 #' @export
-#'
-#' @examples
 ProcessLinear = function(dcircs, circ.gr.reduced, wobble){
 
     lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['linear']]),

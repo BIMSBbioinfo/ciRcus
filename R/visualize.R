@@ -51,10 +51,10 @@ setMethod("histogram",
 #' (coding sequence, UTRs, introns, intergenic regions, ...). Low-frequency
 #' features can be collapsed to "other".
 #'
+#' @param se a SummarizedExperiment object
 #' @param other.threshold a minimum number of candidates feature should
 #'                        have to be present in the pie-chart. Can be expressed
 #'                        as fraction, or raw number.
-#' @param se
 #' @param ... other arguments
 #' @return ggplot2 pie-chart
 #'
