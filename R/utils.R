@@ -1,3 +1,11 @@
+#' test if input and annotation have the same coordinate indexing
+#'
+#' @param g1 a GenomicRanges object
+#' @param g2 a GenomicRanges object
+#'
+#' @return a list
+#' @export
+#'
 testCoordinateIndexing <- function(g1, g2) {
   start.hits <- c(equal    = sum( start(g1)      %in% start(g2)),
                   plusone  = sum((start(g1) + 1) %in% start(g2)),

@@ -5,6 +5,10 @@
 #'
 #'
 #'
+#' @param se a SummarizedExperiment object
+#' @param binwidth bin width
+#' @param ... other arguments
+#'
 #' @return returns a ggplot2 object
 #'
 #'
@@ -47,10 +51,11 @@ setMethod("histogram",
 #' (coding sequence, UTRs, introns, intergenic regions, ...). Low-frequency
 #' features can be collapsed to "other".
 #'
-#' @param circs a list of circRNA candidates, loaded and annotated using \code{annotateCircs()}
 #' @param other.threshold a minimum number of candidates feature should
 #'                        have to be present in the pie-chart. Can be expressed
 #'                        as fraction, or raw number.
+#' @param se
+#' @param ... other arguments
 #' @return ggplot2 pie-chart
 #'
 #' @export
@@ -120,6 +125,7 @@ setMethod("annotPie",
 #'
 #' @param se A SummarizedExperiment object
 #' @param sample Which sample to plot?
+#'
 #' @return ggplot2 scatterplot
 #'
 #' @export

@@ -5,6 +5,9 @@
 #' SummarizedExperiment object
 #'
 #'
+#' @param se
+#' @param ... other arguments
+#'
 #' @return returns a data.table
 #'
 #'

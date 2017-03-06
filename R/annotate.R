@@ -61,9 +61,11 @@ loadAnnotation <- function(txdb.file) {
 #' calculates circular-to-linear ratios, and extends the input with
 #' genomic features
 #'
-#' @param circs.bed a list of splice junctions (linear and circular), generated using \code{find_circ.py}.
+#' @param se a SummarizedExperiment object
 #' @param annot.list list of relevant genomic features generated using \code{loadAnnotation()}
 #' @param assembly what genome assembly the input data are coming from
+#' @param fixCoordIndexing check and fix genomic coordinate indexing?
+#' @param ... other arguments
 #'
 #' @export
 setGeneric("annotateCircs",
@@ -133,7 +135,8 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
 #'
 #' details
 #'
-#' @param circs
+#' @param se a SummarizedExperiment object
+#' @param genes.gr a GenomicRanges object with gene models
 #'
 #' @export
 annotateHostGenes <- function(se, genes.gr) {
@@ -210,7 +213,8 @@ annotateHostGenes <- function(se, genes.gr) {
 #'
 #' details
 #'
-#' @param circs
+#' @param se a SummarizedExperiment object
+#' @param annot.list an annotation list, as returned by \code{loadAnnotation()}
 #'
 #' @export
 annotateFlanks <- function(se, annot.list) {
@@ -253,7 +257,8 @@ annotateFlanks <- function(se, annot.list) {
 #'
 #' details
 #'
-#' @param circs
+#' @param se a SummarizedExperiment object
+#' @param annot.list an annotation list, as returned by \code{loadAnnotation()}
 #'
 #' @export
 annotateJunctions <- function(se, annot.list) {
@@ -302,7 +307,12 @@ annotateJunctions <- function(se, annot.list) {
 #'
 #' details
 #'
-#' @param circs
+#' @param r1 a GenomicRanges object with ranges to be annotated
+#' @param l a GRangesList with genomic features
+#' @param ignore.strand should strand info be ignored
+#' @param type annotation mode, \code{precedence} or \code{all}
+#' @param null.fact a value to be used for ranges that do not hit any annotation
+#' @param collapse.char a collapse character for multiple hits in \code{all} mode
 #'
 #' @export
 AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.fact = 'None', collapse.char=':') {
@@ -349,6 +359,8 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
 #' details
 #'
 #' @param ensg character vector of ensembl gene ids
+#' @param organism three-letter organism abbreviation, such as hsa, mmu, rno...
+#' @param release which ensembl release to use?
 #'
 ensg2name <- function(ensg, organism, release = "current") {
 

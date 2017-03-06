@@ -1,7 +1,8 @@
 # ---------------------------------------------------------------------------- #
 #' circLinRatio
 #'
-#' @param bla
+#' @param se a SummarizedExperiment object
+#' @param ... other arguments
 #'
 #' @return returns a data.table
 #'
