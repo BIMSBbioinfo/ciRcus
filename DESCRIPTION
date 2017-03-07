@@ -1,7 +1,7 @@
 Package: ciRcus
 Type: Package
 Title: Annotation, analysis and visualization of circRNA data
-Version: 0.1.3
+Version: 0.1.4
 Author: Petar Glazar [aut, cre], Vedran Franke [aut, cre]
 Maintainer: Petar Glazar <petar.glazar@gmail.com>, Vedran Franke
     <vedran.franke@gmail.com>
