@@ -31,21 +31,22 @@ install_github("BIMSBbioinfo/ciRcus", build_vignettes=FALSE)
 Load genomic features from Ensembl and build a database for later (re)use. Currently supported assemblies are hg19, hg38, mm10, rn5, dm6 and WBcel235. This needs to be done only once per assembly.
 ```R
 gtf2sqlite( assembly = "hg19",
-            db.file  = system.file("~/human_hg19_ens75_txdb.sqlite",
+            db.file  = system.file("extdata/db/human_hg19_ens75_txdb.sqlite",
                                    package="ciRcus"))
 ```
 ### Extract features from the database
 List of features returned by `loadAnnotation()` will be used to annotate circRNAs. Saving it as a separate object is a good practice once we start analyzing multiple circRNA libraries.
 ```R
-annot.list <- loadAnnotation(system.file("~/human_hg19_ens75_txdb.sqlite",
+annot.list <- loadAnnotation(system.file("extdata/db/human_hg19_ens75_txdb.sqlite",
                                          package="ciRcus"))
 ```
 ### Load and annotate circRNAs
 ```R
 cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
-                    filename=list.files(system.file('extdata', package='ciRcus'),                                            pattern='sites.bed',
+                    filename=list.files(system.file('extdata/encode_demo_small', package='ciRcus'),
+                                        pattern='sites.bed',
                                         full.names=TRUE)[1:6])
-circs.se <- summarizeCircs(colData=cdata, wobble=1)
+circs.se <- summarizeCircs(colData=cdata, wobble=1, keepCols=1:12)
 circs.se <- annotateCircs(circs.se, annot.list=annot.list)
 circs.dt <- resTable(circs.se)
 circs.dt
