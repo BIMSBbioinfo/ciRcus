@@ -43,7 +43,7 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
     }
 
   } else if (ncol(DT) >= 21 & names(DT)[1] == '#chrom'){
-
+    # read find_circ2
     DT.lin <- fread(sub("circ_splice_sites.bed$", "lin_splice_sites.bed", file), sep="\t", header=T)
     DT.lin$name <- sub("lin", "norm", DT.lin$name)
     DT <- rbind(DT.lin, DT)
@@ -53,6 +53,9 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
     setnames(DT, names(DT)[5], "n_reads") # TODO: this is dirty af
 
     DT <- DT[!grepl("#", DT$chrom)]
+  } else if (ncol(DT) == 12 & names(DT)[1] == 'circRNA_ID') {
+    # read CIRI2
+    setnames(DT, c('name', 'chrom', 'start', 'end', 'n_reads', 'SM_MS_SMS', 'n_reads_nonjunction', 'junction_reads_ratio', 'circRNA_type', 'gene_id', 'strand', 'junction_reads_ID'))
   }
 
 
@@ -159,17 +162,6 @@ setMethod("summarizeCircs", signature("data.frame"),
             circ.gr.reduced = unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE))
             # -------------------------------------- #
             message('Fetching circular expression')
-            # TODO: pull this out as a helper function that can go through all circ.gr metadata
-            #       columns and assign them to assays
-            # circ.ex = merge.fos[,.(queryHits, fac)]
-            # circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
-            # circ.ex$set = circ.gr$set[circ.ex$queryHits]
-            # circ.ex.matrix = dcast.data.table(formula=fac~set,
-            #                                   fun.aggregate=sum,
-            #                                   fill=0,
-            #                                   value.var='nreads',
-            #                                   data=circ.ex)
-            # circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
             n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
             n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
             assays = list()
@@ -203,9 +195,9 @@ setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
 
             message('Constructing colData...')
-            colData = data.frame(sample = sub('.candidates.bed','',basename(colData)),
-                                filename=colData,
-                                stringsAsFactors=FALSE)
+            colData = data.frame(sample   = sub('.candidates.bed', '', basename(colData)),
+                                 filename = colData,
+                                 stringsAsFactors=FALSE)
 
             summarizeCircs(colData=colData,
                            keep.linear=keep.linear,

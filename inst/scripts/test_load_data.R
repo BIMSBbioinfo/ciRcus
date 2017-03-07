@@ -1,3 +1,20 @@
+#CIRI2
+annot.list <- loadAnnotation("inst/extdata/db/test.sqlite")
+cdata <- data.frame(sample=c("riboz", "RNaseR"),
+                    filename=c("inst/extdata/ciri_demo_hek/HEK_riborezo_CIRI_sites.txt",
+                               "inst/extdata/ciri_demo_hek/HEK_RNaseR_CIRI_sites.txt"))
+
+colData <- cdata
+keep.linear <- TRUE
+wobble <- 1
+subs <- "all"
+qualfilter <- FALSE
+keepCols <- 1:12
+
+
+circs.se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:12)
+
+
 # find_circ2
 annot.list <- loadAnnotation("data/test.sqlite")
 
