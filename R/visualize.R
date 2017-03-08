@@ -155,11 +155,11 @@ setMethod("uniqReadsQC",
 
             SMPL <- sample
             if (sample == "all") {
-              totals <- rowSums(assays(circs.se)$circ)
-              uniqs  <- rowSums(assays(circs.se)$circ.uniq)
+              totals <- rowSums(assays(se)$circ)
+              uniqs  <- rowSums(assays(se)$circ.uniq)
             } else {
-              totals <- assays(circs.se)$circ[, SMPL]
-              uniqs  <- assays(circs.se)$circ.uniq[, SMPL]
+              totals <- assays(se)$circ[, SMPL]
+              uniqs  <- assays(se)$circ.uniq[, SMPL]
             }
 
             tmp.dt <- data.table(totals = totals,
