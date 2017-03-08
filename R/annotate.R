@@ -124,8 +124,13 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
             message('annotating splice junctions...')
             se <- annotateFlanks(se, annot.list$gene.feats)
             se <- annotateJunctions(se, annot.list$junctions)
-            message('calculating circular/linear ratios...')
-            se <- circLinRatio(se)
+
+            if (grepl("linear", names(assays(se)))) {
+              message('calculating circular/linear ratios...')
+              se <- circLinRatio(se)
+            } else {
+              message('no linear splicing info found, skipping circular/linear ratios...')
+            }
 
             return(se)
 

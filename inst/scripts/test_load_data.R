@@ -13,7 +13,7 @@ keepCols <- 1:12
 
 
 circs.se <- summarizeCircs(colData = cdata, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
-
+circs.se <-  annotateCircs(se = circs.se, annot.list = annot.list, assembly = "hg19")
 
 # find_circ2
 annot.list <- loadAnnotation("data/test.sqlite")
