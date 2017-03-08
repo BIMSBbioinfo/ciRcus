@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/BIMSBbioinfo/ciRcus.svg?branch=master)](https://travis-ci.org/BIMSBbioinfo/ciRcus)
+
 # ciRcus: an R package for circRNA manipulation, annotation and analysis
 
 ciRcus is a collection of functions for everyday munging of circRNA data.
