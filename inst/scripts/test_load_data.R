@@ -12,7 +12,7 @@ qualfilter <- FALSE
 keepCols <- 1:12
 
 
-circs.se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:12)
+circs.se <- summarizeCircs(colData = cdata, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
 
 
 # find_circ2
