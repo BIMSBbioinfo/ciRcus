@@ -24,8 +24,6 @@ biocLite(c("GenomicRanges","GenomicFeatures", "IRanges", "biomaRt", "AnnotationH
 #' install the package
 library(devtools)
 install_github("BIMSBbioinfo/ciRcus", build_vignettes=FALSE)
-
-
 ```
 
 # Using the package
@@ -57,4 +55,5 @@ circs.dt
 ```R
 histogram(circs.se, 0.5)
 annotPie(circs.se, 0.02)
+uniqReadsQC(circs.se, "all")
 ```

@@ -1,10 +1,11 @@
-Unreleased
-----------
+ciRcus 0.1.4
+------------
 
 NEW FEATURES
 
-* QC plot for total vs. unique reads
+* CIRI2 support
 * WBcel235 genome assembly supported
+* QC plot for total vs. unique reads
 
 IMPROVEMENTS AND BUG FIXES
 
