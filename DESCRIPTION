@@ -1,10 +1,10 @@
 Package: ciRcus
 Type: Package
 Title: Annotation, analysis and visualization of circRNA data
-Version: 0.1.4
-Author: Petar Glazar [aut, cre], Vedran Franke [aut, cre]
+Version: 0.1.5
+Author: Petar Glazar [aut, cre], Vedran Franke [aut, cre], Marcel Schilling [aut, cre]
 Maintainer: Petar Glazar <petar.glazar@gmail.com>, Vedran Franke
-    <vedran.franke@gmail.com>
+    <vedran.franke@gmail.com>, Marcel Schilling <marcel.schilling@mdc-berlin.de>
 Description: A package for annotation, analysis and visualization of circRNA
     data. Users can annotate their circRNA candidates with host genes, gene featrues
     they are spliced from, and discriminate between known and yet unknown splice
