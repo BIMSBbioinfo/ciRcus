@@ -151,15 +151,22 @@ setMethod("uniqReadsQC",
           signature("RangedSummarizedExperiment"),
           definition=function(se, sample) {
 
-            if (sample != "all" & !(sample %in% colnames(se))) stop(sample, ' is not a valid sample.')
+            # this makes sense only for find_circ analyses,
+            # CIRI does not report unique reads
+            if (!("circ.uniq" %in% names(assays(se)))) {
+              stop('circ.uniq assay does not exist')
+            }
+            if (sample != "all" & !(sample %in% colnames(se))) {
+              stop(sample, ' is not a valid sample.')
+            }
 
             SMPL <- sample
             if (sample == "all") {
-              totals <- rowSums(assays(circs.se)$circ)
-              uniqs  <- rowSums(assays(circs.se)$circ.uniq)
+              totals <- rowSums(assays(se)$circ)
+              uniqs  <- rowSums(assays(se)$circ.uniq)
             } else {
-              totals <- assays(circs.se)$circ[, SMPL]
-              uniqs  <- assays(circs.se)$circ.uniq[, SMPL]
+              totals <- assays(se)$circ[, SMPL]
+              uniqs  <- assays(se)$circ.uniq[, SMPL]
             }
 
             tmp.dt <- data.table(totals = totals,

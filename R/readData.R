@@ -43,7 +43,7 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
     }
 
   } else if (ncol(DT) >= 21 & names(DT)[1] == '#chrom'){
-
+    # read find_circ2
     DT.lin <- fread(sub("circ_splice_sites.bed$", "lin_splice_sites.bed", file), sep="\t", header=T)
     DT.lin$name <- sub("lin", "norm", DT.lin$name)
     DT <- rbind(DT.lin, DT)
@@ -53,6 +53,9 @@ readCircs <- function(file, subs="all", qualfilter=TRUE, keepCols=1:6, ...) {
     setnames(DT, names(DT)[5], "n_reads") # TODO: this is dirty af
 
     DT <- DT[!grepl("#", DT$chrom)]
+  } else if (ncol(DT) == 12 & names(DT)[1] == 'circRNA_ID') {
+    # read CIRI2
+    setnames(DT, c('name', 'chrom', 'start', 'end', 'n_reads', 'SM_MS_SMS', 'n_reads_nonjunction', 'junction_reads_ratio', 'circRNA_type', 'gene_id', 'strand', 'junction_reads_ID'))
   }
 
 
@@ -113,38 +116,46 @@ setMethod("summarizeCircs", signature("data.frame"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
 
 
+            # munge input
             # -------------------------------------- #
             coldata.cnams = c('sample','filename')
             if(!all(coldata.cnams %in% colnames(colData)))
                stop(paste(setdiff(coldata.cnams, colnames(colData),
                             'is missing from colData')))
 
-
-            # -------------------------------------- #
             circ.files = as.character(colData$filename)
 
-            # -------------------------------------- #
             if(!all(file.exists(circ.files)))
               stop('Supplied circ files do not exist')
 
+            # load circs
+            # -------------------------------------- #
             circs = lapply(circ.files, readCircs, subs, qualfilter, keepCols)
             names(circs) <- colData$sample
 
             dcircs = rbindlist(circs)
-            if (grepl("_circ_norm_", dcircs$name[1]) | grepl("_circ_circ_", dcircs$name[1])) {
-              message('funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes')
-              dcircs$name <- sub("_circ_norm_", "_norm_", dcircs$name) # TODO: add exception somewhere, if there is _circ_norm_ in names, boom
-              dcircs$name <- sub("_circ_circ_", "_circ_", dcircs$name)
-            }
-            dcircs$type = ifelse(grepl('circ', dcircs$name), 'circ', 'linear')
-            #dcircs$set = factor(sub('norm_.+','',sub('circ_.+','',dcircs$name))) # old
             dcircs$set = factor(rep(names(circs), sapply(circs, nrow)), levels=names(circs))
-            dcircs = split(dcircs, dcircs$type)
 
+            # process circular and linear if input is find_circ
+            if (!("SM_MS_SMS" %in% names(circs[[1]]))) { #TODO: find a better way to recognize CIRI2
+              # find_circ
+              if (grepl("_circ_norm_", dcircs$name[1]) | grepl("_circ_circ_", dcircs$name[1])) {
+                message('funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes')
+                dcircs$name <- sub("_circ_norm_", "_norm_", dcircs$name)
+                dcircs$name <- sub("_circ_circ_", "_circ_", dcircs$name)
+              }
+              dcircs$type = ifelse(grepl('circ', dcircs$name), 'circ', 'linear')
+
+              dcircs = split(dcircs, dcircs$type)
+
+              circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['circ']]), keep.extra.columns=TRUE)
+            } else {
+              # CIRI2
+              circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs), keep.extra.columns=TRUE)
+            }
+
+            # prepare the wobble
             # -------------------------------------- #
-            message('Processing circular transcripts')
-            circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['circ']]), keep.extra.columns=TRUE)
-
             circ.gr.s = resize(resize(circ.gr, fix='start', width=1), fix='center', width=wobble)
             circ.gr.e = resize(resize(circ.gr, fix='end',   width=1), fix='center', width=wobble)
 
@@ -157,25 +168,27 @@ setMethod("summarizeCircs", signature("data.frame"),
             #circ.gr.reduced = sort(unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE)))
             # TODO: wobble logic is naive, should be improved to select the best expressed circRNA as a referent one
             circ.gr.reduced = unlist(range(split(circ.gr, merge.fos$fac), ignore.strand=FALSE))
+
+            # prepare the assays object
+            # TODO: this screams refactoring
             # -------------------------------------- #
             message('Fetching circular expression')
-            # TODO: pull this out as a helper function that can go through all circ.gr metadata
-            #       columns and assign them to assays
-            # circ.ex = merge.fos[,.(queryHits, fac)]
-            # circ.ex$nreads = circ.gr$n_reads[circ.ex$queryHits]
-            # circ.ex$set = circ.gr$set[circ.ex$queryHits]
-            # circ.ex.matrix = dcast.data.table(formula=fac~set,
-            #                                   fun.aggregate=sum,
-            #                                   fill=0,
-            #                                   value.var='nreads',
-            #                                   data=circ.ex)
-            # circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
-            n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
-            n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
+
             assays = list()
-            assays$circ      = as.matrix(n_reads.dt[,-1,with=FALSE])
-            assays$circ.uniq = as.matrix( n_uniq.dt[,-1,with=FALSE])
-            #assays$circ = as.matrix(circ.ex.matrix[,-1,with=FALSE])
+            if (!("SM_MS_SMS" %in% names(circs[[1]]))) { #TODO: find a better way to recognize CIRI2
+
+              n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
+              n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
+
+              assays$circ      = as.matrix(n_reads.dt[, -1, with=FALSE])
+              assays$circ.uniq = as.matrix( n_uniq.dt[, -1, with=FALSE])
+
+            } else {
+
+              n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
+              assays$circ      = as.matrix(n_reads.dt[, -1, with=FALSE])
+
+            }
 
             if(keep.linear==TRUE){
               message('Processing linear transcripts')
@@ -203,9 +216,9 @@ setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
 
             message('Constructing colData...')
-            colData = data.frame(sample = sub('.candidates.bed','',basename(colData)),
-                                filename=colData,
-                                stringsAsFactors=FALSE)
+            colData = data.frame(sample   = sub('.candidates.bed', '', basename(colData)),
+                                 filename = colData,
+                                 stringsAsFactors=FALSE)
 
             summarizeCircs(colData=colData,
                            keep.linear=keep.linear,

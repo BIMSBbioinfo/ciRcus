@@ -1,3 +1,20 @@
+#CIRI2
+annot.list <- loadAnnotation("inst/extdata/db/test.sqlite")
+cdata <- data.frame(sample=c("riboz", "RNaseR"),
+                    filename=c("inst/extdata/ciri_demo_hek/HEK_riborezo_CIRI_sites.txt",
+                               "inst/extdata/ciri_demo_hek/HEK_RNaseR_CIRI_sites.txt"))
+
+# colData <- cdata
+# keep.linear <- TRUE
+# wobble <- 1
+# subs <- "all"
+# qualfilter <- FALSE
+# keepCols <- 1:12
+
+
+circs.se <- summarizeCircs(colData = cdata, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
+circs.se <-  annotateCircs(se = circs.se, annot.list = annot.list, assembly = "hg19")
+
 # find_circ2
 annot.list <- loadAnnotation("data/test.sqlite")
 
@@ -14,7 +31,7 @@ circs.se <- annotateCircs(se = circs.se, annot.list = annot.list, assembly = "hg
 
 histogram(circs.se, 0.5)
 annotPie(circs.se, 0.02)
-uniqReadsQC(circs.se, "D0")
+uniqReadsQC(circs.se, "all")
 
 # development
 #library(data.table)
