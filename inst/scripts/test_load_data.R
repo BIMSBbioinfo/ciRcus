@@ -1,14 +1,37 @@
-# master
-gtf2sqlite(assembly = "hg19", db.file="data/test.sqlite")
+#CIRI2
+annot.list <- loadAnnotation("inst/extdata/db/test.sqlite")
+cdata <- data.frame(sample=c("riboz", "RNaseR"),
+                    filename=c("inst/extdata/ciri_demo_hek/HEK_riborezo_CIRI_sites.txt",
+                               "inst/extdata/ciri_demo_hek/HEK_RNaseR_CIRI_sites.txt"))
 
+# colData <- cdata
+# keep.linear <- TRUE
+# wobble <- 1
+# subs <- "all"
+# qualfilter <- FALSE
+# keepCols <- 1:12
+
+
+circs.se <- summarizeCircs(colData = cdata, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
+circs.se <-  annotateCircs(se = circs.se, annot.list = annot.list, assembly = "hg19")
+
+# find_circ2
 annot.list <- loadAnnotation("data/test.sqlite")
 
-circs.f <- annotateCircs(circs.bed = "data/Sy5y_D0_sites.bed", annot.list = annot.list, assembly = "hg19")
+cdata <- data.frame(sample=c("D0", "D2", "D4"),
+                    filename=c("inst/extdata/Sy5y_D0_sites.bed",
+                               "/data/circrna/Human/Sy5y_diff/D2/Sy5y_D2_sites.bed",
+                               "/data/circrna/Human/Sy5y_diff/D4/Sy5y_D4_sites.bed"))
+
+circs.se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:19)
+
+circs.se <- annotateCircs(se = circs.se, annot.list = annot.list, assembly = "hg19", fixCoordIndexing = T)
 
 
 
-circHist(circs.f, 0.5)
-annotPie(circs.f, 0.02)
+histogram(circs.se, 0.5)
+annotPie(circs.se, 0.02)
+uniqReadsQC(circs.se, "all")
 
 # development
 #library(data.table)
@@ -20,6 +43,10 @@ cdata <- data.frame(sample=c("FC1", "FC2", "H1", "H2", "L1", "L2"),
                     filename=dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))])
 #se <- summarizeCircs(dir("inst/extdata/", full.names=T)[grep("rep", dir("inst/extdata/"))], wobble=1, colData = cdata)
 se <- summarizeCircs(colData = cdata, wobble=1)
+se <- annotateCircs(se, annot.list, "mm9", fixCoordIndexing = TRUE)
+tab <- resTable(se)
+tab
+
 se <- annotateHostGenes(se, annot.list$genes)
 resTable(se)
 se <- annotateFlanks(se, annot.list$gene.feats)

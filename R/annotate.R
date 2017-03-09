@@ -9,15 +9,14 @@
 #' @param db.file a file to save SQLite database to
 #'
 #' @export
-#' @importFrom AnnotationDbi saveDb
-gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.file) {
+gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), db.file) {
 
   ah <- AnnotationHub()
   gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
   gtf.gr <- keepStandardChromosomes(gtf.gr)
   seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep="")
   seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
-  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value="GRCh37"))
+  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value=assembly))
   saveDb(txdb, file=db.file)
 
 }
@@ -32,7 +31,6 @@ gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), db.fi
 #' @param txdb.file path to the TxDb gene annotation file saved as SQLite database
 #'
 #' @export
-#' @importFrom AnnotationDbi loadDb
 loadAnnotation <- function(txdb.file) {
 
   txdb <- loadDb(txdb.file)
@@ -63,23 +61,27 @@ loadAnnotation <- function(txdb.file) {
 #' calculates circular-to-linear ratios, and extends the input with
 #' genomic features
 #'
-#' @param circs.bed a list of splice junctions (linear and circular), generated using \code{find_circ.py}.
+#' @param se a SummarizedExperiment object
 #' @param annot.list list of relevant genomic features generated using \code{loadAnnotation()}
 #' @param assembly what genome assembly the input data are coming from
+#' @param fixCoordIndexing check and fix genomic coordinate indexing?
+#' @param ... other arguments
 #'
+#' @docType methods
+#' @rdname annotateCircs-methods
 #' @export
 setGeneric("annotateCircs",
            function(se,
                     annot.list,
-                    assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"),
+                    assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"),
                     fixCoordIndexing=TRUE,
                     ...)
              standardGeneric("annotateCircs"))
 
-#' @rdname summarizeCircs-methods
-#' @usage  \\S4method{annotateCircs}{character}(colData, annot.list, assembly, fixCoordIndexing, ...)
+#' @aliases annotateCircs,RangedSummarizedExperiment-method
+#' @rdname annotateCircs-methods
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
-          function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), fixCoordIndexing = TRUE, ...) {
+          function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...) {
 
             if (fixCoordIndexing == TRUE) {
               message('checking out coordinate indexing...')
@@ -109,36 +111,30 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
               warning("input coordinates were not modified.")
             }
 
+            # check seqlevel style, match input
+            if (!any(seqlevelsStyle(annot.list$genes) %in% seqlevelsStyle(se))) {
+              warning('nonmatching seqlevel styles, will fix automatically')
+              for (i in 1:length(annot.list)) {
+                seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
+              }
+            }
+
             message('annotating host genes...')
             se <- annotateHostGenes(se, annot.list$genes)
             message('annotating splice junctions...')
             se <- annotateFlanks(se, annot.list$gene.feats)
             se <- annotateJunctions(se, annot.list$junctions)
-            message('calculating circular/linear ratios...')
-            se <- circLinRatio(se)
+
+            if (grepl("linear", names(assays(se)))) {
+              message('calculating circular/linear ratios...')
+              se <- circLinRatio(se)
+            } else {
+              message('no linear splicing info found, skipping circular/linear ratios...')
+            }
 
             return(se)
 
           })
-# annotateCircs <- function(cdt, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6"), ...) {
-#
-#   se <- summarizeCircs(circ.files = as.character(cdt$filename), wobble=1, colData = cdt)
-#   se <- annotateHostGenes(se, annot.list$genes)
-#   se <- annotateFlanks(se, annot.list$gene.feats)
-#   se <- annotateJunctions(se, annot.list$junctions)
-#   se <- circLinRatio(se)
-# #   DT <- readCircs(file = circs.bed)
-# #   DT <- circLinRatio(sites = DT)
-# #   DT <- getIDs(DT, "hsa", "hg19")
-# #   DT$start <- DT$start + 1
-# #   DT <- annotateHostGenes(circs = DT, genes.gr = annot.list$genes)
-# #   DT <- annotateFlanks(circs = DT, annot.list = annot.list$gene.feats)
-# #   DT <- annotateJunctions(circs = DT, annot.list = annot.list$junctions)
-# #   DT$gene <- ensg2name(ensg = DT$host, organism = getOption("assembly2organism")[[assembly]], release = getOption("assembly2release")[[assembly]])
-#
-#   return(se)
-# }
-
 # ---------------------------------------------------------------------------- #
 #' title
 #'
@@ -146,7 +142,8 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
 #'
 #' details
 #'
-#' @param circs
+#' @param se a SummarizedExperiment object
+#' @param genes.gr a GenomicRanges object with gene models
 #'
 #' @export
 annotateHostGenes <- function(se, genes.gr) {
@@ -214,69 +211,6 @@ annotateHostGenes <- function(se, genes.gr) {
   return(se)
 }
 
-# annotateHostGenes <- function(circs, genes.gr) {
-#
-#   # circs to GR
-#   circs.gr <- GRanges(seqnames=circs$chrom,
-#                       ranges=IRanges(start=circs$start,
-#                                      end=circs$end),
-#                       strand=circs$strand,
-#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-#   circs.gr <- sort(circs.gr)
-#
-#
-#   # GR with circ starts and ends only (left and right flanks, actually)
-#   circ.starts.gr <- circs.gr
-#   end(circ.starts.gr) <- start(circ.starts.gr)
-#   circ.ends.gr <- circs.gr
-#   start(circ.ends.gr) <- end(circ.ends.gr)
-#
-#   olap.start <- findOverlaps(circ.starts.gr, genes.gr, type="within")
-#   olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type="within")
-#
-#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-#   circs$start.hit <- circs$id %in% circs.gr$id[queryHits(olap.start)]
-#   circs$end.hit   <- circs$id %in% circs.gr$id[queryHits(olap.end)]
-#
-#   matches.start <- data.table(id=circs.gr$id[queryHits(olap.start)], gene=names(genes.gr)[subjectHits(olap.start)] )
-#   matches.end   <- data.table(id=circs.gr$id[queryHits(olap.end)],   gene=names(genes.gr)[subjectHits(olap.end)] )
-#
-#   start.list <- lapply(split(matches.start, matches.start$id), function(x) x$gene)
-#   end.list   <- lapply(split(matches.end,   matches.end$id),   function(x) x$gene)
-#
-#   circs <- merge(circs, data.table(id=names(start.list), starts=sapply(start.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
-#   circs <- merge(circs, data.table(id=names(end.list), ends=sapply(end.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
-#
-#   hs <- hash(start.list)
-#   he <- hash(end.list)
-#
-#   circs$hit.ctrl <- circs$id %in% unique(c(keys(hs), keys(he)))
-#
-#   #ptm <- proc.time()
-#   tmphits <- integer()
-#   tmpgenes <- integer()
-#   host.candidates <- integer()
-#   for (circ in circs$id) {
-#     tmphits <- append(tmphits, sum(hs[[circ]] %in% he[[circ]]))
-#     tmpgenes <- append(tmpgenes, paste(hs[[circ]][hs[[circ]] %in% he[[circ]]], collapse=","))
-#     host.candidates <- append(host.candidates, length(unique(c(hs[[circ]], he[[circ]]))))
-#   }
-#   #proc.time() - ptm
-#   circs$hitcnt <- tmphits
-#   circs$hitgenes <- tmpgenes
-#   circs$host.candidates <- host.candidates
-#
-#   circs$host[circs$hitcnt == 1] <- circs$hitgenes[circs$hitcnt == 1]
-#   circs$host[circs$hitcnt > 1]  <- "ambiguous"
-#   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == FALSE] <- "intergenic" # TODO: actually, some of them may have a putative host gene within, I was only testing starts/ends
-#   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == TRUE]  <- "no_single_host"
-#   circs$host[circs$hitcnt == 0 & xor(circs$start.hit, circs$end.hit) & circs$host.candidates > 1] <- "ambiguous"
-#   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == FALSE & circs$host.candidates == 1] <- circs$starts[circs$hitcnt == 0 & circs$start.hit == TRUE   & circs$end.hit == FALSE & circs$host.candidates == 1]
-#   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
-#
-#   #return(circs)
-#   return(circs[, !c("id", "start.hit", "end.hit", "starts", "ends", "hit.ctrl", "hitcnt", "hitgenes", "host.candidates"), with=F])
-# }
 
 # ---------------------------------------------------------------------------- #
 #' title
@@ -286,7 +220,8 @@ annotateHostGenes <- function(se, genes.gr) {
 #'
 #' details
 #'
-#' @param circs
+#' @param se a SummarizedExperiment object
+#' @param annot.list an annotation list, as returned by \code{loadAnnotation()}
 #'
 #' @export
 annotateFlanks <- function(se, annot.list) {
@@ -321,41 +256,6 @@ annotateFlanks <- function(se, annot.list) {
 
 
 
-
-# annotateFlanks <- function(circs, annot.list) {
-#
-#   # cat('Munging input data...\n')
-#   circs.gr <- GRanges(seqnames=circs$chrom,
-#                       ranges=IRanges(start=circs$start,
-#                                      end=circs$end),
-#                       strand=circs$strand,
-#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-#   circs.gr <- sort(circs.gr)
-#
-#   # GR with circ starts and ends only (left and right flanks, actually)
-#   circ.starts.gr <- circs.gr
-#   end(circ.starts.gr) <- start(circ.starts.gr)
-#   circ.ends.gr <- circs.gr
-#   start(circ.ends.gr) <- end(circ.ends.gr)
-#
-#   # cat('Annotating circRNAs...\n')
-#   circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list,  null.fact = "intergenic", type="precedence")
-#   # circ.starts.gr$feat_start_all <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="all")
-#   circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list,  null.fact = "intergenic", type="precedence")
-#   # circ.ends.gr$feat_end_all     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="all")
-#
-#   # cat('Merging data')
-#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
-#   circs[, feature:=character(.N)]
-#   circs$feature[circs$feat_start == circs$feat_end] <- circs$feat_start[circs$feat_start == circs$feat_end]
-#   circs$feature[circs$feature == "" & circs$strand == "+"] <- paste(circs$feat_start[circs$feature == "" & circs$strand == "+"], circs$feat_end[circs$feature == "" & circs$strand == "+"], sep=":")
-#   circs$feature[circs$feature == "" & circs$strand == "-"] <- paste(circs$feat_end[circs$feature == "" & circs$strand == "-"],   circs$feat_start[circs$feature == "" & circs$strand == "-"], sep=":")
-#
-#   return(circs[, !c("id", "feat_start", "feat_end"), with = F])
-# }
-
 # ---------------------------------------------------------------------------- #
 #' title
 #'
@@ -364,7 +264,8 @@ annotateFlanks <- function(se, annot.list) {
 #'
 #' details
 #'
-#' @param circs
+#' @param se a SummarizedExperiment object
+#' @param annot.list an annotation list, as returned by \code{loadAnnotation()}
 #'
 #' @export
 annotateJunctions <- function(se, annot.list) {
@@ -400,69 +301,10 @@ annotateJunctions <- function(se, annot.list) {
   junct.known[circ.starts.gr$annotated_start_junction == FALSE & circ.ends.gr$annotated_end_junction == TRUE  & as.logical(strand(circs.gr) == "+")] <- "3pr"
   junct.known[circ.starts.gr$annotated_start_junction == FALSE & circ.ends.gr$annotated_end_junction == TRUE  & as.logical(strand(circs.gr) == "-")] <- "5pr"
 
-  # cat('Merging data')
-  #   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-  #   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-  #   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
-  #
-  #   circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
-  #   circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
-  #   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
-  #   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
-  #
-  #   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
-  #   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
-  #   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
-  #   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
-  #   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
-  #   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
-  #
-  #   return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
-
   rowRanges(se)$junct.known <- junct.known
 
   return(se)
 }
-
-# annotateJunctions <- function(circs, annot.list) {
-#
-#   # cat('Munging input data...\n')
-#   circs.gr <- GRanges(seqnames=circs$chrom,
-#                       ranges=IRanges(start=circs$start,
-#                                      end=circs$end),
-#                       strand=circs$strand,
-#                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-#   circs.gr <- sort(circs.gr)
-#
-#   # GR with circ starts and ends only (left and right flanks, actually)
-#   circ.starts.gr <- circs.gr
-#   end(circ.starts.gr) <- start(circ.starts.gr)
-#   circ.ends.gr <- circs.gr
-#   start(circ.ends.gr) <- end(circ.ends.gr)
-#
-#   # cat('Annotating circRNAs...\n')
-#   circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
-#   circ.ends.gr$annotated_end_junction <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
-#
-#   # cat('Merging data')
-#   circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.starts.gr))), by="id")
-#   circs <- merge(circs, data.table(as.data.frame(GenomicRanges::values(circ.ends.gr))), by="id")
-#
-#   circs$annotated_start_junction[circs$annotated_start_junction != "None"] <- TRUE
-#   circs$annotated_start_junction[circs$annotated_start_junction == "None"] <- FALSE
-#   circs$annotated_end_junction[circs$annotated_end_junction != "None"] <- TRUE
-#   circs$annotated_end_junction[circs$annotated_end_junction == "None"] <- FALSE
-#
-#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == TRUE]  <- "both"
-#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == FALSE] <- "none"
-#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "+"] <- "5pr"
-#   circs$junct.known[circs$annotated_start_junction == TRUE  & circs$annotated_end_junction == FALSE & circs$strand == "-"] <- "3pr"
-#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "+"] <- "3pr"
-#   circs$junct.known[circs$annotated_start_junction == FALSE & circs$annotated_end_junction == TRUE  & circs$strand == "-"] <- "5pr"
-#
-#   return(circs[, !c("id", "annotated_start_junction", "annotated_end_junction"), with = F])
-# }
 
 # ---------------------------------------------------------------------------- #
 #' title
@@ -472,7 +314,12 @@ annotateJunctions <- function(se, annot.list) {
 #'
 #' details
 #'
-#' @param circs
+#' @param r1 a GenomicRanges object with ranges to be annotated
+#' @param l a GRangesList with genomic features
+#' @param ignore.strand should strand info be ignored
+#' @param type annotation mode, \code{precedence} or \code{all}
+#' @param null.fact a value to be used for ranges that do not hit any annotation
+#' @param collapse.char a collapse character for multiple hits in \code{all} mode
 #'
 #' @export
 AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.fact = 'None', collapse.char=':') {
@@ -486,8 +333,6 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
   if(!type %in% c('precedence','all'))
     stop('type may only be precedence and all')
 
-  # require(data.table)
-  # require(GenomicRanges)
   # cat('Overlapping...\n')
   if(class(l) != 'GRangesList')
     l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
@@ -521,6 +366,8 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
 #' details
 #'
 #' @param ensg character vector of ensembl gene ids
+#' @param organism three-letter organism abbreviation, such as hsa, mmu, rno...
+#' @param release which ensembl release to use?
 #'
 ensg2name <- function(ensg, organism, release = "current") {
 

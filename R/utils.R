@@ -1,10 +1,18 @@
+#' test if input and annotation have the same coordinate indexing
+#'
+#' @param g1 a GenomicRanges object
+#' @param g2 a GenomicRanges object
+#'
+#' @return a list
+#' @export
+#'
 testCoordinateIndexing <- function(g1, g2) {
-  start.hits <- c(equal    = sum( start(g1)      %in% start(annot.list$gene.feats$cds)),
-                  plusone  = sum((start(g1) + 1) %in% start(annot.list$gene.feats$cds)),
-                  minusone = sum((start(g1) - 1) %in% start(annot.list$gene.feats$cds)))
-  end.hits   <- c(equal    = sum( end(g1)        %in%   end(annot.list$gene.feats$cds)),
-                  plusone  = sum((end(g1) + 1)   %in%   end(annot.list$gene.feats$cds)),
-                  minusone = sum((end(g1) - 1)   %in%   end(annot.list$gene.feats$cds)))
+  start.hits <- c(equal    = sum( start(g1)      %in% start(g2)),
+                  plusone  = sum((start(g1) + 1) %in% start(g2)),
+                  minusone = sum((start(g1) - 1) %in% start(g2)))
+  end.hits   <- c(equal    = sum( end(g1)        %in%   end(g2)),
+                  plusone  = sum((end(g1) + 1)   %in%   end(g2)),
+                  minusone = sum((end(g1) - 1)   %in%   end(g2)))
   if        (start.hits["plusone"] > sum(start.hits)*0.9) {
     warning(round(start.hits["plusone"]/sum(start.hits)*100, 2),  "% start coordinates are off by one when compared to annotation. Looks like input is zero- and annotation is one-based.")
   } else if (start.hits["minusone"] > sum(start.hits)*0.9) {

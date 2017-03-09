@@ -8,15 +8,18 @@
 #'
 #' @docType package
 #' @name ciRcus
+#' @importFrom AnnotationDbi saveDb loadDb
 #' @import AnnotationHub
-#' @import biomaRt
-#' @import data.table
+#' @importFrom biomaRt useMart useDataset getBM
+#' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @import GenomicRanges
-#' @import GenomicFeatures
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce
+#' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
-#' @import hash
-#' @import IRanges
+#' @importFrom hash hash keys
+#' @importFrom IRanges findOverlaps
+#' @import methods
+#' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL
 #' @import S4Vectors
 #' @import stringr
@@ -51,6 +54,7 @@ NULL
                            "78"      = "dec2014.archive.ensembl.org",
                            "79"      = "mar2015.archive.ensembl.org",
                            "80"      = "may2015.archive.ensembl.org",
+                           "81"      = "jul2015.archive.ensembl.org",
                            "current" = "ensembl.org"
                            ),
 
@@ -61,24 +65,27 @@ NULL
                             "dme" = "dmelanogaster"
                             ),
 
-    assembly2annhub = list("hg19" = "AH10684",
-                           "hg38" = "AH47963",
-                           "mm10" = "AH47973",
-                           "dm6"  = "AH47953",
-                           "rn5"  = "AH28841"
+    assembly2annhub = list("hg19"     = "AH10684",
+                           "hg38"     = "AH47963",
+                           "mm10"     = "AH47973",
+                           "dm6"      = "AH47953",
+                           "rn5"      = "AH28841",
+                           "WBcel235" = "AH47942"
                            ),
-    assembly2release = list("hg19" = "75",
-                            "hg38" = "current",
-                            "mm10" = "current",
-                            "mm9"  = "67",
-                            "dm6"  = "current",
-                            "rn5"  = "79"
+
+    assembly2release = list("hg19"     = "75",
+                            "hg38"     = "current",
+                            "mm10"     = "current",
+                            "dm6"      = "current",
+                            "rn5"      = "79",
+                            "WBcel235" = "81"
                             ),
-    assembly2organism = list("hg19" = "hsa",
-                             "hg38" = "hsa",
-                             "mm10" = "mmu",
-                             "mm9"  = "mmu",
-                             "dm6"  = "dme"
+
+    assembly2organism = list("hg19"     = "hsa",
+                             "hg38"     = "hsa",
+                             "mm10"     = "mmu",
+                             "dm6"      = "dme",
+                             "WBcel235" = "cel"
                              )
 
   )

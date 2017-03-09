@@ -6,6 +6,13 @@
 #' details
 #'
 #'
+#' @param circs circs
+#' @param organism organism
+#' @param assembly assembly
+#' @param chrom chromosome
+#' @param start start
+#' @param end end
+#' @param strand strand
 getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end="end", strand="strand") {
 
   con <- dbConnect(drv    = dbDriver("MySQL"),
@@ -39,6 +46,11 @@ getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end=
 #'
 #' details
 #'
+#'
+#' @param organism organism
+#' @param assembly assembly
+#' @param study study
+#' @param sample sample
 #'
 #' @export
 getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA) {

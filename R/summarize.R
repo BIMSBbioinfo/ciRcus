@@ -5,18 +5,23 @@
 #' SummarizedExperiment object
 #'
 #'
+#' @param se a SummarizedExperiment object
+#' @param ... other arguments
 #'
 #' @return returns a data.table
 #'
 #'
 #' @docType methods
-#' @rdname summarizeCircs-methods
+#' @rdname resTable-methods
 #'
 #' @export
 setGeneric("resTable",
            function(se,
                     ...)
            standardGeneric("resTable"))
+
+#' @aliases resTable,RangedSummarizedExperiment-method
+#' @rdname resTable-methods
 setMethod("resTable",
           signature("RangedSummarizedExperiment"),
           definition=function(se, ...) {
