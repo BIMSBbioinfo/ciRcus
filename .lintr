@@ -1,0 +1,20 @@
+# see https://github.com/jimhester/lintr#project-configuration
+linters: with_defaults(
+    infix_spaces_linter = NULL, # 221
+    camel_case_linter = NULL, # 133
+    line_length_linter = NULL, # 118
+    single_quotes_linter = NULL, # 101
+    multiple_dots_linter = NULL, # 88
+    assignment_linter = NULL, # 72
+    commas_linter = NULL, # 30
+    commented_code_linter = NULL, # 30
+    object_usage_linter = NULL, # 22
+    spaces_left_parentheses_linter = NULL, # 15
+    absolute_paths_linter = NULL, # 8
+    object_length_linter = NULL, # 4
+    open_curly_linter = NULL, # 3
+    closed_curly_linter = NULL, # 1
+    no_tab_linter = NULL, # 1
+    trailing_blank_lines_linter = NULL, # 1
+    NULL
+  )
