@@ -152,10 +152,10 @@ setMethod("uniqReadsQC",
             # this makes sense only for find_circ analyses,
             # CIRI does not report unique reads
             if (!("circ.uniq" %in% names(assays(se)))) {
-              stop('circ.uniq assay does not exist')
+              stop("circ.uniq assay does not exist")
             }
             if (sample != "all" & !(sample %in% colnames(se))) {
-              stop(sample, ' is not a valid sample.')
+              stop(sample, " is not a valid sample.")
             }
 
             SMPL <- sample

@@ -84,7 +84,7 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
           function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...) {
 
             if (fixCoordIndexing == TRUE) {
-              message('checking out coordinate indexing...')
+              message("checking out coordinate indexing...")
               coordfix <- testCoordinateIndexing(rowRanges(se), annot.list$gene.feats$cds)
               tophits <- sapply(coordfix, function(x) which(x / sum(x) > 0.9))
               if (!is.na(max(coordfix[[1]][2:3] / sum(coordfix[[1]])) > 0.9) &
@@ -113,23 +113,23 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
 
             # check seqlevel style, match input
             if (!any(seqlevelsStyle(annot.list$genes) %in% seqlevelsStyle(se))) {
-              warning('nonmatching seqlevel styles, will fix automatically')
+              warning("nonmatching seqlevel styles, will fix automatically")
               for (i in 1:length(annot.list)) {
                 seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
               }
             }
 
-            message('annotating host genes...')
+            message("annotating host genes...")
             se <- annotateHostGenes(se, annot.list$genes)
-            message('annotating splice junctions...')
+            message("annotating splice junctions...")
             se <- annotateFlanks(se, annot.list$gene.feats)
             se <- annotateJunctions(se, annot.list$junctions)
 
             if (grepl("linear", names(assays(se)))) {
-              message('calculating circular/linear ratios...')
+              message("calculating circular/linear ratios...")
               se <- circLinRatio(se)
             } else {
-              message('no linear splicing info found, skipping circular/linear ratios...')
+              message("no linear splicing info found, skipping circular/linear ratios...")
             }
 
             return(se)
@@ -230,7 +230,7 @@ annotateFlanks <- function(se, annot.list) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  # cat('Annotating circRNAs...\n')
+  # cat("Annotating circRNAs...\n")
   circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list,  null.fact = "intergenic", type = "precedence")
   circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list,  null.fact = "intergenic", type = "precedence")
 
@@ -267,7 +267,7 @@ annotateJunctions <- function(se, annot.list) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  # cat('Annotating circRNAs...\n')
+  # cat("Annotating circRNAs...\n")
   circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type = "precedence")
   circ.ends.gr$annotated_end_junction     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type = "precedence")
 
@@ -304,18 +304,18 @@ annotateJunctions <- function(se, annot.list) {
 #' @param collapse.char a collapse character for multiple hits in \code{all} mode
 #'
 #' @export
-AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = 'precedence', null.fact = 'None', collapse.char = ':') {
+AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = "precedence", null.fact = "None", collapse.char = ":") {
 
-  if(! class(r1) == 'GRanges')
-    stop('Ranges to be annotated need to be GRanges')
+  if(! class(r1) == "GRanges")
+    stop("Ranges to be annotated need to be GRanges")
 
-  if(! all(sapply(l, class) == 'GRanges'))
-    stop('Annotating ranges need to be GRanges')
+  if(! all(sapply(l, class) == "GRanges"))
+    stop("Annotating ranges need to be GRanges")
 
-  if(!type %in% c('precedence','all'))
-    stop('type may only be precedence and all')
+  if(!type %in% c("precedence","all"))
+    stop("type may only be precedence and all")
 
-  if(class(l) != 'GRangesList')
+  if(class(l) != "GRangesList")
     l = GRangesList(lapply(l, function(x){values(x) = NULL;x}))
 
   a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
@@ -323,12 +323,12 @@ AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = 'precedence', nul
   a$precedence = match(a$id,names(l))
   a = a[order(a$precedence)]
 
-  if(type == 'precedence'){
+  if(type == "precedence"){
     a = a[!duplicated(a$queryHits)]
   }
 
-  if(type == 'all'){
-    a = a[,list(id = paste(unique(id),collapse = collapse.char)),by = 'queryHits']
+  if(type == "all"){
+    a = a[,list(id = paste(unique(id),collapse = collapse.char)),by = "queryHits"]
   }
 
   annot = rep(null.fact, length(r1))

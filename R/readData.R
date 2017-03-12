@@ -29,7 +29,7 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...
   )
 
   # try to figure out what tool the data are coming from
-  if (ncol(DT) == 19 & names(DT)[1] == '# chrom') {
+  if (ncol(DT) == 19 & names(DT)[1] == "# chrom") {
     # read find_circ
     setnames(DT, "# chrom", "chrom")
     DT <- DT[!grepl("#", DT$chrom)]
@@ -37,12 +37,12 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...
     # ***due to find_circ.py logic of putting a header line
     #    in the middle of the output file, all columns are
     #    character after fread()
-    char.class = c('chrom', 'name', 'strand', 'tissues', 'signal', 'strandmatch', 'category')
+    char.class = c("chrom", "name", "strand", "tissues", "signal", "strandmatch", "category")
     for (col in setdiff(colnames(DT), char.class)){
       set(DT, j = col, value = as.integer(DT[[col]]))
     }
 
-  } else if (ncol(DT) >= 21 & names(DT)[1] == '#chrom'){
+  } else if (ncol(DT) >= 21 & names(DT)[1] == "#chrom"){
     # read find_circ2
     DT.lin <- fread(sub("circ_splice_sites.bed$", "lin_splice_sites.bed", file), sep = "\t", header = T)
     DT.lin$name <- sub("lin", "norm", DT.lin$name)
@@ -53,9 +53,9 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...
     setnames(DT, names(DT)[5], "n_reads") # TODO: this is dirty af
 
     DT <- DT[!grepl("#", DT$chrom)]
-  } else if (ncol(DT) == 12 & names(DT)[1] == 'circRNA_ID') {
+  } else if (ncol(DT) == 12 & names(DT)[1] == "circRNA_ID") {
     # read CIRI2
-    setnames(DT, c('name', 'chrom', 'start', 'end', 'n_reads', 'SM_MS_SMS', 'n_reads_nonjunction', 'junction_reads_ratio', 'circRNA_type', 'gene_id', 'strand', 'junction_reads_ID'))
+    setnames(DT, c("name", "chrom", "start", "end", "n_reads", "SM_MS_SMS", "n_reads_nonjunction", "junction_reads_ratio", "circRNA_type", "gene_id", "strand", "junction_reads_ID"))
   }
 
 
@@ -104,7 +104,7 @@ setGeneric("summarizeCircs",
            function(colData = NULL,
                     keep.linear = TRUE,
                     wobble = 5,
-                    subs = 'all',
+                    subs = "all",
                     qualfilter = TRUE,
                     keepCols = 1:6,
                     ...)
@@ -118,15 +118,15 @@ setMethod("summarizeCircs", signature("data.frame"),
 
             # munge input
             # -------------------------------------- #
-            coldata.cnams = c('sample','filename')
+            coldata.cnams = c("sample","filename")
             if(!all(coldata.cnams %in% colnames(colData)))
                stop(paste(setdiff(coldata.cnams, colnames(colData),
-                            'is missing from colData')))
+                            "is missing from colData")))
 
             circ.files = as.character(colData$filename)
 
             if(!all(file.exists(circ.files)))
-              stop('Supplied circ files do not exist')
+              stop("Supplied circ files do not exist")
 
             # load circs
             # -------------------------------------- #
@@ -140,15 +140,15 @@ setMethod("summarizeCircs", signature("data.frame"),
             if (!("SM_MS_SMS" %in% names(circs[[1]]))) { #TODO: find a better way to recognize CIRI2
               # find_circ
               if (grepl("_circ_norm_", dcircs$name[1]) | grepl("_circ_circ_", dcircs$name[1])) {
-                message('funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes')
+                message("funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes")
                 dcircs$name <- sub("_circ_norm_", "_norm_", dcircs$name)
                 dcircs$name <- sub("_circ_circ_", "_circ_", dcircs$name)
               }
-              dcircs$type = ifelse(grepl('circ', dcircs$name), 'circ', 'linear')
+              dcircs$type = ifelse(grepl("circ", dcircs$name), "circ", "linear")
 
               dcircs = split(dcircs, dcircs$type)
 
-              circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['circ']]), keep.extra.columns = TRUE)
+              circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[["circ"]]), keep.extra.columns = TRUE)
             } else {
               # CIRI2
               circ.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs), keep.extra.columns = TRUE)
@@ -156,13 +156,13 @@ setMethod("summarizeCircs", signature("data.frame"),
 
             # prepare the wobble
             # -------------------------------------- #
-            circ.gr.s = resize(resize(circ.gr, fix = 'start', width = 1), fix = 'center', width = wobble)
-            circ.gr.e = resize(resize(circ.gr, fix = 'end',   width = 1), fix = 'center', width = wobble)
+            circ.gr.s = resize(resize(circ.gr, fix = "start", width = 1), fix = "center", width = wobble)
+            circ.gr.e = resize(resize(circ.gr, fix = "end",   width = 1), fix = "center", width = wobble)
 
             circ.fos = data.table(as.matrix(findOverlaps(circ.gr.s, reduce(circ.gr.s, ignore.strand = FALSE))))
             circ.foe = data.table(as.matrix(findOverlaps(circ.gr.e, reduce(circ.gr.e, ignore.strand = FALSE))))
 
-            merge.fos = merge(circ.fos, circ.foe, by = 'queryHits', all = TRUE)
+            merge.fos = merge(circ.fos, circ.foe, by = "queryHits", all = TRUE)
             merge.fos$fac = with(merge.fos, as.numeric(factor(paste(subjectHits.x, subjectHits.y))))
 
             #circ.gr.reduced = sort(unlist(range(split(circ.gr, merge.fos$fac), ignore.strand = FALSE)))
@@ -172,7 +172,7 @@ setMethod("summarizeCircs", signature("data.frame"),
             # prepare the assays object
             # TODO: this screams refactoring
             # -------------------------------------- #
-            message('Fetching circular expression')
+            message("Fetching circular expression")
 
             assays = list()
             if (!("SM_MS_SMS" %in% names(circs[[1]]))) { #TODO: find a better way to recognize CIRI2
@@ -191,14 +191,14 @@ setMethod("summarizeCircs", signature("data.frame"),
             }
 
             if(keep.linear == TRUE){
-              message('Processing linear transcripts')
+              message("Processing linear transcripts")
               linear = ProcessLinear(dcircs, circ.gr.reduced, wobble)
               assays = c(assays, linear)
             }
 
 
 
-            if(class(colData) == 'data.frame')
+            if(class(colData) == "data.frame")
                 colData = DataFrame(colData)
 
 
@@ -215,8 +215,8 @@ setMethod("summarizeCircs", signature("data.frame"),
 setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
 
-            message('Constructing colData...')
-            colData = data.frame(sample   = sub('.candidates.bed', '', basename(colData)),
+            message("Constructing colData...")
+            colData = data.frame(sample   = sub(".candidates.bed", "", basename(colData)),
                                  filename = colData,
                                  stringsAsFactors = FALSE)
 
@@ -244,7 +244,7 @@ setMethod("summarizeCircs", signature("character"),
 MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
 
   if (!(column.name %in% colnames(elementMetadata(circ.gr)))) {
-    stop('unknown column name: ', column.name)
+    stop("unknown column name: ", column.name)
   }
 
   circ.ex = merge.fos[,.(queryHits, fac)]
@@ -253,7 +253,7 @@ MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
   circ.ex.matrix = dcast.data.table(formula = fac~set,
                                     fun.aggregate = sum,
                                     fill = 0,
-                                    value.var = 'nreads',
+                                    value.var = "nreads",
                                     data = circ.ex)
   circ.ex.matrix = circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
 
@@ -272,30 +272,30 @@ MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
 #' @export
 ProcessLinear = function(dcircs, circ.gr.reduced, wobble){
 
-    lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[['linear']]),
+    lin.gr =  makeGRangesFromDataFrame(as.data.frame(dcircs[["linear"]]),
                                        keep.extra.columns = TRUE)
-    circ.gr.s = resize(resize(circ.gr.reduced, fix = 'start', width = 1),
-                       fix = 'center', width = wobble)
-    circ.gr.e = resize(resize(circ.gr.reduced, fix = 'end',   width = 1),
-                       fix = 'center', width = wobble)
+    circ.gr.s = resize(resize(circ.gr.reduced, fix = "start", width = 1),
+                       fix = "center", width = wobble)
+    circ.gr.e = resize(resize(circ.gr.reduced, fix = "end",   width = 1),
+                       fix = "center", width = wobble)
 
-    cfos = data.table(as.matrix(findOverlaps(resize(lin.gr, fix = 'start', width = 1),
+    cfos = data.table(as.matrix(findOverlaps(resize(lin.gr, fix = "start", width = 1),
                                              circ.gr.e, ignore.strand = FALSE)))
-    cfoe = data.table(as.matrix(findOverlaps(resize(lin.gr, fix = 'end',   width = 1),
+    cfoe = data.table(as.matrix(findOverlaps(resize(lin.gr, fix = "end",   width = 1),
                                              circ.gr.s, ignore.strand = FALSE)))
 
     cfos$nreads = lin.gr$n_reads[cfos$queryHits]
     cfos$set = lin.gr$set[cfos$queryHits]
     cfos$queryHits = factor(cfos$subjectHits, levels = 1:length(circ.gr.reduced))
     cfos.cast = dcast.data.table(formula = queryHits~set, fun.aggregate = sum,fill = 0,
-                                 value.var = 'nreads', data = cfos, drop = FALSE)
+                                 value.var = "nreads", data = cfos, drop = FALSE)
     cfos.cast = cfos.cast[match(names(circ.gr.reduced),cfos.cast$queryHits)]
 
     cfoe$nreads = lin.gr$n_reads[cfoe$queryHits]
     cfoe$set = lin.gr$set[cfoe$queryHits]
     cfoe$queryHits = factor(cfoe$subjectHits, levels = 1:length(circ.gr.reduced))
     cfoe.cast = dcast.data.table(formula = queryHits~set, fun.aggregate = sum,fill = 0,
-                                 value.var = 'nreads', data = cfoe, drop = FALSE)
+                                 value.var = "nreads", data = cfoe, drop = FALSE)
     cfoe.cast = cfoe.cast[match(names(circ.gr.reduced),cfoe.cast$queryHits)]
 
     return(list(linear.start = as.matrix(cfos.cast[,-1,with = FALSE]),

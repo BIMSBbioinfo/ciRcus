@@ -1,10 +1,10 @@
 test_that("summarizeCircs", {
 
 
-  circ.files <- list.files(system.file('extdata/encode_demo_small', package = 'ciRcus'),
-                          pattern = 'sites.bed',
+  circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+                          pattern = "sites.bed",
                           full.names = TRUE)
-  circ.files <- circ.files[!grepl('Sy5y', circ.files)]
+  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
   # score matrix should be 4 by 6 (4 circs, 6 samples)
@@ -28,17 +28,17 @@ test_that("summarizeCircs", {
 })
 
 
-test_that('Annotation',{
+test_that("Annotation",{
 
-  circ.files = list.files(system.file('extdata/encode_demo_small', package = 'ciRcus'),
-                          pattern = 'sites.bed',
+  circ.files = list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+                          pattern = "sites.bed",
                           full.names = TRUE)
-  circ.files = circ.files[!grepl('Sy5y', circ.files)]
+  circ.files = circ.files[!grepl("Sy5y", circ.files)]
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
 
   # annotation tests
-  annot.file = system.file('extdata/db/hsa_ens75_minimal.sqlite', package = 'ciRcus')
+  annot.file = system.file("extdata/db/hsa_ens75_minimal.sqlite", package = "ciRcus")
   annot.list <- suppressMessages(loadAnnotation(annot.file))
   se <- annotateHostGenes(se, annot.list$genes)
   expect_equal(resTable(se)$gene_id, c("ENSG00000183023",
@@ -54,12 +54,12 @@ test_that('Annotation',{
   expect_equal(unname(assays(se)$ratio[3,4]), 4.03)
 })
 
-test_that('sample labels are robust upon resorting colData', {
+test_that("sample labels are robust upon resorting colData", {
 
-  circ.files = list.files(system.file('extdata/encode_demo_small', package = 'ciRcus'),
-                          pattern = 'sites.bed',
+  circ.files = list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+                          pattern = "sites.bed",
                           full.names = TRUE)
-  circ.files = circ.files[!grepl('Sy5y', circ.files)]
+  circ.files = circ.files[!grepl("Sy5y", circ.files)]
 
   se.sorted   <- summarizeCircs(circ.files,      wobble = 1, keepCols = 1:7)
   se.unsorted <- summarizeCircs(rev(circ.files), wobble = 1, keepCols = 1:7)
@@ -69,20 +69,20 @@ test_that('sample labels are robust upon resorting colData', {
   expect_equal(rownames(colData(se.unsorted)), colData(se.unsorted)$sample)
 
   # sorted vs. sorted
-  expect_equal(unname(assays(se.sorted)$circ[,'FrontalCortex_rep1_sites.bed']),   resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ)
+  expect_equal(unname(assays(se.sorted)$circ[,"FrontalCortex_rep1_sites.bed"]),   resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ)
   # unsorted vs. unsorted
-  expect_equal(unname(assays(se.unsorted)$circ[,'FrontalCortex_rep1_sites.bed']), resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
+  expect_equal(unname(assays(se.unsorted)$circ[,"FrontalCortex_rep1_sites.bed"]), resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
 
   # sorted vs. unsorted, assays()
-  expect_equal(assays(se.sorted)$circ[,'FrontalCortex_rep1_sites.bed'],   assays(se.unsorted)$circ[,'FrontalCortex_rep1_sites.bed'])
+  expect_equal(assays(se.sorted)$circ[,"FrontalCortex_rep1_sites.bed"],   assays(se.unsorted)$circ[,"FrontalCortex_rep1_sites.bed"])
   # sorted vs. unsorted, resTable()
   expect_equal(resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ, resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
 })
 
-test_that('CIRI2 input can be digested by ciRcus', {
+test_that("CIRI2 input can be digested by ciRcus", {
 
-  circ.files = list.files(system.file('extdata/ciri_demo_hek', package = 'ciRcus'),
-                          pattern = 'HEK',
+  circ.files = list.files(system.file("extdata/ciri_demo_hek", package = "ciRcus"),
+                          pattern = "HEK",
                           full.names = TRUE)
 
   se <- summarizeCircs(circ.files, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
