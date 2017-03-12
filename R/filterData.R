@@ -19,7 +19,7 @@ qualFilter <- function(sites, n_uniq_thr = 2) {
 
   # pipeline-specific filters
   if (ncol(sites) == 19) {
-    qual.ind <- rowSums(sites[, grepl("best_qual",colnames(sites)), with = FALSE] >= 35) > 0
+    qual.ind <- rowSums(sites[, grepl("best_qual", colnames(sites)), with = FALSE] >= 35) > 0
     sites <- sites[qual.ind]
   } else if (ncol(sites) == 21) {
     sites <- sites[!grepl("HUGE|SHORT", category)]

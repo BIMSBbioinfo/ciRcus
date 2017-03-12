@@ -78,7 +78,7 @@ setGeneric("annotateCircs",
                     ...)
              standardGeneric("annotateCircs"))
 
-#' @aliases annotateCircs,RangedSummarizedExperiment-method
+#' @aliases annotateCircs, RangedSummarizedExperiment-method
 #' @rdname annotateCircs-methods
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
           function(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...) {
@@ -312,7 +312,7 @@ AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = "precedence", nul
   if(! all(sapply(l, class) == "GRanges"))
     stop("Annotating ranges need to be GRanges")
 
-  if(!type %in% c("precedence","all"))
+  if(!type %in% c("precedence", "all"))
     stop("type may only be precedence and all")
 
   if(class(l) != "GRangesList")
@@ -320,7 +320,7 @@ AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = "precedence", nul
 
   a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
   a$id = names(l)[a$subjectHits]
-  a$precedence = match(a$id,names(l))
+  a$precedence = match(a$id, names(l))
   a = a[order(a$precedence)]
 
   if(type == "precedence"){
@@ -328,7 +328,7 @@ AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = "precedence", nul
   }
 
   if(type == "all"){
-    a = a[,list(id = paste(unique(id),collapse = collapse.char)),by = "queryHits"]
+    a = a[, list(id = paste(unique(id), collapse = collapse.char)), by = "queryHits"]
   }
 
   annot = rep(null.fact, length(r1))

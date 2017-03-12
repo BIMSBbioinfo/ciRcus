@@ -110,7 +110,7 @@ setGeneric("summarizeCircs",
                     ...)
              standardGeneric("summarizeCircs"))
 
-#' @aliases summarizeCircs,data.frame-method
+#' @aliases summarizeCircs, data.frame-method
 #' @rdname summarizeCircs-methods
 setMethod("summarizeCircs", signature("data.frame"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
@@ -118,7 +118,7 @@ setMethod("summarizeCircs", signature("data.frame"),
 
             # munge input
             # -------------------------------------- #
-            coldata.cnams = c("sample","filename")
+            coldata.cnams = c("sample", "filename")
             if(!all(coldata.cnams %in% colnames(colData)))
                stop(paste(setdiff(coldata.cnams, colnames(colData),
                             "is missing from colData")))
@@ -210,10 +210,10 @@ setMethod("summarizeCircs", signature("data.frame"),
 
 })
 
-#' @aliases summarizeCircs,character-method
+#' @aliases summarizeCircs, character-method
 #' @rdname summarizeCircs-methods
 setMethod("summarizeCircs", signature("character"),
-          function(colData, keep.linear, wobble, subs, qualfilter,keepCols){
+          function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
 
             message("Constructing colData...")
             colData = data.frame(sample   = sub(".candidates.bed", "", basename(colData)),
@@ -247,7 +247,7 @@ MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
     stop("unknown column name: ", column.name)
   }
 
-  circ.ex = merge.fos[,.(queryHits, fac)]
+  circ.ex = merge.fos[, .(queryHits, fac)]
   circ.ex$nreads = values(circ.gr)[[column.name]][circ.ex$queryHits]
   circ.ex$set = circ.gr$set[circ.ex$queryHits]
   circ.ex.matrix = dcast.data.table(formula = fac~set,
@@ -287,18 +287,18 @@ ProcessLinear = function(dcircs, circ.gr.reduced, wobble){
     cfos$nreads = lin.gr$n_reads[cfos$queryHits]
     cfos$set = lin.gr$set[cfos$queryHits]
     cfos$queryHits = factor(cfos$subjectHits, levels = 1:length(circ.gr.reduced))
-    cfos.cast = dcast.data.table(formula = queryHits~set, fun.aggregate = sum,fill = 0,
+    cfos.cast = dcast.data.table(formula = queryHits~set, fun.aggregate = sum, fill = 0,
                                  value.var = "nreads", data = cfos, drop = FALSE)
-    cfos.cast = cfos.cast[match(names(circ.gr.reduced),cfos.cast$queryHits)]
+    cfos.cast = cfos.cast[match(names(circ.gr.reduced), cfos.cast$queryHits)]
 
     cfoe$nreads = lin.gr$n_reads[cfoe$queryHits]
     cfoe$set = lin.gr$set[cfoe$queryHits]
     cfoe$queryHits = factor(cfoe$subjectHits, levels = 1:length(circ.gr.reduced))
-    cfoe.cast = dcast.data.table(formula = queryHits~set, fun.aggregate = sum,fill = 0,
+    cfoe.cast = dcast.data.table(formula = queryHits~set, fun.aggregate = sum, fill = 0,
                                  value.var = "nreads", data = cfoe, drop = FALSE)
-    cfoe.cast = cfoe.cast[match(names(circ.gr.reduced),cfoe.cast$queryHits)]
+    cfoe.cast = cfoe.cast[match(names(circ.gr.reduced), cfoe.cast$queryHits)]
 
-    return(list(linear.start = as.matrix(cfos.cast[,-1,with = FALSE]),
-                linear.end   = as.matrix(cfoe.cast[,-1,with = FALSE])))
+    return(list(linear.start = as.matrix(cfos.cast[, -1, with = FALSE]),
+                linear.end   = as.matrix(cfoe.cast[, -1, with = FALSE])))
 }
 

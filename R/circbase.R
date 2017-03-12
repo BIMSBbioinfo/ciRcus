@@ -29,7 +29,7 @@ getIDs <- function(circs, organism, assembly, chrom = "chrom", start = "start", 
   chunk$id <- paste(chunk$chrom, ":", chunk$pos_start, "-", chunk$pos_end, sep = "")
 
   circs$id <- paste(circs[[chrom]], ":", circs[[start]], "-", circs[[end]], sep = "")
-  out <- merge(circs, chunk[,.(id, circID)], by = "id", all.x = T)
+  out <- merge(circs, chunk[, .(id, circID)], by = "id", all.x = T)
 
   dbHasCompleted(rs)
   dbClearResult(rs)
