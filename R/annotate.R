@@ -304,7 +304,7 @@ annotateJunctions <- function(se, annot.list) {
 #' @param collapse.char a collapse character for multiple hits in \code{all} mode
 #'
 #' @export
-AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = "precedence", null.fact = "None", collapse.char = ":") {
+AnnotateRanges <- function(r1, l, ignore.strand = FALSE, type = "precedence", null.fact = "None", collapse.char = ":") {
 
   if(! class(r1) == "GRanges")
     stop("Ranges to be annotated need to be GRanges")
@@ -316,23 +316,24 @@ AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = "precedence", nul
     stop("type may only be precedence and all")
 
   if(class(l) != "GRangesList")
-    l = GRangesList(lapply(l, function(x){values(x) = NULL;x}))
+    l <- GRangesList(lapply(l, function(x){values(x) <- NULL;x}))
 
-  a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
-  a$id = names(l)[a$subjectHits]
-  a$precedence = match(a$id, names(l))
-  a = a[order(a$precedence)]
+  a <- suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
+  a$id <- names(l)[a$subjectHits]
+  a$precedence <- match(a$id, names(l))
+  a <- a[order(a$precedence)]
 
   if(type == "precedence"){
-    a = a[!duplicated(a$queryHits)]
+    a <- a[!duplicated(a$queryHits)]
+
   }
 
   if(type == "all"){
-    a = a[, list(id = paste(unique(id), collapse = collapse.char)), by = "queryHits"]
+    a <- a[, list(id = paste(unique(id), collapse = collapse.char)), by = "queryHits"]
   }
 
-  annot = rep(null.fact, length(r1))
-  annot[a$queryHits] = a$id
+  annot <- rep(null.fact, length(r1))
+  annot[a$queryHits] <- a$id
 
   return(annot)
 }
@@ -353,8 +354,8 @@ ensg2name <- function(ensg, organism, release = "current") {
 
   ensembl.host <- getOption("ensembl.release")[[release]]
 
-  ensembl = useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = ensembl.host)
-  ensembl = useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep = ""), mart = ensembl)
+  ensembl <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = ensembl.host)
+  ensembl <- useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep = ""), mart = ensembl)
 
   xrefs <- getBM(attributes = c("external_gene_id", "ensembl_gene_id"),
                  filter     = "ensembl_gene_id",

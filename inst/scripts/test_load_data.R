@@ -145,10 +145,10 @@ circs <- lapply(dir("data/demo/", full.names = T)[grep("sites", dir("data/demo/"
 circs <- lapply(circs, circLinRatio, return.readcounts = TRUE)
 
 
-circ.files <- dir("/clusterhome/pglazar/projects/circus/ciRcus/data/demo/", full.names = T)[grep("sites", dir("/clusterhome/pglazar/projects/circus/ciRcus/data/demo/"))]
-keep.linear = TRUE
-wobble = 1
-subs = "all"
-qualfilter = TRUE
-keepCols = 1:6
-colData = NULL
+circ.files <- dir("/clusterhome/pglazar/projects/circus/ciRcus/data/demo/", full.names <- T)[grep("sites", dir("/clusterhome/pglazar/projects/circus/ciRcus/data/demo/"))]
+keep.linear <- TRUE
+wobble <- 1
+subs <- "all"
+qualfilter <- TRUE
+keepCols <- 1:6
+colData <- NULL

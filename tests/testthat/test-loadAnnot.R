@@ -2,8 +2,8 @@ test_that("summarizeCircs", {
 
 
   circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
-                          pattern = "sites.bed",
-                          full.names = TRUE)
+                           pattern = "sites.bed",
+                           full.names = TRUE)
   circ.files <- circ.files[!grepl("Sy5y", circ.files)]
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
@@ -30,15 +30,15 @@ test_that("summarizeCircs", {
 
 test_that("Annotation", {
 
-  circ.files = list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
-                          pattern = "sites.bed",
-                          full.names = TRUE)
-  circ.files = circ.files[!grepl("Sy5y", circ.files)]
+  circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+                           pattern = "sites.bed",
+                           full.names = TRUE)
+  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
 
   # annotation tests
-  annot.file = system.file("extdata/db/hsa_ens75_minimal.sqlite", package = "ciRcus")
+  annot.file <- system.file("extdata/db/hsa_ens75_minimal.sqlite", package = "ciRcus")
   annot.list <- suppressMessages(loadAnnotation(annot.file))
   se <- annotateHostGenes(se, annot.list$genes)
   expect_equal(resTable(se)$gene_id, c("ENSG00000183023",
@@ -56,10 +56,10 @@ test_that("Annotation", {
 
 test_that("sample labels are robust upon resorting colData", {
 
-  circ.files = list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
-                          pattern = "sites.bed",
-                          full.names = TRUE)
-  circ.files = circ.files[!grepl("Sy5y", circ.files)]
+  circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+                           pattern = "sites.bed",
+                           full.names = TRUE)
+  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
 
   se.sorted   <- summarizeCircs(circ.files,      wobble = 1, keepCols = 1:7)
   se.unsorted <- summarizeCircs(rev(circ.files), wobble = 1, keepCols = 1:7)
@@ -81,9 +81,9 @@ test_that("sample labels are robust upon resorting colData", {
 
 test_that("CIRI2 input can be digested by ciRcus", {
 
-  circ.files = list.files(system.file("extdata/ciri_demo_hek", package = "ciRcus"),
-                          pattern = "HEK",
-                          full.names = TRUE)
+  circ.files <- list.files(system.file("extdata/ciri_demo_hek", package = "ciRcus"),
+                           pattern = "HEK",
+                           full.names = TRUE)
 
   se <- summarizeCircs(circ.files, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
 

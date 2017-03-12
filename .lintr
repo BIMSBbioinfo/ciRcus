@@ -3,7 +3,6 @@ linters: with_defaults(
     camel_case_linter = NULL, # 133
     line_length_linter = NULL, # 118
     multiple_dots_linter = NULL, # 88
-    assignment_linter = NULL, # 72
     commented_code_linter = NULL, # 30
     object_usage_linter = NULL, # 22
     spaces_left_parentheses_linter = NULL, # 15
