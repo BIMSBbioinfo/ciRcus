@@ -13,7 +13,7 @@
 #' @param start start
 #' @param end end
 #' @param strand strand
-getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end="end", strand="strand") {
+getIDs <- function(circs, organism, assembly, chrom = "chrom", start = "start", end = "end", strand = "strand") {
 
   con <- dbConnect(drv    = dbDriver("MySQL"),
                    host   = getOption("circbase.host"),
@@ -22,21 +22,21 @@ getIDs <- function(circs, organism, assembly, chrom="chrom", start="start", end=
                    dbname = getOption("circbase.db"))
 
   query <- paste( "SELECT circID, chrom, pos_start, pos_end, strand FROM ",
-                  organism, "_", assembly, "_circles", sep="")
+                  organism, "_", assembly, "_circles", sep = "")
 
   rs <- dbSendQuery(con, query)
-  chunk <- data.table(fetch(rs, n=-1))
-  chunk$id <- paste(chunk$chrom, ":", chunk$pos_start, "-", chunk$pos_end, sep="")
+  chunk <- data.table(fetch(rs, n = -1))
+  chunk$id <- paste(chunk$chrom, ":", chunk$pos_start, "-", chunk$pos_end, sep = "")
 
-  circs$id <- paste(circs[[chrom]], ":", circs[[start]], "-", circs[[end]], sep="")
-  out <- merge(circs, chunk[,.(id, circID)], by="id", all.x=T)
+  circs$id <- paste(circs[[chrom]], ":", circs[[start]], "-", circs[[end]], sep = "")
+  out <- merge(circs, chunk[,.(id, circID)], by = "id", all.x = T)
 
   dbHasCompleted(rs)
   dbClearResult(rs)
   dbListTables(con)
   dbDisconnect(con)
 
-  return(out[, !"id", with=F])
+  return(out[, !"id", with = F])
 }
 
 # ---------------------------------------------------------------------------- #
@@ -72,11 +72,11 @@ getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA
     ORGN <- strsplit(tbl, "_")[[1]][1]
     ASM  <- strsplit(tbl, "_")[[1]][2]
 
-    query <- paste("SELECT DISTINCT expID, sample FROM ", tbl, " order by expID, sample", sep="")
+    query <- paste("SELECT DISTINCT expID, sample FROM ", tbl, " order by expID, sample", sep = "")
     rs <- dbSendQuery(con, query)
-    chunk <- data.table(fetch(rs, n=-1))
+    chunk <- data.table(fetch(rs, n = -1))
     setnames(chunk, c("stdy", "smpl"))
-    out <- rbind(out, cbind(orgn=ORGN, asm=ASM, chunk))
+    out <- rbind(out, cbind(orgn = ORGN, asm = ASM, chunk))
 
   }
 
@@ -102,7 +102,7 @@ getStudiesList <- function(organism = NA, assembly = NA, study = NA, sample = NA
   setnames(out, c("organism", "assembly", "study", "sample"))
 
   if (nrow(out) == 0) {
-    stop(paste("no circBase data for organism ", organism, ", assembly ", assembly, ", study ", study, ", and sample ", sample, ".", sep=""))
+    stop(paste("no circBase data for organism ", organism, ", assembly ", assembly, ", study ", study, ", and sample ", sample, ".", sep = ""))
   }
 
   return(out)

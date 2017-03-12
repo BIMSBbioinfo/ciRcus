@@ -14,10 +14,10 @@ gtf2sqlite <- function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel
   ah <- AnnotationHub()
   gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
   gtf.gr <- keepStandardChromosomes(gtf.gr)
-  seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep="")
+  seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep = "")
   seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
-  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name="Genome", value=assembly))
-  saveDb(txdb, file=db.file)
+  txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE, metadata = data.frame(name = "Genome", value = assembly))
+  saveDb(txdb, file = db.file)
 
 }
 
@@ -74,7 +74,7 @@ setGeneric("annotateCircs",
            function(se,
                     annot.list,
                     assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"),
-                    fixCoordIndexing=TRUE,
+                    fixCoordIndexing = TRUE,
                     ...)
              standardGeneric("annotateCircs"))
 
@@ -86,9 +86,9 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
             if (fixCoordIndexing == TRUE) {
               message('checking out coordinate indexing...')
               coordfix <- testCoordinateIndexing(rowRanges(se), annot.list$gene.feats$cds)
-              tophits <- sapply(coordfix, function(x) which(x/sum(x) > 0.9))
-              if (!is.na(max(coordfix[[1]][2:3]/sum(coordfix[[1]])) > 0.9) &
-                  max(coordfix[[1]][2:3]/sum(coordfix[[1]])) > 0.9) {
+              tophits <- sapply(coordfix, function(x) which(x / sum(x) > 0.9))
+              if (!is.na(max(coordfix[[1]][2:3] / sum(coordfix[[1]])) > 0.9) &
+                  max(coordfix[[1]][2:3] / sum(coordfix[[1]])) > 0.9) {
                 if (tophits[1] == 2) {
                   start(se) <- start(se) + 1
                 } else if (tophits[1] == 3) {
@@ -97,8 +97,8 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
                 warning("start coordinates modified to match annotation.")
               }
 
-              if (!is.na(max(coordfix[[2]][2:3]/sum(coordfix[[2]])) > 0.9) &
-                  max(coordfix[[2]][2:3]/sum(coordfix[[2]])) > 0.9) {
+              if (!is.na(max(coordfix[[2]][2:3] / sum(coordfix[[2]])) > 0.9) &
+                  max(coordfix[[2]][2:3] / sum(coordfix[[2]])) > 0.9) {
                 if (tophits[2] == 2) {
                   end(se) <- end(se) + 1
                 } else if (tophits[2] == 3) {
@@ -159,22 +159,22 @@ annotateHostGenes <- function(se, genes.gr) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  olap.start <- findOverlaps(circ.starts.gr, genes.gr, type="within")
-  olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type="within")
+  olap.start <- findOverlaps(circ.starts.gr, genes.gr, type = "within")
+  olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type = "within")
 
   circs <- data.table(start.hit = names(circs.gr) %in% queryHits(olap.start),
                       end.hit   = names(circs.gr) %in% queryHits(olap.end),
                       id        = circs.gr$id,
                       ord       = 1:length(circs.gr))
 
-  matches.start <- data.table(id=circs.gr$id[queryHits(olap.start)], gene=names(genes.gr)[subjectHits(olap.start)] )
-  matches.end   <- data.table(id=circs.gr$id[queryHits(olap.end)],   gene=names(genes.gr)[subjectHits(olap.end)] )
+  matches.start <- data.table(id = circs.gr$id[queryHits(olap.start)], gene = names(genes.gr)[subjectHits(olap.start)] )
+  matches.end   <- data.table(id = circs.gr$id[queryHits(olap.end)],   gene = names(genes.gr)[subjectHits(olap.end)] )
 
   start.list <- lapply(split(matches.start, matches.start$id), function(x) x$gene)
   end.list   <- lapply(split(matches.end,   matches.end$id),   function(x) x$gene)
 
-  circs <- merge(circs, data.table(id=names(start.list), starts=sapply(start.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
-  circs <- merge(circs, data.table(id=names(end.list), ends=sapply(end.list, function(x) paste(x, collapse=","))), by="id", all.x=T)
+  circs <- merge(circs, data.table(id = names(start.list), starts = sapply(start.list, function(x) paste(x, collapse = ","))), by = "id", all.x = T)
+  circs <- merge(circs, data.table(id = names(end.list), ends = sapply(end.list, function(x) paste(x, collapse = ","))), by = "id", all.x = T)
 
   hs <- hash(start.list)
   he <- hash(end.list)
@@ -186,7 +186,7 @@ annotateHostGenes <- function(se, genes.gr) {
   host.candidates <- integer()
   for (circ in circs$id) {
     tmphits <- append(tmphits, sum(hs[[circ]] %in% he[[circ]]))
-    tmpgenes <- append(tmpgenes, paste(hs[[circ]][hs[[circ]] %in% he[[circ]]], collapse=","))
+    tmpgenes <- append(tmpgenes, paste(hs[[circ]][hs[[circ]] %in% he[[circ]]], collapse = ","))
     host.candidates <- append(host.candidates, length(unique(c(hs[[circ]], he[[circ]]))))
   }
 
@@ -196,7 +196,7 @@ annotateHostGenes <- function(se, genes.gr) {
 
   circs$host[circs$hitcnt == 1] <- circs$hitgenes[circs$hitcnt == 1]
   circs$host[circs$hitcnt > 1]  <- "ambiguous"
-  circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == FALSE] <- "intergenic" # TODO: actually, some of them may have a putative host gene within, I was only testing starts/ends
+  circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == FALSE] <- "intergenic" # TODO: actually, some of them may have a putative host gene within, I was only testing starts / ends
   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == TRUE]  <- "no_single_host"
   circs$host[circs$hitcnt == 0 & xor(circs$start.hit, circs$end.hit) & circs$host.candidates > 1] <- "ambiguous"
   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == FALSE & circs$host.candidates == 1] <- circs$starts[circs$hitcnt == 0 & circs$start.hit == TRUE   & circs$end.hit == FALSE & circs$host.candidates == 1]
@@ -231,13 +231,13 @@ annotateFlanks <- function(se, annot.list) {
   start(circ.ends.gr) <- end(circ.ends.gr)
 
   # cat('Annotating circRNAs...\n')
-  circ.starts.gr$feat_start     <- AnnotateRanges(r1=circ.starts.gr, l=annot.list,  null.fact="intergenic", type="precedence")
-  circ.ends.gr$feat_end         <- AnnotateRanges(r1=circ.ends.gr,   l=annot.list,  null.fact="intergenic", type="precedence")
+  circ.starts.gr$feat_start     <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list,  null.fact = "intergenic", type = "precedence")
+  circ.ends.gr$feat_end         <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list,  null.fact = "intergenic", type = "precedence")
 
 
   rowRanges(se)$feature <- ifelse(as.character(strand(rowRanges(se))) == "+",
-                                  paste(circ.starts.gr$feat_start, circ.ends.gr$feat_end,   sep=":"),
-                                  paste(circ.ends.gr$feat_end,     circ.starts.gr$feat_start, sep=":"))
+                                  paste(circ.starts.gr$feat_start, circ.ends.gr$feat_end,   sep = ":"),
+                                  paste(circ.ends.gr$feat_end,     circ.starts.gr$feat_start, sep = ":"))
 
 
   return(se)
@@ -268,8 +268,8 @@ annotateJunctions <- function(se, annot.list) {
   start(circ.ends.gr) <- end(circ.ends.gr)
 
   # cat('Annotating circRNAs...\n')
-  circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type="precedence")
-  circ.ends.gr$annotated_end_junction     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type="precedence")
+  circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr, l = annot.list, type = "precedence")
+  circ.ends.gr$annotated_end_junction     <- AnnotateRanges(r1 = circ.ends.gr,   l = annot.list, type = "precedence")
 
 
   circ.starts.gr$annotated_start_junction <- ifelse(circ.starts.gr$annotated_start_junction == "None", FALSE, TRUE)
@@ -304,7 +304,7 @@ annotateJunctions <- function(se, annot.list) {
 #' @param collapse.char a collapse character for multiple hits in \code{all} mode
 #'
 #' @export
-AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.fact = 'None', collapse.char=':') {
+AnnotateRanges = function(r1, l, ignore.strand = FALSE, type = 'precedence', null.fact = 'None', collapse.char = ':') {
 
   if(! class(r1) == 'GRanges')
     stop('Ranges to be annotated need to be GRanges')
@@ -316,9 +316,9 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
     stop('type may only be precedence and all')
 
   if(class(l) != 'GRangesList')
-    l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
+    l = GRangesList(lapply(l, function(x){values(x) = NULL;x}))
 
-  a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand=ignore.strand))))
+  a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
   a$id = names(l)[a$subjectHits]
   a$precedence = match(a$id,names(l))
   a = a[order(a$precedence)]
@@ -328,7 +328,7 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
   }
 
   if(type == 'all'){
-    a = a[,list(id=paste(unique(id),collapse=collapse.char)),by='queryHits']
+    a = a[,list(id = paste(unique(id),collapse = collapse.char)),by = 'queryHits']
   }
 
   annot = rep(null.fact, length(r1))
@@ -354,7 +354,7 @@ ensg2name <- function(ensg, organism, release = "current") {
   ensembl.host <- getOption("ensembl.release")[[release]]
 
   ensembl = useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = ensembl.host)
-  ensembl = useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep=""), mart = ensembl)
+  ensembl = useDataset(dataset = paste(getOption("ensembl.organism")[[organism]], "_gene_ensembl", sep = ""), mart = ensembl)
 
   xrefs <- getBM(attributes = c("external_gene_id", "ensembl_gene_id"),
                  filter     = "ensembl_gene_id",

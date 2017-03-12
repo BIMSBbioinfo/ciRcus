@@ -24,7 +24,7 @@ setGeneric("resTable",
 #' @rdname resTable-methods
 setMethod("resTable",
           signature("RangedSummarizedExperiment"),
-          definition=function(se, ...) {
+          definition = function(se, ...) {
             DT <- data.table(as.data.frame(rowRanges(se)))
             setnames(DT, "seqnames", "chr")
             for (i in 1:length(colData(se)$sample)) {

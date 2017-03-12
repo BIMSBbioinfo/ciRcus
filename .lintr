@@ -1,6 +1,5 @@
 # see https://github.com/jimhester/lintr#project-configuration
 linters: with_defaults(
-    infix_spaces_linter = NULL, # 221
     camel_case_linter = NULL, # 133
     line_length_linter = NULL, # 118
     single_quotes_linter = NULL, # 101
