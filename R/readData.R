@@ -137,7 +137,8 @@ setMethod("summarizeCircs", signature("data.frame"),
             dcircs$set <- factor(rep(names(circs), sapply(circs, nrow)), levels = names(circs))
 
             # process circular and linear if input is find_circ
-            if (!("SM_MS_SMS" %in% names(circs[[1]]))) { #TODO: find a better way to recognize CIRI2
+            # TODO: find a better way to recognize CIRI2
+            if (!("SM_MS_SMS" %in% names(circs[[1]]))) {
               # find_circ
               if (grepl("_circ_norm_", dcircs$name[1]) | grepl("_circ_circ_", dcircs$name[1])) {
                 message("funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes")
@@ -175,7 +176,8 @@ setMethod("summarizeCircs", signature("data.frame"),
             message("Fetching circular expression")
 
             assays <- list()
-            if (!("SM_MS_SMS" %in% names(circs[[1]]))) { #TODO: find a better way to recognize CIRI2
+            # TODO: find a better way to recognize CIRI2
+            if (!("SM_MS_SMS" %in% names(circs[[1]]))) {
 
               n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
               n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
