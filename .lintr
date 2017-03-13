@@ -4,6 +4,8 @@ linters: with_defaults(
     multiple_dots_linter = NULL, # 88
     commented_code_linter = NULL, # 30
     object_usage_linter = NULL, # 22
-    absolute_paths_linter = NULL, # 8
     NULL
+  )
+exclusions: list(
+    "inst/scripts/test_load_data.R"
   )
