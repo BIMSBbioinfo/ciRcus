@@ -317,7 +317,8 @@ AnnotateRanges <- function(r1, l, ignore.strand = FALSE, type = "precedence", nu
 
   if (class(l) != "GRangesList")
     l <- GRangesList(lapply(l, function(x){
-                                 values(x) <- NULL;x}))
+                                 values(x) <- NULL;x
+                               }))
   a <- suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
   a$id <- names(l)[a$subjectHits]
   a$precedence <- match(a$id, names(l))
