@@ -306,16 +306,16 @@ annotateJunctions <- function(se, annot.list) {
 #' @export
 AnnotateRanges <- function(r1, l, ignore.strand = FALSE, type = "precedence", null.fact = "None", collapse.char = ":") {
 
-  if(! class(r1) == "GRanges")
+  if (! class(r1) == "GRanges")
     stop("Ranges to be annotated need to be GRanges")
 
-  if(! all(sapply(l, class) == "GRanges"))
+  if (! all(sapply(l, class) == "GRanges"))
     stop("Annotating ranges need to be GRanges")
 
-  if(!type %in% c("precedence", "all"))
+  if (!type %in% c("precedence", "all"))
     stop("type may only be precedence and all")
 
-  if(class(l) != "GRangesList")
+  if (class(l) != "GRangesList")
     l <- GRangesList(lapply(l, function(x){values(x) <- NULL;x}))
 
   a <- suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand = ignore.strand))))
@@ -323,12 +323,12 @@ AnnotateRanges <- function(r1, l, ignore.strand = FALSE, type = "precedence", nu
   a$precedence <- match(a$id, names(l))
   a <- a[order(a$precedence)]
 
-  if(type == "precedence"){
+  if (type == "precedence"){
     a <- a[!duplicated(a$queryHits)]
 
   }
 
-  if(type == "all"){
+  if (type == "all"){
     a <- a[, list(id = paste(unique(id), collapse = collapse.char)), by = "queryHits"]
   }
 

@@ -90,7 +90,7 @@ NULL
 
   )
   toset <- !(names(op.circus) %in% names(op))
-  if(any(toset)) options(op.circus[toset])
+  if (any(toset)) options(op.circus[toset])
 
   invisible()
 }

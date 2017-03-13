@@ -119,13 +119,13 @@ setMethod("summarizeCircs", signature("data.frame"),
             # munge input
             # -------------------------------------- #
             coldata.cnams <- c("sample", "filename")
-            if(!all(coldata.cnams %in% colnames(colData)))
+            if (!all(coldata.cnams %in% colnames(colData)))
                stop(paste(setdiff(coldata.cnams, colnames(colData),
                             "is missing from colData")))
 
             circ.files <- as.character(colData$filename)
 
-            if(!all(file.exists(circ.files)))
+            if (!all(file.exists(circ.files)))
               stop("Supplied circ files do not exist")
 
             # load circs
@@ -190,7 +190,7 @@ setMethod("summarizeCircs", signature("data.frame"),
 
             }
 
-            if(keep.linear == TRUE){
+            if (keep.linear == TRUE){
               message("Processing linear transcripts")
               linear <- ProcessLinear(dcircs, circ.gr.reduced, wobble)
               assays <- c(assays, linear)
@@ -198,7 +198,7 @@ setMethod("summarizeCircs", signature("data.frame"),
 
 
 
-            if(class(colData) == "data.frame")
+            if (class(colData) == "data.frame")
                 colData <- DataFrame(colData)
 
 
