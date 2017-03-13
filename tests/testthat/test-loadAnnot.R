@@ -69,14 +69,14 @@ test_that("sample labels are robust upon resorting colData", {
   expect_equal(rownames(colData(se.unsorted)), colData(se.unsorted)$sample)
 
   # sorted vs. sorted
-  expect_equal(unname(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"]),   resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ)
+  expect_equal(unname(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"]),   resTable(se.sorted)[["FrontalCortex_rep1_sites.bed_circ"]])
   # unsorted vs. unsorted
-  expect_equal(unname(assays(se.unsorted)$circ[, "FrontalCortex_rep1_sites.bed"]), resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
+  expect_equal(unname(assays(se.unsorted)$circ[, "FrontalCortex_rep1_sites.bed"]), resTable(se.unsorted)[["FrontalCortex_rep1_sites.bed_circ"]])
 
   # sorted vs. unsorted, assays()
   expect_equal(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"],   assays(se.unsorted)$circ[, "FrontalCortex_rep1_sites.bed"])
   # sorted vs. unsorted, resTable()
-  expect_equal(resTable(se.sorted)$FrontalCortex_rep1_sites.bed_circ, resTable(se.unsorted)$FrontalCortex_rep1_sites.bed_circ)
+  expect_equal(resTable(se.sorted)[, "FrontalCortex_rep1_sites.bed_circ"], resTable(se.unsorted)[, "FrontalCortex_rep1_sites.bed_circ"])
 })
 
 test_that("CIRI2 input can be digested by ciRcus", {

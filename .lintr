@@ -6,6 +6,5 @@ linters: with_defaults(
     commented_code_linter = NULL, # 30
     object_usage_linter = NULL, # 22
     absolute_paths_linter = NULL, # 8
-    object_length_linter = NULL, # 4
     NULL
   )
