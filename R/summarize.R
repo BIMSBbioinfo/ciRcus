@@ -29,8 +29,11 @@ setMethod("resTable",
             setnames(DT, "seqnames", "chr")
             for (i in 1:length(colData(se)$sample)) {
 
-              DT <- cbind(DT, sapply(names(assays(se)), function(x) assays(se)[[x]][, i]))
-              setnames(DT, tail(names(DT), length(assays(se))), paste0(colData(se)$sample[i], "_", tail(names(DT), length(assays(se)))))
+              DT <- cbind(DT, sapply(names(assays(se)),
+                                     function(x) assays(se)[[x]][, i]))
+              setnames(DT, tail(names(DT), length(assays(se))),
+                       paste0(colData(se)$sample[i], "_",
+                              tail(names(DT), length(assays(se)))))
 
             }
 

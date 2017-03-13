@@ -1,7 +1,8 @@
 test_that("summarizeCircs", {
 
 
-  circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+  circ.files <- list.files(system.file("extdata/encode_demo_small",
+                                       package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
   circ.files <- circ.files[!grepl("Sy5y", circ.files)]
@@ -15,7 +16,8 @@ test_that("summarizeCircs", {
   expect_equal(sum(assays(se)$circ[, 1]),  1574)
   # circ read counts
   expect_equal(assays(se)$circ[[3, 3]],     14892)
-  expect_equal(unname(colSums(assays(se)$circ)), c(1574, 757, 17266, 7221, 67, 93))
+  expect_equal(unname(colSums(assays(se)$circ)),
+               c(1574, 757, 17266, 7221, 67, 93))
   # lin read counts
   expect_equal(assays(se)$linear.start[[3, 3]], 2362)
   # lin read count for a non-existing circRNA
@@ -30,7 +32,8 @@ test_that("summarizeCircs", {
 
 test_that("Annotation", {
 
-  circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+  circ.files <- list.files(system.file("extdata/encode_demo_small",
+                                       package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
   circ.files <- circ.files[!grepl("Sy5y", circ.files)]
@@ -38,7 +41,8 @@ test_that("Annotation", {
 
 
   # annotation tests
-  annot.file <- system.file("extdata/db/hsa_ens75_minimal.sqlite", package = "ciRcus")
+  annot.file <- system.file("extdata/db/hsa_ens75_minimal.sqlite",
+                            package = "ciRcus")
   annot.list <- suppressMessages(loadAnnotation(annot.file))
   se <- annotateHostGenes(se, annot.list$genes)
   expect_equal(resTable(se)$gene_id, c("ENSG00000183023",
@@ -56,7 +60,8 @@ test_that("Annotation", {
 
 test_that("sample labels are robust upon resorting colData", {
 
-  circ.files <- list.files(system.file("extdata/encode_demo_small", package = "ciRcus"),
+  circ.files <- list.files(system.file("extdata/encode_demo_small",
+                                       package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
   circ.files <- circ.files[!grepl("Sy5y", circ.files)]
@@ -69,23 +74,30 @@ test_that("sample labels are robust upon resorting colData", {
   expect_equal(rownames(colData(se.unsorted)), colData(se.unsorted)$sample)
 
   # sorted vs. sorted
-  expect_equal(unname(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"]),   resTable(se.sorted)[["FrontalCortex_rep1_sites.bed_circ"]])
+  expect_equal(unname(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"]),
+               resTable(se.sorted)[["FrontalCortex_rep1_sites.bed_circ"]])
   # unsorted vs. unsorted
-  expect_equal(unname(assays(se.unsorted)$circ[, "FrontalCortex_rep1_sites.bed"]), resTable(se.unsorted)[["FrontalCortex_rep1_sites.bed_circ"]])
+  expect_equal(unname(assays(se.unsorted)$circ[,
+                                               "FrontalCortex_rep1_sites.bed"]),
+               resTable(se.unsorted)[["FrontalCortex_rep1_sites.bed_circ"]])
 
   # sorted vs. unsorted, assays()
-  expect_equal(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"],   assays(se.unsorted)$circ[, "FrontalCortex_rep1_sites.bed"])
+  expect_equal(assays(se.sorted)$circ[, "FrontalCortex_rep1_sites.bed"],
+               assays(se.unsorted)$circ[, "FrontalCortex_rep1_sites.bed"])
   # sorted vs. unsorted, resTable()
-  expect_equal(resTable(se.sorted)[, "FrontalCortex_rep1_sites.bed_circ"], resTable(se.unsorted)[, "FrontalCortex_rep1_sites.bed_circ"])
+  expect_equal(resTable(se.sorted)[, "FrontalCortex_rep1_sites.bed_circ"],
+               resTable(se.unsorted)[, "FrontalCortex_rep1_sites.bed_circ"])
 })
 
 test_that("CIRI2 input can be digested by ciRcus", {
 
-  circ.files <- list.files(system.file("extdata/ciri_demo_hek", package = "ciRcus"),
+  circ.files <- list.files(system.file("extdata/ciri_demo_hek",
+                                       package = "ciRcus"),
                            pattern = "HEK",
                            full.names = TRUE)
 
-  se <- summarizeCircs(circ.files, keep.linear = FALSE, wobble = 1, subs = "all", qualfilter = FALSE, keepCols = 1:12)
+  se <- summarizeCircs(circ.files, keep.linear = FALSE, wobble = 1,
+                       subs = "all", qualfilter = FALSE, keepCols = 1:12)
 
   # total circRNAs in both samples
   expect_equal(nrow(resTable(se)), 14936)

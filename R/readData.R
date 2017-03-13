@@ -22,7 +22,8 @@
 #' @return A data table.
 #'
 #' @export
-readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...) {
+readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6,
+                      ...) {
 
   suppressWarnings(
     DT <- fread(file, sep = "\t", header = T) # maybe add colClasses later
@@ -37,14 +38,16 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...
     # ***due to find_circ.py logic of putting a header line
     #    in the middle of the output file, all columns are
     #    character after fread()
-    char.class <- c("chrom", "name", "strand", "tissues", "signal", "strandmatch", "category")
+    char.class <- c("chrom", "name", "strand", "tissues", "signal",
+                    "strandmatch", "category")
     for (col in setdiff(colnames(DT), char.class)){
       set(DT, j = col, value = as.integer(DT[[col]]))
     }
 
   } else if (ncol(DT) >= 21 & names(DT)[1] == "#chrom"){
     # read find_circ2
-    DT.lin <- fread(sub("circ_splice_sites.bed$", "lin_splice_sites.bed", file), sep = "\t", header = T)
+    DT.lin <- fread(sub("circ_splice_sites.bed$", "lin_splice_sites.bed", file),
+                    sep = "\t", header = T)
     DT.lin$name <- sub("lin", "norm", DT.lin$name)
     DT <- rbind(DT.lin, DT)
 
@@ -55,7 +58,9 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6, ...
     DT <- DT[!grepl("#", DT$chrom)]
   } else if (ncol(DT) == 12 & names(DT)[1] == "circRNA_ID") {
     # read CIRI2
-    setnames(DT, c("name", "chrom", "start", "end", "n_reads", "SM_MS_SMS", "n_reads_nonjunction", "junction_reads_ratio", "circRNA_type", "gene_id", "strand", "junction_reads_ID"))
+    setnames(DT, c("name", "chrom", "start", "end", "n_reads", "SM_MS_SMS",
+                   "n_reads_nonjunction", "junction_reads_ratio",
+                   "circRNA_type", "gene_id", "strand", "junction_reads_ID"))
   }
 
 
@@ -134,41 +139,62 @@ setMethod("summarizeCircs", signature("data.frame"),
             names(circs) <- colData$sample
 
             dcircs <- rbindlist(circs)
-            dcircs$set <- factor(rep(names(circs), sapply(circs, nrow)), levels = names(circs))
+            dcircs$set <- factor(rep(names(circs), sapply(circs, nrow)),
+                                 levels = names(circs))
 
             # process circular and linear if input is find_circ
             # TODO: find a better way to recognize CIRI2
             if (!("SM_MS_SMS" %in% names(circs[[1]]))) {
               # find_circ
-              if (grepl("_circ_norm_", dcircs$name[1]) | grepl("_circ_circ_", dcircs$name[1])) {
-                message("funky naming scheme used, will convert _circ_norm_ to _norm_ and _circ_circ_ to _circ_ before everything crashes")
+              if (grepl("_circ_norm_", dcircs$name[1]) |
+                  grepl("_circ_circ_", dcircs$name[1])) {
+                message(paste("funky naming scheme used, will convert",
+                              "_circ_norm_ to _norm_ and _circ_circ_ to _circ_",
+                              "before everything crashes"))
                 dcircs$name <- sub("_circ_norm_", "_norm_", dcircs$name)
                 dcircs$name <- sub("_circ_circ_", "_circ_", dcircs$name)
               }
-              dcircs$type <- ifelse(grepl("circ", dcircs$name), "circ", "linear")
+              dcircs$type <- ifelse(grepl("circ", dcircs$name), "circ",
+                                    "linear")
 
               dcircs <- split(dcircs, dcircs$type)
 
-              circ.gr <-  makeGRangesFromDataFrame(as.data.frame(dcircs[["circ"]]), keep.extra.columns = TRUE)
+              circ.gr <-
+                makeGRangesFromDataFrame(as.data.frame(dcircs[["circ"]]),
+                                         keep.extra.columns = TRUE)
             } else {
               # CIRI2
-              circ.gr <-  makeGRangesFromDataFrame(as.data.frame(dcircs), keep.extra.columns = TRUE)
+              circ.gr <-  makeGRangesFromDataFrame(as.data.frame(dcircs),
+                                                   keep.extra.columns = TRUE)
             }
 
             # prepare the wobble
             # -------------------------------------- #
-            circ.gr.s <- resize(resize(circ.gr, fix = "start", width = 1), fix = "center", width = wobble)
-            circ.gr.e <- resize(resize(circ.gr, fix = "end",   width = 1), fix = "center", width = wobble)
+            circ.gr.s <- resize(resize(circ.gr, fix = "start", width = 1),
+                                fix = "center", width = wobble)
+            circ.gr.e <- resize(resize(circ.gr, fix = "end",   width = 1),
+                                fix = "center", width = wobble)
 
-            circ.fos <- data.table(as.matrix(findOverlaps(circ.gr.s, reduce(circ.gr.s, ignore.strand = FALSE))))
-            circ.foe <- data.table(as.matrix(findOverlaps(circ.gr.e, reduce(circ.gr.e, ignore.strand = FALSE))))
+            circ.fos <-
+              data.table(as.matrix(findOverlaps(circ.gr.s,
+                                                reduce(circ.gr.s,
+                                                       ignore.strand = FALSE))))
+            circ.foe <-
+              data.table(as.matrix(findOverlaps(circ.gr.e,
+                                                reduce(circ.gr.e,
+                                                       ignore.strand = FALSE))))
 
             merge.fos <- merge(circ.fos, circ.foe, by = "queryHits", all = TRUE)
-            merge.fos$fac <- with(merge.fos, as.numeric(factor(paste(subjectHits.x, subjectHits.y))))
+            merge.fos$fac <- with(merge.fos,
+                                  as.numeric(factor(paste(subjectHits.x,
+                                                          subjectHits.y))))
 
-            #circ.gr.reduced <- sort(unlist(range(split(circ.gr, merge.fos$fac), ignore.strand = FALSE)))
-            # TODO: wobble logic is naive, should be improved to select the best expressed circRNA as a referent one
-            circ.gr.reduced <- unlist(range(split(circ.gr, merge.fos$fac), ignore.strand = FALSE))
+            #circ.gr.reduced <- sort(unlist(range(split(circ.gr, merge.fos$fac),
+            #                                     ignore.strand = FALSE)))
+            # TODO: wobble logic is naive, should be improved to select the best
+            # expressed circRNA as a referent one
+            circ.gr.reduced <- unlist(range(split(circ.gr, merge.fos$fac),
+                                            ignore.strand = FALSE))
 
             # prepare the assays object
             # TODO: this screams refactoring
@@ -179,15 +205,18 @@ setMethod("summarizeCircs", signature("data.frame"),
             # TODO: find a better way to recognize CIRI2
             if (!("SM_MS_SMS" %in% names(circs[[1]]))) {
 
-              n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
-              n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_uniq")
+              n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced,
+                                        "n_reads")
+              n_uniq.dt  <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced,
+                                        "n_uniq")
 
               assays$circ      <- as.matrix(n_reads.dt[, -1, with = FALSE])
               assays$circ.uniq <- as.matrix( n_uniq.dt[, -1, with = FALSE])
 
             } else {
 
-              n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced, "n_reads")
+              n_reads.dt <- MungeColumn(merge.fos, circ.gr, circ.gr.reduced,
+                                        "n_reads")
               assays$circ      <- as.matrix(n_reads.dt[, -1, with = FALSE])
 
             }
@@ -218,7 +247,8 @@ setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
 
             message("Constructing colData...")
-            colData <- data.frame(sample   = sub(".candidates.bed", "", basename(colData)),
+            colData <- data.frame(sample   = sub(".candidates.bed", "",
+                                                 basename(colData)),
                                   filename = colData,
                                   stringsAsFactors = FALSE)
 
@@ -233,8 +263,10 @@ setMethod("summarizeCircs", signature("character"),
 
 #' Title
 #'
-#' Function that, based on circRNA candidate list and collapsed circRNA candidate list
-#' summarizes a numeric input column into a matrix that can be hooked to SummarizedExperiment
+#' Function that, based on circRNA candidate list and collapsed circRNA
+#' candidate list
+#' summarizes a numeric input column into a matrix that can be hooked to
+#' SummarizedExperiment
 #'
 #' @param merge.fos merge fos
 #' @param circ.gr circs
@@ -257,7 +289,8 @@ MungeColumn <- function(merge.fos, circ.gr, circ.gr.reduced, column.name) {
                                      fill = 0,
                                      value.var = "nreads",
                                      data = circ.ex)
-  circ.ex.matrix <- circ.ex.matrix[match(names(circ.gr.reduced), circ.ex.matrix$fac)]
+  circ.ex.matrix <- circ.ex.matrix[match(names(circ.gr.reduced),
+                                         circ.ex.matrix$fac)]
 
   return(circ.ex.matrix)
 }
@@ -281,23 +314,31 @@ ProcessLinear <- function(dcircs, circ.gr.reduced, wobble){
     circ.gr.e <- resize(resize(circ.gr.reduced, fix = "end",   width = 1),
                         fix = "center", width = wobble)
 
-    cfos <- data.table(as.matrix(findOverlaps(resize(lin.gr, fix = "start", width = 1),
-                                              circ.gr.e, ignore.strand = FALSE)))
-    cfoe <- data.table(as.matrix(findOverlaps(resize(lin.gr, fix = "end",   width = 1),
-                                              circ.gr.s, ignore.strand = FALSE)))
+    cfos <- data.table(as.matrix(findOverlaps(resize(lin.gr, fix = "start",
+                                                     width = 1),
+                                              circ.gr.e,
+                                              ignore.strand = FALSE)))
+    cfoe <- data.table(as.matrix(findOverlaps(resize(lin.gr, fix = "end",
+                                                     width = 1),
+                                              circ.gr.s,
+                                              ignore.strand = FALSE)))
 
     cfos$nreads <- lin.gr$n_reads[cfos$queryHits]
     cfos$set <- lin.gr$set[cfos$queryHits]
-    cfos$queryHits <- factor(cfos$subjectHits, levels = 1:length(circ.gr.reduced))
-    cfos.cast <- dcast.data.table(formula = queryHits~set, fun.aggregate = sum, fill = 0,
-                                  value.var = "nreads", data = cfos, drop = FALSE)
+    cfos$queryHits <- factor(cfos$subjectHits,
+                             levels = 1:length(circ.gr.reduced))
+    cfos.cast <- dcast.data.table(formula = queryHits~set, fun.aggregate = sum,
+                                  fill = 0, value.var = "nreads", data = cfos,
+                                  drop = FALSE)
     cfos.cast <- cfos.cast[match(names(circ.gr.reduced), cfos.cast$queryHits)]
 
     cfoe$nreads <- lin.gr$n_reads[cfoe$queryHits]
     cfoe$set <- lin.gr$set[cfoe$queryHits]
-    cfoe$queryHits <- factor(cfoe$subjectHits, levels = 1:length(circ.gr.reduced))
-    cfoe.cast <- dcast.data.table(formula = queryHits~set, fun.aggregate = sum, fill = 0,
-                                  value.var = "nreads", data = cfoe, drop = FALSE)
+    cfoe$queryHits <- factor(cfoe$subjectHits,
+                             levels = 1:length(circ.gr.reduced))
+    cfoe.cast <- dcast.data.table(formula = queryHits~set, fun.aggregate = sum,
+                                  fill = 0, value.var = "nreads", data = cfoe,
+                                  drop = FALSE)
     cfoe.cast <- cfoe.cast[match(names(circ.gr.reduced), cfoe.cast$queryHits)]
 
     return(list(linear.start = as.matrix(cfos.cast[, -1, with = FALSE]),
