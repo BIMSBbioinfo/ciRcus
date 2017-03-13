@@ -7,6 +7,5 @@ linters: with_defaults(
     object_usage_linter = NULL, # 22
     absolute_paths_linter = NULL, # 8
     object_length_linter = NULL, # 4
-    trailing_blank_lines_linter = NULL, # 1
     NULL
   )

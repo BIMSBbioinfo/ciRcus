@@ -303,4 +303,3 @@ ProcessLinear <- function(dcircs, circ.gr.reduced, wobble){
     return(list(linear.start = as.matrix(cfos.cast[, -1, with = FALSE]),
                 linear.end   = as.matrix(cfoe.cast[, -1, with = FALSE])))
 }
-
