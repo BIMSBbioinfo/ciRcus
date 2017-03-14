@@ -21,4 +21,4 @@ sudo: required
 bioc_required: true
 
 after_success:
-- Rscript -e 'covr::codecov()'
+- Rscript -e 'covr::codecov(line_exclusions = "inst/scripts/test_load_data.R")'
