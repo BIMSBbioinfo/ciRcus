@@ -7,9 +7,10 @@
 loadAnnotation(txdb.file)
 }
 \arguments{
-\item{txdb.file}{path to the TxDb gene annotation file saved as SQLite database}
+\item{txdb.file}{path to the TxDb gene annotation file saved as SQLite
+database}
 }
 \description{
-Loads a local .sqlite TxDb annotation file (e.g. created using \code{gtf2sqlite}),
-returns a list of features needed for circRNA annotation.
+Loads a local .sqlite TxDb annotation file (e.g. created using
+\code{gtf2sqlite}), returns a list of features needed for circRNA annotation.
 }

@@ -20,7 +20,7 @@ setGeneric("resTable",
                     ...)
            standardGeneric("resTable"))
 
-#' @aliases resTable, RangedSummarizedExperiment-method
+#' @aliases resTable,RangedSummarizedExperiment-method
 #' @rdname resTable-methods
 setMethod("resTable",
           signature("RangedSummarizedExperiment"),

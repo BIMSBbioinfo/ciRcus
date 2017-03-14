@@ -86,7 +86,7 @@ setGeneric("annotateCircs",
                     ...)
              standardGeneric("annotateCircs"))
 
-#' @aliases annotateCircs, RangedSummarizedExperiment-method
+#' @aliases annotateCircs,RangedSummarizedExperiment-method
 #' @rdname annotateCircs-methods
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
           function(se, annot.list,

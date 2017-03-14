@@ -115,7 +115,7 @@ setGeneric("summarizeCircs",
                     ...)
              standardGeneric("summarizeCircs"))
 
-#' @aliases summarizeCircs, data.frame-method
+#' @aliases summarizeCircs,data.frame-method
 #' @rdname summarizeCircs-methods
 setMethod("summarizeCircs", signature("data.frame"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){
@@ -241,7 +241,7 @@ setMethod("summarizeCircs", signature("data.frame"),
 
 })
 
-#' @aliases summarizeCircs, character-method
+#' @aliases summarizeCircs,character-method
 #' @rdname summarizeCircs-methods
 setMethod("summarizeCircs", signature("character"),
           function(colData, keep.linear, wobble, subs, qualfilter, keepCols){

@@ -19,6 +19,8 @@ MungeColumn(merge.fos, circ.gr, circ.gr.reduced, column.name)
 a matrix
 }
 \description{
-Function that, based on circRNA candidate list and collapsed circRNA candidate list
-summarizes a numeric input column into a matrix that can be hooked to SummarizedExperiment
+Function that, based on circRNA candidate list and collapsed circRNA
+candidate list
+summarizes a numeric input column into a matrix that can be hooked to
+SummarizedExperiment
 }
