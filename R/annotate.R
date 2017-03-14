@@ -82,6 +82,7 @@ setMethod("loadAnnotation", signature("character"),
 
             loadAnnotation(txdb = txdb)
 })
+
 # ---------------------------------------------------------------------------- #
 #' Load and annotate a list of circRNA candidates
 #'
