@@ -272,7 +272,6 @@ annotateFlanks <- function(se, annot.list) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  # cat("Annotating circRNAs...\n")
   circ.starts.gr$feat_start <- AnnotateRanges(r1 = circ.starts.gr,
                                               l = annot.list,
                                               null.fact = "intergenic",
@@ -317,7 +316,6 @@ annotateJunctions <- function(se, annot.list) {
   circ.ends.gr <- circs.gr
   start(circ.ends.gr) <- end(circ.ends.gr)
 
-  # cat("Annotating circRNAs...\n")
   circ.starts.gr$annotated_start_junction <- AnnotateRanges(r1 = circ.starts.gr,
                                                             l = annot.list,
                                                             type = "precedence")
