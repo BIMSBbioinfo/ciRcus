@@ -34,7 +34,6 @@ setMethod("histogram",
               coord_trans(y = "sqrt") +
               scale_x_sqrt(breaks = c(1, 10, 50, 100, 250, 500, 750)) +
               scale_y_continuous(breaks = c(0, 1, 10, 50, 100, 250, 500, 750, 1000, 2000, 3000)) +
-              #scale_y_continuous(breaks=c(0, 10, 50, 100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000)) +
               xlab("#reads on head-to-tail splice junction") +
               ylab("#circRNAs") +
               theme(axis.title.y = element_text(size=20),
@@ -90,7 +89,6 @@ setMethod("annotPie",
             collapse.to.other <- names(table(rowRanges(se)$feature)[table(rowRanges(se)$feature) < thresh])
 
             tbl <- table(rowRanges(se)$feature)
-            # tbl <- tbl[order(tbl, decreasing=T)]
             tmpdf <- data.table(feature = rep(names(tbl), tbl))
             tmpdf$feature[tmpdf$feature %in% collapse.to.other] <- "other"
 

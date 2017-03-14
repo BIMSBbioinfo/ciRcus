@@ -151,7 +151,6 @@ annotateHostGenes <- function(se, genes.gr) {
   # circs to GR
   circs.gr <- rowRanges(se)
   circs.gr$id <- paste0(seqnames(circs.gr), ":", start(circs.gr), "-", end(circs.gr))
-  # circs.gr <- sort(circs.gr)
 
 
   # GR with circ starts and ends only (left and right flanks, actually)
@@ -163,7 +162,6 @@ annotateHostGenes <- function(se, genes.gr) {
   olap.start <- findOverlaps(circ.starts.gr, genes.gr, type="within")
   olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type="within")
 
-  #circs$id <- paste(circs$chrom, ":", circs$start, "-", circs$end, sep="")
   circs <- data.table(start.hit = names(circs.gr) %in% queryHits(olap.start),
                       end.hit   = names(circs.gr) %in% queryHits(olap.end),
                       id        = circs.gr$id,
@@ -183,7 +181,6 @@ annotateHostGenes <- function(se, genes.gr) {
 
   circs$hit.ctrl <- circs$id %in% unique(c(keys(hs), keys(he)))
 
-  #ptm <- proc.time()
   tmphits <- integer()
   tmpgenes <- integer()
   host.candidates <- integer()
@@ -192,7 +189,7 @@ annotateHostGenes <- function(se, genes.gr) {
     tmpgenes <- append(tmpgenes, paste(hs[[circ]][hs[[circ]] %in% he[[circ]]], collapse=","))
     host.candidates <- append(host.candidates, length(unique(c(hs[[circ]], he[[circ]]))))
   }
-  #proc.time() - ptm
+
   circs$hitcnt <- tmphits
   circs$hitgenes <- tmpgenes
   circs$host.candidates <- host.candidates
@@ -205,7 +202,6 @@ annotateHostGenes <- function(se, genes.gr) {
   circs$host[circs$hitcnt == 0 & circs$start.hit == TRUE  & circs$end.hit == FALSE & circs$host.candidates == 1] <- circs$starts[circs$hitcnt == 0 & circs$start.hit == TRUE   & circs$end.hit == FALSE & circs$host.candidates == 1]
   circs$host[circs$hitcnt == 0 & circs$start.hit == FALSE & circs$end.hit == TRUE & circs$host.candidates == 1]  <- circs$ends[circs$hitcnt == 0   & circs$start.hit == FALSE  & circs$end.hit == TRUE  & circs$host.candidates == 1]
 
-  #return(circs)
   rowRanges(se)$gene_id <- circs$host[order(circs$ord)]
 
   return(se)
@@ -226,14 +222,7 @@ annotateHostGenes <- function(se, genes.gr) {
 #' @export
 annotateFlanks <- function(se, annot.list) {
 
-  # cat('Munging input data...\n')
   circs.gr <- rowRanges(se)
-  #   circs.gr <- GRanges(seqnames=circs$chrom,
-  #                       ranges=IRanges(start=circs$start,
-  #                                      end=circs$end),
-  #                       strand=circs$strand,
-  #                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-  #circs.gr <- sort(circs.gr)
 
   # GR with circ starts and ends only (left and right flanks, actually)
   circ.starts.gr <- circs.gr
@@ -271,13 +260,6 @@ annotateFlanks <- function(se, annot.list) {
 annotateJunctions <- function(se, annot.list) {
 
   circs.gr <- rowRanges(se)
-  # cat('Munging input data...\n')
-  #   circs.gr <- GRanges(seqnames=circs$chrom,
-  #                       ranges=IRanges(start=circs$start,
-  #                                      end=circs$end),
-  #                       strand=circs$strand,
-  #                       id=paste(circs$chrom, ":", circs$start, "-", circs$end, sep=""))
-  #   circs.gr <- sort(circs.gr)
 
   # GR with circ starts and ends only (left and right flanks, actually)
   circ.starts.gr <- circs.gr
@@ -333,24 +315,22 @@ AnnotateRanges = function(r1, l, ignore.strand=FALSE, type = 'precedence', null.
   if(!type %in% c('precedence','all'))
     stop('type may only be precedence and all')
 
-  # cat('Overlapping...\n')
   if(class(l) != 'GRangesList')
     l = GRangesList(lapply(l, function(x){values(x)=NULL;x}))
+
   a = suppressWarnings(data.table(as.matrix(findOverlaps(r1, l, ignore.strand=ignore.strand))))
   a$id = names(l)[a$subjectHits]
-  # a$precedence = match(a$id,names(l))[a$subjectHits]
   a$precedence = match(a$id,names(l))
   a = a[order(a$precedence)]
 
   if(type == 'precedence'){
-    # cat('precedence...\n')
     a = a[!duplicated(a$queryHits)]
-
   }
+
   if(type == 'all'){
-    # cat('all...\n')
     a = a[,list(id=paste(unique(id),collapse=collapse.char)),by='queryHits']
   }
+
   annot = rep(null.fact, length(r1))
   annot[a$queryHits] = a$id
 
