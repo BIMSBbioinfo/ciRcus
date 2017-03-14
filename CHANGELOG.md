@@ -1,8 +1,13 @@
-Unreleased
+ciRcus 0.1.5
 ------------
 NEW FEATURES
 
+* loadAnnotation() converted to S4, can digest both TxDb objects and their sqlite dumps
+
 IMPROVEMENTS AND BUG FIXES
+
+* circLinRatio bug that prevented the ratio from being calculated in 0.1.4 fixed
+* many under-the-hood improvements (travis, lintr, codecov...) users will indirectly benefit from
 
 ciRcus 0.1.4
 ------------
