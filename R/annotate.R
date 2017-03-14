@@ -161,7 +161,7 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
             se <- annotateFlanks(se, annot.list$gene.feats)
             se <- annotateJunctions(se, annot.list$junctions)
 
-            if (grepl("linear", names(assays(se)))) {
+            if (any(grepl("linear", names(assays(se))))) {
               message("calculating circular/linear ratios...")
               se <- circLinRatio(se)
             } else {

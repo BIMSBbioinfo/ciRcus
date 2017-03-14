@@ -39,11 +39,14 @@ test_that("Annotation", {
   circ.files <- circ.files[!grepl("Sy5y", circ.files)]
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
-
-  # annotation tests
+  # load annotation
   annot.file <- system.file("extdata/db/hsa_ens75_minimal.sqlite",
                             package = "ciRcus")
   annot.list <- suppressMessages(loadAnnotation(annot.file))
+
+  se.annot <- annotateCircs(se = se, annot.list = annot.list, assembly = "hg19")
+
+  # annotation tests, separate functions
   se <- annotateHostGenes(se, annot.list$genes)
   expect_equal(resTable(se)$gene_id, c("ENSG00000183023",
                                        "ENSG00000183023",
@@ -56,6 +59,17 @@ test_that("Annotation", {
   expect_equal(resTable(se)$junct.known, c("5pr", "5pr", "5pr", "both"))
   se <- circLinRatio(se)
   expect_equal(unname(assays(se)$ratio[3, 4]), 4.03)
+
+  # annotation test, wrapper, should behave the same as separate tests
+  expect_equal(resTable(se.annot)$feature[2], "utr5:cds")
+  expect_equal(resTable(se.annot)$feature[4], "utr5:cds")
+  expect_equal(resTable(se.annot)$junct.known, c("5pr", "5pr", "5pr", "both"))
+  expect_equal(unname(assays(se.annot)$ratio[3, 4]), 4.03)
+  expect_equal(resTable(se.annot)$gene_id, c("ENSG00000183023",
+                                             "ENSG00000183023",
+                                             "ENSG00000183023",
+                                             "ENSG00000180357"))
+
 })
 
 test_that("sample labels are robust upon resorting colData", {
