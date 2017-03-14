@@ -16,7 +16,8 @@ annotateCircs(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5",
 \arguments{
 \item{se}{a SummarizedExperiment object}
 
-\item{annot.list}{list of relevant genomic features generated using \code{loadAnnotation()}}
+\item{annot.list}{list of relevant genomic features generated using
+\code{loadAnnotation()}}
 
 \item{assembly}{what genome assembly the input data are coming from}
 

@@ -1,3 +1,9 @@
+Unreleased
+------------
+NEW FEATURES
+
+IMPROVEMENTS AND BUG FIXES
+
 ciRcus 0.1.4
 ------------
 

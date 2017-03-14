@@ -20,6 +20,6 @@ loadAnnotation(txdb)
 A \code{list} of gene feature \code{GRanges}/\code{GRangesList} objects.
 }
 \description{
-Loads a local .sqlite TxDb annotation file (e.g. created using \code{gtf2sqlite}),
-returns a list of features needed for circRNA annotation.
+Loads a local .sqlite TxDb annotation file (e.g. created using
+\code{gtf2sqlite}), returns a list of features needed for circRNA annotation.
 }

@@ -4,3 +4,4 @@
 ^\.gitignore
 ^\.travis\.yml$
 ^CHANGELOG\.md$
+^\.lintr$

@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/BIMSBbioinfo/ciRcus.svg?branch=master)](https://travis-ci.org/BIMSBbioinfo/ciRcus)
+[![codecov](https://codecov.io/gh/BIMSBbioinfo/ciRcus/branch/master/graph/badge.svg)](https://codecov.io/gh/BIMSBbioinfo/ciRcus)
 
 # ciRcus: an R package for circRNA manipulation, annotation and analysis
 

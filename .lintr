@@ -1,0 +1,10 @@
+# see https://github.com/jimhester/lintr#project-configuration
+linters: with_defaults(
+    camel_case_linter = NULL, # 133
+    multiple_dots_linter = NULL, # 88
+    object_usage_linter = NULL, # 22
+    NULL
+  )
+exclusions: list(
+    "inst/scripts/test_load_data.R"
+  )
