@@ -32,33 +32,56 @@ gtf2sqlite <-
 #' Loads a local .sqlite TxDb annotation file (e.g. created using
 #' \code{gtf2sqlite}), returns a list of features needed for circRNA annotation.
 #'
-#' @param txdb.file path to the TxDb gene annotation file saved as SQLite
-#' database
+#' @param txdb TxDb gene annotation (or path to SQLite database file)
+#'
+#' @return A \code{list} of gene feature \code{GRanges}/\code{GRangesList} objects.
+#'
+#'
+#' @docType methods
+#' @rdname loadAnnotation-methods
 #'
 #' @export
-loadAnnotation <- function(txdb.file) {
+setGeneric("loadAnnotation",
+           function(txdb)
+             standardGeneric("loadAnnotation"))
 
-  txdb <- loadDb(txdb.file)
-  exns <- unique(exons(txdb))
-  junct.start <- exns
-  end(junct.start) <- start(junct.start)
-  junct.end <- exns
-  start(junct.end) <- end(junct.end)
+#' @aliases loadAnnotation,TxDb-method
+#' @rdname loadAnnotation-methods
+setMethod("loadAnnotation", signature("TxDb"),
+          function(txdb){
 
-  gene.feats <-
-    GRangesList(cds    = reduce(cds(txdb)),
-                utr5   = reduce(unlist(fiveUTRsByTranscript(txdb))),
-                utr3   = reduce(unlist(threeUTRsByTranscript(txdb))),
-                intron = reduce(unlist(intronsByTranscript(txdb))),
-                tx     = reduce(exns))
-  junctions <- GRangesList(start = junct.start,
-                           end   = junct.end)
+            exns <- unique(exons(txdb))
+            junct.start <- exns
+            end(junct.start) <- start(junct.start)
+            junct.end <- exns
+            start(junct.end) <- end(junct.end)
 
-  genes <- genes(txdb)
+            gene.feats <-
+              GRangesList(cds    = reduce(cds(txdb)),
+                          utr5   = reduce(unlist(fiveUTRsByTranscript(txdb))),
+                          utr3   = reduce(unlist(threeUTRsByTranscript(txdb))),
+                          intron = reduce(unlist(intronsByTranscript(txdb))),
+                          tx     = reduce(exns))
+            junctions <- GRangesList(start = junct.start,
+                                     end   = junct.end)
 
-  return(list(genes = genes, gene.feats = gene.feats, junctions = junctions))
-}
+            genes <- genes(txdb)
 
+            return(list(genes      = genes,
+                        gene.feats = gene.feats,
+                        junctions  = junctions))
+})
+
+#' @aliases loadAnnotation,character-method
+#' @rdname loadAnnotation-methods
+setMethod("loadAnnotation", signature("character"),
+          function(txdb){
+
+            message("loading TxDb annotation from SQLite database file...")
+            txdb <- loadDb(txdb)
+
+            loadAnnotation(txdb = txdb)
+})
 # ---------------------------------------------------------------------------- #
 #' Load and annotate a list of circRNA candidates
 #'
