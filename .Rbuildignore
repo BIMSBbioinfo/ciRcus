@@ -6,3 +6,4 @@
 ^CHANGELOG\.md$
 ^\.lintr$
 ^inst/\.lintr$
+^appveyor\.yml$
