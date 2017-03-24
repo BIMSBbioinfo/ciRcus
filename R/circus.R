@@ -13,7 +13,7 @@
 #' @importFrom biomaRt useMart useDataset getBM
 #' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce GRangesList
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
 #' @importFrom hash hash keys
@@ -21,6 +21,7 @@
 #' @import methods
 #' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL
+#' @importFrom rtracklayer score
 #' @import S4Vectors
 #' @import stringr
 #' @import SummarizedExperiment
