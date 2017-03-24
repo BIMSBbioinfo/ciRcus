@@ -13,6 +13,7 @@
 #' @importFrom biomaRt useMart useDataset getBM
 #' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
+#' @importFrom GenomeInfoDb seqlevelsStyle seqlevelsStyle<-
 #' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce GRangesList
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
@@ -21,7 +22,7 @@
 #' @import methods
 #' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL
-#' @importFrom rtracklayer score
+#' @importFrom rtracklayer export score
 #' @import S4Vectors
 #' @import stringr
 #' @import SummarizedExperiment

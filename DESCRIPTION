@@ -23,6 +23,7 @@ Imports:
     biomaRt,
     data.table,
     DBI,
+    GenomeInfoDb,
     GenomicFeatures,
     GenomicRanges,
     ggplot2,
