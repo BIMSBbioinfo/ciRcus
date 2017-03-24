@@ -5,3 +5,4 @@
 ^\.travis\.yml$
 ^CHANGELOG\.md$
 ^\.lintr$
+^inst/\.lintr$
