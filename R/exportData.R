@@ -119,3 +119,83 @@ setMethod("bedTracks",
             # return GRangesList
             return(ranges)
           })
+
+
+# ---------------------------------------------------------------------------- #
+#' writeBedTracks
+#'
+#' Write circRNA information from given \code{BED6}-style \code{GRangesList} (or
+#' \code{SummarizedExperiment} object) to \code{BED} files (one per sample).
+#' These can be loaded as genome browser tracks showing circRNA candidates.
+#'
+#'
+#' @param circs \code{GRangesList} or \code{SummarizedExperiment} object with
+#'              circRNA information
+#' @param out.prefix \code{character} vector (only first elemen will be used)
+#'                   specifying the prefix to use for output files (before the
+#'                   sample name)
+#' @param out.suffix \code{character} vector (only first elemen will be used)
+#'                   specifying the suffix to use for output files (after the
+#'                   sample name)
+#' @param seqlevels.style \code{character} vector (only first element will be
+#'                        used) specifying the seqlevels style to use for the
+#'                        output BED files
+#' @param ... named arguments defined above to be passed on from
+#'            \{code{SummarizedExperiment}-method to \code{GRangesList}-method
+#'
+#' @return None
+#'
+#'
+#' @docType methods
+#' @rdname writeBedTracks-methods
+#'
+#' @export
+setGeneric("writeBedTracks",
+           function(circs, ...)
+           standardGeneric("writeBedTracks"))
+
+#' @aliases writeBedTracks,GRangesList-method
+#' @rdname writeBedTracks-methods
+setMethod("writeBedTracks",
+          signature("GRangesList"),
+          definition = function(circs,
+                                out.prefix = "ciRcus_",
+                                out.suffix = ".bed",
+                                seqlevels.style = "UCSC") {
+
+            # check input
+            if (length(seqlevels.style) > 1){
+              warning(paste("length(seqlevels.style) > 1;",
+                            "only first entry will be used"))
+              seqlevels.style <- seqlevels.style[1]
+            }
+
+            # adjust seqlevels style
+            if (!is.null(seqlevels.style)) {
+              if (!(seqlevels.style) %in% seqlevelsStyle(circs)){
+                message(paste0("Changing seqlevels style to '", seqlevels.style,
+                               "' for BED track output file",
+                               ifelse(length(circs) > 1, "s", ""), "."))
+                seqlevelsStyle(circs) <- seqlevels.style
+              }
+            }
+
+            # export GRanges to BED files one sample at a time
+            for (sample.name in names(circs)) {
+              export(circs[[sample.name]],
+                     con = paste0(out.prefix, sample.name, out.suffix),
+                     format = "BED"
+                     )
+            }
+          })
+
+#' @aliases writeBedTracks,RangedSummarizedExperiment-method
+#' @rdname writeBedTracks-methods
+setMethod("writeBedTracks",
+          signature("RangedSummarizedExperiment"),
+          definition = function(circs, ...) {
+
+            # extract BED6-style GRangesList from SummarizedExperiment and
+            # write BED tracks based on that GRangesList
+            writeBedTracks(bedTracks(circs), ...)
+          })

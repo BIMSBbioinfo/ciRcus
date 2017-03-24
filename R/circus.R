@@ -21,7 +21,7 @@
 #' @import methods
 #' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL
-#' @importFrom rtracklayer score
+#' @importFrom rtracklayer export score
 #' @import S4Vectors
 #' @import stringr
 #' @import SummarizedExperiment
