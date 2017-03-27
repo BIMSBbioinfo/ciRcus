@@ -2,6 +2,9 @@ Unreleased
 ------------
 NEW FEATURES
 
+* new bedTracks()/writeBedTracks() functions generating BED6-style
+  GRangesList/writing BED files for circRNA browser tracks
+
 IMPROVEMENTS AND BUG FIXES
 
 
