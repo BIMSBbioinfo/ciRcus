@@ -116,7 +116,7 @@ test_that("CIRI2 input can be digested by ciRcus", {
   # total circRNAs in both samples
   expect_equal(nrow(resTable(se)), 14936)
   # there should be 4127 ribozero circRNAs
-  expect_equal(sum(resTable(se)$HEK_riborezo_CIRI_sites.txt_circ > 0), 4127)
+  expect_equal(sum(resTable(se)[, "HEK_riborezo_CIRI_sites.txt_circ"] > 0), 4127)
   # there should be 14013 RNaseR circRNAs
-  expect_equal(sum(resTable(se)$HEK_RNaseR_CIRI_sites.txt_circ > 0), 14013)
+  expect_equal(sum(resTable(se)[, "HEK_RNaseR_CIRI_sites.txt_circ"] > 0), 14013)
 })
