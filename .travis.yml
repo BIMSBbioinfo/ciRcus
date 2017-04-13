@@ -13,7 +13,7 @@ r_github_packages:
 
 # See https://docs.travis-ci.com/user/languages/r/#R-Versions
 r:
-#  - oldrel
+  - oldrel
   - release
   - devel
 
