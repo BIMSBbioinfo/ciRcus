@@ -5,7 +5,7 @@ test_that("summarizeCircs", {
                                        package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
-  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
+
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
   # score matrix should be 4 by 6 (4 circs, 6 samples)
@@ -36,7 +36,7 @@ test_that("Annotation", {
                                        package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
-  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
+
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
   # load annotation
@@ -78,7 +78,7 @@ test_that("sample labels are robust upon resorting colData", {
                                        package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
-  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
+
 
   se.sorted   <- summarizeCircs(circ.files,      wobble = 1, keepCols = 1:7)
   se.unsorted <- summarizeCircs(rev(circ.files), wobble = 1, keepCols = 1:7)
