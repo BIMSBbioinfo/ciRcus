@@ -200,10 +200,10 @@ annotateHostGenes <- function(se, genes.gr) {
   start(circ.ends.gr) <- end(circ.ends.gr)
 
   olap.start <- findOverlaps(circ.starts.gr, genes.gr, type = "within")
-  olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type = "within")
+  olap.end   <- findOverlaps(circ.ends.gr,   genes.gr, type = "within")
 
-  circs <- data.table(start.hit = names(circs.gr) %in% queryHits(olap.start),
-                      end.hit   = names(circs.gr) %in% queryHits(olap.end),
+  circs <- data.table(start.hit = 1:length(circs.gr) %in% queryHits(olap.start),
+                      end.hit   = 1:length(circs.gr) %in% queryHits(olap.end),
                       id        = circs.gr$id,
                       ord       = 1:length(circs.gr))
 

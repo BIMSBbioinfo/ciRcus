@@ -18,8 +18,19 @@ circs.se <- summarizeCircs(colData = cdata, keep.linear = FALSE, wobble = 1,
 circs.se <-  annotateCircs(se = circs.se, annot.list = annot.list,
                            assembly = "hg19")
 
+# issue16
+tmp <- resTable(circs.se)
+tmp[feature == "intergenic:intergenic"  & gene_id != "intergenic"]
+tmp.gr <- GRanges(seqnames = tmp[feature == "intergenic:intergenic"  & gene_id != "intergenic"][3:7,]$chr,
+                  ranges   = IRanges(start=tmp[feature == "intergenic:intergenic"  & gene_id != "intergenic"][3:7]$start,
+                                     end=tmp[feature == "intergenic:intergenic"  & gene_id != "intergenic"][3:7]$end),
+                  strand = "-")
+
+tmp.gr <- range(tmp.gr)
+
+
 # find_circ2
-annot.list <- loadAnnotation("data/test.sqlite")
+annot.list <- loadAnnotation("inst/extdata/db/test.sqlite")
 
 cdata <- data.frame(sample = c("D0", "D2", "D4"),
                     filename = c("inst/extdata/Sy5y_D0_sites.bed",
@@ -32,11 +43,25 @@ circs.se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:19)
 circs.se <- annotateCircs(se = circs.se, annot.list = annot.list,
                           assembly = "hg19", fixCoordIndexing = T)
 
-
+# issue #16
 
 histogram(circs.se, 0.5)
 annotPie(circs.se, 0.02)
 uniqReadsQC(circs.se, "all")
+
+## issue #16 #
+tmp <- resTable(circs.se)
+tmp[feature=="intergenic:intergenic" & gene_id == "no_single_host"]
+rowRanges(circs.se)[start(rowRanges(circs.se))==119107780]
+rowRanges(circs.se)[start(rowRanges(circs.se))==180669210]
+
+rowRanges(circs.se)[start(rowRanges(circs.se)) %in% c(119107780, 180669210)]
+
+sub.se <- circs.se[c(which(start(rowRanges(circs.se)) %in% c(119107779, 180669209)), 200:300),]
+
+
+
+
 
 # development
 #library(data.table)
