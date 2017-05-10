@@ -140,6 +140,9 @@ setMethod("bedTracks",
 #' @param seqlevels.style \code{character} vector (only first element will be
 #'                        used) specifying the seqlevels style to use for the
 #'                        output BED files
+#' @param sort.bed \code{logical} vector (only first element will be used)
+#'                 specifying whether or not to sort the \code{BED} output (by
+#'                 genomic coordinates)
 #' @param ... named arguments defined above to be passed on from
 #'            \{code{SummarizedExperiment}-method to \code{GRangesList}-method
 #'
@@ -161,13 +164,19 @@ setMethod("writeBedTracks",
           definition = function(circs,
                                 out.prefix = "ciRcus_",
                                 out.suffix = ".bed",
-                                seqlevels.style = "UCSC") {
+                                seqlevels.style = "UCSC",
+                                sort.bed = TRUE) {
 
             # check input
             if (length(seqlevels.style) > 1){
               warning(paste("length(seqlevels.style) > 1;",
                             "only first entry will be used"))
               seqlevels.style <- seqlevels.style[1]
+            }
+            if (length(sort.bed) > 1){
+              warning(paste("length(sort.bed) > 1;",
+                            "only first entry will be used"))
+              sort.bed <- sort.bed[1]
             }
 
             # adjust seqlevels style
@@ -178,6 +187,15 @@ setMethod("writeBedTracks",
                                ifelse(length(circs) > 1, "s", ""), "."))
                 seqlevelsStyle(circs) <- seqlevels.style
               }
+            }
+
+            # sort BED entries by genomic coordinates
+            if (sort.bed) {
+              message(paste0("Sorting circRNA candidates by genomic ",
+                             "coordinates for BED track output file",
+                             ifelse(length(circs) > 1, "s", ""), "."))
+              circs <- sortSeqlevels(circs)
+              circs <- BiocGenerics::sort(circs)
             }
 
             # export GRanges to BED files one sample at a time
