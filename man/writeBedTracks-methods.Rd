@@ -21,11 +21,11 @@ circRNA information}
 \item{...}{named arguments defined above to be passed on from
 \{code{SummarizedExperiment}-method to \code{GRangesList}-method}
 
-\item{out.prefix}{\code{character} vector (only first elemen will be used)
+\item{out.prefix}{\code{character} vector (only first element will be used)
 specifying the prefix to use for output files (before the
 sample name)}
 
-\item{out.suffix}{\code{character} vector (only first elemen will be used)
+\item{out.suffix}{\code{character} vector (only first element will be used)
 specifying the suffix to use for output files (after the
 sample name)}
 

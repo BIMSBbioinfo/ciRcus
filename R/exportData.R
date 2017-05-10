@@ -8,7 +8,7 @@
 #'
 #'
 #' @param se \code{SummarizedExperiment} object with circRNA information
-#' @param score \code{character} vector (only first elemen will be used) naming
+#' @param score \code{character} vector (only first element will be used) naming
 #'              the assay to use as \code{BED} score (\code{NULL} to omit BED
 #'              score and use `.` as a placeholder instead)
 #' @param min.score \code{numeric} vector (only first element will be used) with
@@ -131,10 +131,10 @@ setMethod("bedTracks",
 #'
 #' @param circs \code{GRangesList} or \code{SummarizedExperiment} object with
 #'              circRNA information
-#' @param out.prefix \code{character} vector (only first elemen will be used)
+#' @param out.prefix \code{character} vector (only first element will be used)
 #'                   specifying the prefix to use for output files (before the
 #'                   sample name)
-#' @param out.suffix \code{character} vector (only first elemen will be used)
+#' @param out.suffix \code{character} vector (only first element will be used)
 #'                   specifying the suffix to use for output files (after the
 #'                   sample name)
 #' @param seqlevels.style \code{character} vector (only first element will be

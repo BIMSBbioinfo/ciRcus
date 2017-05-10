@@ -17,7 +17,7 @@ bedTracks(se, score = "circ.uniq", min.score = unlist(ifelse(is.null(score),
 \arguments{
 \item{se}{\code{SummarizedExperiment} object with circRNA information}
 
-\item{score}{\code{character} vector (only first elemen will be used) naming
+\item{score}{\code{character} vector (only first element will be used) naming
 the assay to use as \code{BED} score (\code{NULL} to omit BED
 score and use `.` as a placeholder instead)}
 
