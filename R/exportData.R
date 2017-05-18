@@ -190,12 +190,19 @@ setMethod("writeBedTracks",
             }
 
             # sort BED entries by genomic coordinates
+            # Note: By default, GRanges are sorted by seqlevel, *strand* and
+            # start, which is not only counter-intuitive, but also wrong when
+            # exporting to BED. Thus, `ignore.strand` must explicitely set to
+            # `TRUE`. Unfortunately, the GRangesList `sort` method doesn't
+            # provide that option (i.e. pass it down to the GRanges one). Thus,
+            # an `endoapply` call is necessary.
             if (sort.bed) {
               message(paste0("Sorting circRNA candidates by genomic ",
                              "coordinates for BED track output file",
                              ifelse(length(circs) > 1, "s", ""), "."))
               circs <- sortSeqlevels(circs)
-              circs <- BiocGenerics::sort(circs)
+              circs <- endoapply(circs, BiocGenerics::sort,
+                                 ignore.strand = TRUE)
             }
 
             # export GRanges to BED files one sample at a time
