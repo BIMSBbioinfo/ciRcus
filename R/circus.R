@@ -14,7 +14,7 @@
 #' @importFrom BiocGenerics sort
 #' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @importFrom GenomeInfoDb seqlevelsStyle seqlevelsStyle<- sortSeqlevels
+#' @importFrom GenomeInfoDb seqlevelsStyle seqlevelsStyle<- seqlevels<-
 #' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce GRangesList
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2

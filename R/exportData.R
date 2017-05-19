@@ -196,11 +196,16 @@ setMethod("writeBedTracks",
             # `TRUE`. Unfortunately, the GRangesList `sort` method doesn't
             # provide that option (i.e. pass it down to the GRanges one). Thus,
             # an `endoapply` call is necessary.
+            # Also note: `GenomeInfoDb::sortseqlevels` sorts contigs names
+            # 'naturally' (i.e. autosomes ascending, gonosomes and mitochondrial
+            # contigs last), which is not what one expects for sorted BED. Thus,
+            # the seqlevels are sorted alphabetically using `base::sort`
+            # instead.
             if (sort.bed) {
               message(paste0("Sorting circRNA candidates by genomic ",
                              "coordinates for BED track output file",
                              ifelse(length(circs) > 1, "s", ""), "."))
-              circs <- sortSeqlevels(circs)
+              seqlevels(circs) <- base::sort(seqlevels(circs))
               circs <- endoapply(circs, BiocGenerics::sort,
                                  ignore.strand = TRUE)
             }
