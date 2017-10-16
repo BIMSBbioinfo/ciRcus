@@ -59,6 +59,7 @@ test_that("Annotation", {
   expect_equal(resTable(se)$junct.known, c("5pr", "5pr", "5pr", "both"))
   se <- circLinRatio(se)
   expect_equal(unname(assays(se)$ratio[3, 4]), 4.03)
+  expect_equal(unname(assays(se)$ratio[2, 3]), 0.04)
 
   # annotation test, wrapper, should behave the same as separate tests
   expect_equal(resTable(se.annot)$feature[2], "utr5:cds")
