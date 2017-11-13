@@ -94,8 +94,9 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6,
 #' @param subs A character string, keep only lines containing it in the name column
 #' @param qualfilter A boolean. Should quality filtering be performed?
 #' @param keepCols An integer vector. Which input columns should be returned?
-#' @param colData A \code{DataFrame} object that contains the input files
-#'        and sample names to be used for further analysis
+#' @param colData A \code{data.frame} object that contains input files
+#'        and sample names to be used for further analysis. Sample names should
+#'        be unique characters
 #' @param ... other arguments
 #'
 #' @return A \code{SummarizedExperiment} object.
@@ -129,6 +130,9 @@ setMethod("summarizeCircs", signature("data.frame"),
                             "is missing from colData")))
 
             circ.files <- as.character(colData$filename)
+
+            if(any(duplicated(colData$sample)))
+               stop('Sample names must be unique characters')
 
             if (!all(file.exists(circ.files)))
               stop("Supplied circ files do not exist")
