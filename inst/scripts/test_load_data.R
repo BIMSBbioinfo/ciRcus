@@ -68,15 +68,14 @@ sub.se <- circs.se[c(which(start(rowRanges(circs.se)) %in% c(119107779, 18066920
 #library(GenomicRanges)
 #library(hash)
 #annot.list <- loadAnnotation("data/test.sqlite")
-annot.list <- loadAnnotation("inst/extdata/hsa_ens75_minimal.sqlite")
+annot.list <- loadAnnotation("inst/extdata/db/hsa_ens75_minimal.sqlite")
 cdata <- data.frame(sample = c("FC1", "FC2", "H1", "H2", "L1", "L2"),
-                    filename = dir("inst/extdata/",
-                                   full.names = T)[grep("rep",
-                                                        dir("inst/extdata/"))])
+                    filename = dir("inst/extdata/encode_demo_small/",
+                                   full.names = T))
 #se <- summarizeCircs(dir("inst/extdata/",
 #                         full.names = T)[grep("rep", dir("inst/extdata/"))],
 #                     wobble = 1, colData = cdata)
-se <- summarizeCircs(colData = cdata, wobble = 1)
+se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:7)
 se <- annotateCircs(se, annot.list, "mm9", fixCoordIndexing = TRUE)
 tab <- resTable(se)
 tab
@@ -197,3 +196,19 @@ subs <- "all"
 qualfilter <- TRUE
 keepCols <- 1:6
 colData <- NULL
+
+
+# bedran
+annot.list <- loadAnnotation("inst/extdata/db/hsa_ens75_minimal.sqlite")
+cdata <- data.frame(sample = c("s1", "s2"),
+                    filename = dir("../data/vedran/",
+                                   pattern = "circ_splice_sites.bed$",
+                                   full.names = T,
+                                   recursive = T))
+#se <- summarizeCircs(dir("inst/extdata/",
+#                         full.names = T)[grep("rep", dir("inst/extdata/"))],
+#                     wobble = 1, colData = cdata)
+se <- summarizeCircs(colData = cdata, wobble = 1, keepCols = 1:9)
+se <- annotateCircs(se, annot.list, "mm9", fixCoordIndexing = TRUE)
+tab <- resTable(se)
+tab

@@ -15,7 +15,7 @@ gtf2sqlite <-
 
   ah <- AnnotationHub()
   gtf.gr <- ah[[getOption("assembly2annhub")[[assembly]]]]
-  gtf.gr <- keepStandardChromosomes(gtf.gr)
+  gtf.gr <- keepStandardChromosomes(gtf.gr, pruning.mode = "coarse")
   seqlevels(gtf.gr) <- paste("chr", seqlevels(gtf.gr), sep = "")
   seqlevels(gtf.gr)[which(seqlevels(gtf.gr) == "chrMT")] <- "chrM"
   txdb <- makeTxDbFromGRanges(gtf.gr, drop.stop.codons = FALSE,

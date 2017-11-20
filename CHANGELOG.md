@@ -7,6 +7,7 @@ NEW FEATURES
 
 IMPROVEMENTS AND BUG FIXES
 
+* using "coarse" pruning.mode in keepStandardChromosomes when building annotation
 
 ciRcus 0.1.5
 ------------
