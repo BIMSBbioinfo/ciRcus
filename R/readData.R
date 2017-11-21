@@ -131,8 +131,8 @@ setMethod("summarizeCircs", signature("data.frame"),
 
             circ.files <- as.character(colData$filename)
 
-            if(any(duplicated(colData$sample)))
-               stop('Sample names must be unique characters')
+            if (any(duplicated(colData$sample)))
+               stop("Sample names must be unique characters")
 
             if (!all(file.exists(circ.files)))
               stop("Supplied circ files do not exist")
