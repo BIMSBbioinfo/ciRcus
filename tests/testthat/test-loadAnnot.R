@@ -42,7 +42,7 @@ test_that("Annotation", {
   # load annotation
   annot.file <- system.file("extdata/db/hsa_ens75_minimal.sqlite",
                             package = "ciRcus")
-  annot.list <- suppressMessages(loadAnnotation(annot.file))
+  annot.list <- loadAnnotation(annot.file)
 
   se.annot <- annotateCircs(se = se, annot.list = annot.list, assembly = "hg19")
 
