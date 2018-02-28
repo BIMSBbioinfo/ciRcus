@@ -10,7 +10,7 @@
 writeBedTracks(circs, ...)
 
 \S4method{writeBedTracks}{GRangesList}(circs, out.prefix = "ciRcus_",
-  out.suffix = ".bed", seqlevels.style = "UCSC")
+  out.suffix = ".bed", seqlevels.style = "UCSC", sort.bed = TRUE)
 
 \S4method{writeBedTracks}{RangedSummarizedExperiment}(circs, ...)
 }
@@ -32,6 +32,10 @@ sample name)}
 \item{seqlevels.style}{\code{character} vector (only first element will be
 used) specifying the seqlevels style to use for the
 output BED files}
+
+\item{sort.bed}{\code{logical} vector (only first element will be used)
+specifying whether or not to sort the \code{BED} output (by
+genomic coordinates)}
 }
 \value{
 None

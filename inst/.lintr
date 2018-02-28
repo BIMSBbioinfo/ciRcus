@@ -1,12 +1,1 @@
-# Note: There is are two copies of this file (.lintr & inst/.lint) that need to
-# be kept in sync (see https://github.com/jimhester/covr/issues/253)
-# see https://github.com/jimhester/lintr#project-configuration
-linters: with_defaults(
-    camel_case_linter = NULL, # 133
-    multiple_dots_linter = NULL, # 88
-    object_usage_linter = NULL, # 22
-    NULL
-  )
-exclusions: list(
-    "inst/scripts/test_load_data.R"
-  )
+../.lintr

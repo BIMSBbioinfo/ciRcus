@@ -11,14 +11,15 @@
 #' @importFrom AnnotationDbi saveDb loadDb
 #' @import AnnotationHub
 #' @importFrom biomaRt useMart useDataset getBM
+#' @importFrom BiocGenerics sort
 #' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @importFrom GenomeInfoDb seqlevelsStyle seqlevelsStyle<-
+#' @importFrom GenomeInfoDb seqlevelsStyle seqlevelsStyle<- seqlevels<-
 #' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce GRangesList
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
 #' @importFrom hash hash keys
-#' @importFrom IRanges findOverlaps
+#' @importFrom IRanges findOverlaps endoapply
 #' @import methods
 #' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL
