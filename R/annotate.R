@@ -149,11 +149,13 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
             }
 
             # check seqlevel style, match input
-            if (!any(seqlevelsStyle(annot.list$genes) %in%
-                     seqlevelsStyle(se))) {
-              warning("nonmatching seqlevel styles, will fix automatically")
-              for (i in 1:length(annot.list)) {
-                seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
+            if (class(try(seqlevelsStyle(se), TRUE)) != "try-error") {
+              if (!any(seqlevelsStyle(annot.list$genes) %in%
+                       seqlevelsStyle(se))) {
+                warning("nonmatching seqlevel styles, will fix automatically")
+                for (i in 1:length(annot.list)) {
+                  seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
+                }
               }
             }
 
