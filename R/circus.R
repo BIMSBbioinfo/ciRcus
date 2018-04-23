@@ -71,7 +71,7 @@ NULL
     assembly2annhub = list("hg19"     = "AH10684",
                            "hg38"     = "AH47963",
                            "mm10"     = "AH47973",
-                           "dm6"      = "AH47953",
+                           "dm6"      = "AH60052",
                            "rn5"      = "AH28841",
                            "WBcel235" = "AH47942"
                            ),
