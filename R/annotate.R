@@ -10,7 +10,8 @@
 #'
 #' @export
 gtf2sqlite <-
-  function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"),
+  function(assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
+                        "WBcel235"),
            db.file) {
 
   ah <- AnnotationHub()
@@ -105,7 +106,7 @@ setMethod("loadAnnotation", signature("character"),
 setGeneric("annotateCircs",
            function(se,
                     annot.list,
-                    assembly = c("hg19", "hg38", "mm10", "rn5", "dm6",
+                    assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
                                  "WBcel235"),
                     fixCoordIndexing = TRUE,
                     ...)
@@ -115,7 +116,7 @@ setGeneric("annotateCircs",
 #' @rdname annotateCircs-methods
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
           function(se, annot.list,
-                   assembly = c("hg19", "hg38", "mm10", "rn5", "dm6",
+                   assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
                                 "WBcel235"),
                    fixCoordIndexing = TRUE, ...) {
 

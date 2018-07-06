@@ -7,10 +7,10 @@
 \title{Load and annotate a list of circRNA candidates}
 \usage{
 annotateCircs(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5",
-  "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...)
+  "rn6", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...)
 
 \S4method{annotateCircs}{RangedSummarizedExperiment}(se, annot.list,
-  assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"),
+  assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6", "WBcel235"),
   fixCoordIndexing = TRUE, ...)
 }
 \arguments{
