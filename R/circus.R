@@ -79,14 +79,7 @@ NULL
                             "dm6"      = "current",
                             "rn5"      = "79",
                             "WBcel235" = "81"
-                            ),
-
-    assembly2organism = list("hg19"     = "hsa",
-                             "hg38"     = "hsa",
-                             "mm10"     = "mmu",
-                             "dm6"      = "dme",
-                             "WBcel235" = "cel"
-                             )
+                            )
 
   )
   toset <- !(names(op.circus) %in% names(op))
