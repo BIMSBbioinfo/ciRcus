@@ -58,6 +58,7 @@ NULL
                            "79"      = "mar2015.archive.ensembl.org",
                            "80"      = "may2015.archive.ensembl.org",
                            "81"      = "jul2015.archive.ensembl.org",
+                           "91"      = "dec2017.archive.ensembl.org",
                            "current" = "ensembl.org"
                            ),
 
@@ -73,6 +74,7 @@ NULL
                            "mm10"     = "AH47973",
                            "dm6"      = "AH60052",
                            "rn5"      = "AH28841",
+                           "rn6"      = "AH60238",
                            "WBcel235" = "AH47942"
                            ),
 
@@ -81,6 +83,7 @@ NULL
                             "mm10"     = "current",
                             "dm6"      = "current",
                             "rn5"      = "79",
+                            "rn6"      = "91",
                             "WBcel235" = "81"
                             ),
 
