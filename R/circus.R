@@ -19,7 +19,7 @@
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
 #' @importFrom hash hash keys
-#' @importFrom IRanges findOverlaps endoapply
+#' @importFrom IRanges findOverlaps
 #' @import methods
 #' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL

@@ -6,9 +6,9 @@
 \alias{bedTracks,RangedSummarizedExperiment-method}
 \title{bedTracks}
 \usage{
-bedTracks(se, score = "circ.uniq", min.score = unlist(ifelse(is.null(score),
-  list(NULL), list(1))), max.score = unlist(ifelse(is.null(score), list(NULL),
-  list(1000))))
+bedTracks(se, score = "circ.uniq",
+  min.score = unlist(ifelse(is.null(score), list(NULL), list(1))),
+  max.score = unlist(ifelse(is.null(score), list(NULL), list(1000))))
 
 \S4method{bedTracks}{RangedSummarizedExperiment}(se, score = "circ.uniq",
   min.score = unlist(ifelse(is.null(score), list(NULL), list(1))),

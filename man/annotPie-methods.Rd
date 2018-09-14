@@ -8,8 +8,8 @@
 \usage{
 annotPie(se, other.threshold = 0.02, ...)
 
-\S4method{annotPie}{RangedSummarizedExperiment}(se, other.threshold = 0.02,
-  ...)
+\S4method{annotPie}{RangedSummarizedExperiment}(se,
+  other.threshold = 0.02, ...)
 }
 \arguments{
 \item{se}{a SummarizedExperiment object}
