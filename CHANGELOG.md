@@ -1,13 +1,15 @@
-Unreleased
+ciRcus 0.1.6
 ------------
 NEW FEATURES
 
 * new bedTracks()/writeBedTracks() functions generating BED6-style
   GRangesList/writing BED files for circRNA browser tracks
+* added D. melanogaster (dm6) and R. norvegicus (rn6) support
 
 IMPROVEMENTS AND BUG FIXES
 
 * using "coarse" pruning.mode in keepStandardChromosomes when building annotation
+* introduced a number of bugfixes (and probably new bugs)
 
 ciRcus 0.1.5
 ------------
