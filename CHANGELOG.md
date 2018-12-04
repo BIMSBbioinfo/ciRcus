@@ -1,3 +1,9 @@
+ciRcus 0.1.7
+------------
+IMPROVEMENTS AND BUG FIXES
+
+* 18-column find_circ output (wherever it comes from) supported
+
 ciRcus 0.1.6
 ------------
 NEW FEATURES
