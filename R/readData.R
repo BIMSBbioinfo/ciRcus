@@ -30,7 +30,7 @@ readCircs <- function(file, subs = "all", qualfilter = TRUE, keepCols = 1:6,
   )
 
   # try to figure out what tool the data are coming from
-  if (ncol(DT) == 19 & names(DT)[1] == "# chrom") {
+  if (ncol(DT) %in% 18:19 & names(DT)[1] == "# chrom") {
     # read find_circ
     setnames(DT, "# chrom", "chrom")
     DT <- DT[!grepl("#", DT$chrom)]
