@@ -21,8 +21,10 @@ Imports:
     AnnotationDbi,
     AnnotationHub,
     biomaRt,
+    BiocGenerics,
     data.table,
     DBI,
+    GenomeInfoDb,
     GenomicFeatures,
     GenomicRanges,
     ggplot2,
@@ -30,6 +32,7 @@ Imports:
     IRanges,
     RColorBrewer,
     RMySQL,
+    rtracklayer,
     S4Vectors,
     stringr,
     SummarizedExperiment
@@ -37,4 +40,4 @@ Suggests:
     testthat,
     knitr,
     lintr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

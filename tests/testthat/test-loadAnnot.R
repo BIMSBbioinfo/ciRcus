@@ -5,7 +5,7 @@ test_that("summarizeCircs", {
                                        package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
-  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
+
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
   # score matrix should be 4 by 6 (4 circs, 6 samples)
@@ -36,13 +36,13 @@ test_that("Annotation", {
                                        package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
-  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
+
   se <- summarizeCircs(circ.files, wobble = 1, keepCols = 1:7)
 
   # load annotation
   annot.file <- system.file("extdata/db/hsa_ens75_minimal.sqlite",
                             package = "ciRcus")
-  annot.list <- suppressMessages(loadAnnotation(annot.file))
+  annot.list <- loadAnnotation(annot.file)
 
   se.annot <- annotateCircs(se = se, annot.list = annot.list, assembly = "hg19")
 
@@ -59,6 +59,7 @@ test_that("Annotation", {
   expect_equal(resTable(se)$junct.known, c("5pr", "5pr", "5pr", "both"))
   se <- circLinRatio(se)
   expect_equal(unname(assays(se)$ratio[3, 4]), 4.03)
+  expect_equal(unname(assays(se)$ratio[2, 3]), 0.04)
 
   # annotation test, wrapper, should behave the same as separate tests
   expect_equal(resTable(se.annot)$feature[2], "utr5:cds")
@@ -78,7 +79,7 @@ test_that("sample labels are robust upon resorting colData", {
                                        package = "ciRcus"),
                            pattern = "sites.bed",
                            full.names = TRUE)
-  circ.files <- circ.files[!grepl("Sy5y", circ.files)]
+
 
   se.sorted   <- summarizeCircs(circ.files,      wobble = 1, keepCols = 1:7)
   se.unsorted <- summarizeCircs(rev(circ.files), wobble = 1, keepCols = 1:7)
@@ -116,7 +117,9 @@ test_that("CIRI2 input can be digested by ciRcus", {
   # total circRNAs in both samples
   expect_equal(nrow(resTable(se)), 14936)
   # there should be 4127 ribozero circRNAs
-  expect_equal(sum(resTable(se)[, 6, with = F] > 0), 4127)
+  expect_equal(
+    sum(resTable(se)[, "HEK_riborezo_CIRI_sites.txt_circ"] > 0), 4127)
   # there should be 14013 RNaseR circRNAs
-  expect_equal(sum(resTable(se)[, 7, with = F] > 0), 14013)
+  expect_equal(
+    sum(resTable(se)[, "HEK_RNaseR_CIRI_sites.txt_circ"] > 0), 14013)
 })

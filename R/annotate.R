@@ -10,7 +10,8 @@
 #'
 #' @export
 gtf2sqlite <-
-  function(assembly = c("hg19", "hg38", "mm10", "rn5", "dm6", "WBcel235"),
+  function(assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
+                        "WBcel235"),
            db.file) {
 
   ah <- AnnotationHub()
@@ -105,7 +106,7 @@ setMethod("loadAnnotation", signature("character"),
 setGeneric("annotateCircs",
            function(se,
                     annot.list,
-                    assembly = c("hg19", "hg38", "mm10", "rn5", "dm6",
+                    assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
                                  "WBcel235"),
                     fixCoordIndexing = TRUE,
                     ...)
@@ -115,7 +116,7 @@ setGeneric("annotateCircs",
 #' @rdname annotateCircs-methods
 setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
           function(se, annot.list,
-                   assembly = c("hg19", "hg38", "mm10", "rn5", "dm6",
+                   assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
                                 "WBcel235"),
                    fixCoordIndexing = TRUE, ...) {
 
@@ -149,11 +150,13 @@ setMethod("annotateCircs", signature("RangedSummarizedExperiment"),
             }
 
             # check seqlevel style, match input
-            if (!any(seqlevelsStyle(annot.list$genes) %in%
-                     seqlevelsStyle(se))) {
-              warning("nonmatching seqlevel styles, will fix automatically")
-              for (i in 1:length(annot.list)) {
-                seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
+            if (class(try(seqlevelsStyle(se), TRUE)) != "try-error") {
+              if (!any(seqlevelsStyle(annot.list$genes) %in%
+                       seqlevelsStyle(se))) {
+                warning("nonmatching seqlevel styles, will fix automatically")
+                for (i in 1:length(annot.list)) {
+                  seqlevelsStyle(annot.list[[i]]) <- seqlevelsStyle(se)
+                }
               }
             }
 
@@ -200,10 +203,10 @@ annotateHostGenes <- function(se, genes.gr) {
   start(circ.ends.gr) <- end(circ.ends.gr)
 
   olap.start <- findOverlaps(circ.starts.gr, genes.gr, type = "within")
-  olap.end   <- findOverlaps(circ.ends.gr, genes.gr, type = "within")
+  olap.end   <- findOverlaps(circ.ends.gr,   genes.gr, type = "within")
 
-  circs <- data.table(start.hit = names(circs.gr) %in% queryHits(olap.start),
-                      end.hit   = names(circs.gr) %in% queryHits(olap.end),
+  circs <- data.table(start.hit = 1:length(circs.gr) %in% queryHits(olap.start),
+                      end.hit   = 1:length(circs.gr) %in% queryHits(olap.end),
                       id        = circs.gr$id,
                       ord       = 1:length(circs.gr))
 

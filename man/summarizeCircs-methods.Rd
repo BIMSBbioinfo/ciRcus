@@ -17,8 +17,9 @@ summarizeCircs(colData = NULL, keep.linear = TRUE, wobble = 5,
   qualfilter, keepCols)
 }
 \arguments{
-\item{colData}{A \code{DataFrame} object that contains the input files
-and sample names to be used for further analysis}
+\item{colData}{A \code{data.frame} object that contains input files
+and sample names to be used for further analysis. Sample names should
+be unique characters}
 
 \item{keep.linear}{A boolean indicating whether to keep the counts of
 linearly spliced transcripts}

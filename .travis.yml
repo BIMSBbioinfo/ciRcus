@@ -13,9 +13,13 @@ r_github_packages:
 
 # See https://docs.travis-ci.com/user/languages/r/#R-Versions
 r:
-#  - oldrel
+  - oldrel
   - release
   - devel
+
+# See https://github.com/travis-ci/travis-ci/issues/7654#issuecomment-297051230
+# TODO: check for 'latest', 'previous', etc. mappings
+dist: trusty
 
 sudo: required
 bioc_required: true

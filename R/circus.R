@@ -11,9 +11,11 @@
 #' @importFrom AnnotationDbi saveDb loadDb
 #' @import AnnotationHub
 #' @importFrom biomaRt useMart useDataset getBM
+#' @importFrom BiocGenerics sort
 #' @importFrom data.table data.table rbindlist dcast.data.table set setnames fread
 #' @import DBI
-#' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce
+#' @importFrom GenomeInfoDb seqlevelsStyle seqlevelsStyle<- seqlevels<-
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize reduce GRangesList
 #' @importFrom GenomicFeatures makeTxDbFromGRanges
 #' @import ggplot2
 #' @importFrom hash hash keys
@@ -21,6 +23,7 @@
 #' @import methods
 #' @importFrom RColorBrewer brewer.pal
 #' @import RMySQL
+#' @importFrom rtracklayer export score
 #' @import S4Vectors
 #' @import stringr
 #' @import SummarizedExperiment
@@ -55,6 +58,7 @@ NULL
                            "79"      = "mar2015.archive.ensembl.org",
                            "80"      = "may2015.archive.ensembl.org",
                            "81"      = "jul2015.archive.ensembl.org",
+                           "91"      = "dec2017.archive.ensembl.org",
                            "current" = "ensembl.org"
                            ),
 
@@ -68,8 +72,9 @@ NULL
     assembly2annhub = list("hg19"     = "AH10684",
                            "hg38"     = "AH47963",
                            "mm10"     = "AH47973",
-                           "dm6"      = "AH47953",
+                           "dm6"      = "AH60052",
                            "rn5"      = "AH28841",
+                           "rn6"      = "AH60238",
                            "WBcel235" = "AH47942"
                            ),
 
@@ -78,6 +83,7 @@ NULL
                             "mm10"     = "current",
                             "dm6"      = "current",
                             "rn5"      = "79",
+                            "rn6"      = "91",
                             "WBcel235" = "81"
                             ),
 
