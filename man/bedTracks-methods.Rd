@@ -6,13 +6,19 @@
 \alias{bedTracks,RangedSummarizedExperiment-method}
 \title{bedTracks}
 \usage{
-bedTracks(se, score = "circ.uniq",
+bedTracks(
+  se,
+  score = "circ.uniq",
   min.score = unlist(ifelse(is.null(score), list(NULL), list(1))),
-  max.score = unlist(ifelse(is.null(score), list(NULL), list(1000))))
+  max.score = unlist(ifelse(is.null(score), list(NULL), list(1000)))
+)
 
-\S4method{bedTracks}{RangedSummarizedExperiment}(se, score = "circ.uniq",
+\S4method{bedTracks}{RangedSummarizedExperiment}(
+  se,
+  score = "circ.uniq",
   min.score = unlist(ifelse(is.null(score), list(NULL), list(1))),
-  max.score = unlist(ifelse(is.null(score), list(NULL), list(1000))))
+  max.score = unlist(ifelse(is.null(score), list(NULL), list(1000)))
+)
 }
 \arguments{
 \item{se}{\code{SummarizedExperiment} object with circRNA information}

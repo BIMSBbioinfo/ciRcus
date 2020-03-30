@@ -4,8 +4,14 @@
 \alias{AnnotateRanges}
 \title{title}
 \usage{
-AnnotateRanges(r1, l, ignore.strand = FALSE, type = "precedence",
-  null.fact = "None", collapse.char = ":")
+AnnotateRanges(
+  r1,
+  l,
+  ignore.strand = FALSE,
+  type = "precedence",
+  null.fact = "None",
+  collapse.char = ":"
+)
 }
 \arguments{
 \item{r1}{a GenomicRanges object with ranges to be annotated}

@@ -4,8 +4,15 @@
 \alias{getIDs}
 \title{title}
 \usage{
-getIDs(circs, organism, assembly, chrom = "chrom", start = "start",
-  end = "end", strand = "strand")
+getIDs(
+  circs,
+  organism,
+  assembly,
+  chrom = "chrom",
+  start = "start",
+  end = "end",
+  strand = "strand"
+)
 }
 \arguments{
 \item{circs}{circs}

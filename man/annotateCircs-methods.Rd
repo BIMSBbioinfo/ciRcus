@@ -6,12 +6,21 @@
 \alias{annotateCircs,RangedSummarizedExperiment-method}
 \title{Load and annotate a list of circRNA candidates}
 \usage{
-annotateCircs(se, annot.list, assembly = c("hg19", "hg38", "mm10", "rn5",
-  "rn6", "dm6", "WBcel235"), fixCoordIndexing = TRUE, ...)
+annotateCircs(
+  se,
+  annot.list,
+  assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6", "WBcel235", "GRCz11"),
+  fixCoordIndexing = TRUE,
+  ...
+)
 
-\S4method{annotateCircs}{RangedSummarizedExperiment}(se, annot.list,
-  assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6", "WBcel235"),
-  fixCoordIndexing = TRUE, ...)
+\S4method{annotateCircs}{RangedSummarizedExperiment}(
+  se,
+  annot.list,
+  assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6", "WBcel235", "GRCz11"),
+  fixCoordIndexing = TRUE,
+  ...
+)
 }
 \arguments{
 \item{se}{a SummarizedExperiment object}

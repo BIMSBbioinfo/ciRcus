@@ -59,12 +59,14 @@ NULL
                            "80"      = "may2015.archive.ensembl.org",
                            "81"      = "jul2015.archive.ensembl.org",
                            "91"      = "dec2017.archive.ensembl.org",
+                           "99"      = "jan2020.archive.ensembl.org",
                            "current" = "ensembl.org"
                            ),
 
     ensembl.organism = list("hsa" = "hsapiens",
                             "mmu" = "mmusculus",
                             "cel" = "celegans",
+                            "dre" = "drerio",
                             "rno" = "rnorvegicus",
                             "dme" = "dmelanogaster"
                             ),
@@ -73,6 +75,7 @@ NULL
                            "hg38"     = "AH47963",
                            "mm10"     = "AH47973",
                            "dm6"      = "AH60052",
+                           "GRCz11"   = "AH79086",
                            "rn5"      = "AH28841",
                            "rn6"      = "AH60238",
                            "WBcel235" = "AH47942"
@@ -82,6 +85,7 @@ NULL
                             "hg38"     = "current",
                             "mm10"     = "current",
                             "dm6"      = "current",
+                            "GRCz11"   = "99",
                             "rn5"      = "79",
                             "rn6"      = "91",
                             "WBcel235" = "81"
@@ -91,6 +95,7 @@ NULL
                              "hg38"     = "hsa",
                              "mm10"     = "mmu",
                              "dm6"      = "dme",
+                             "GRCz11"   = "dre",
                              "WBcel235" = "cel"
                              )
 
