@@ -4,8 +4,7 @@
 \alias{getStudiesList}
 \title{title}
 \usage{
-getStudiesList(organism = NA, assembly = NA, study = NA,
-  sample = NA)
+getStudiesList(organism = NA, assembly = NA, study = NA, sample = NA)
 }
 \arguments{
 \item{organism}{organism}

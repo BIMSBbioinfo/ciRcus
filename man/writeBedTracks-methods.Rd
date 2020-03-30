@@ -9,8 +9,13 @@
 \usage{
 writeBedTracks(circs, ...)
 
-\S4method{writeBedTracks}{GRangesList}(circs, out.prefix = "ciRcus_",
-  out.suffix = ".bed", seqlevels.style = "UCSC", sort.bed = TRUE)
+\S4method{writeBedTracks}{GRangesList}(
+  circs,
+  out.prefix = "ciRcus_",
+  out.suffix = ".bed",
+  seqlevels.style = "UCSC",
+  sort.bed = TRUE
+)
 
 \S4method{writeBedTracks}{RangedSummarizedExperiment}(circs, ...)
 }

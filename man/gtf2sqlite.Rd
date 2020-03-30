@@ -4,8 +4,10 @@
 \alias{gtf2sqlite}
 \title{Build and save a TxDb object containing gene annotation}
 \usage{
-gtf2sqlite(assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6",
-  "WBcel235"), db.file)
+gtf2sqlite(
+  assembly = c("hg19", "hg38", "mm10", "rn5", "rn6", "dm6", "WBcel235", "GRCz11"),
+  db.file
+)
 }
 \arguments{
 \item{assembly}{abbreviation for one of the supported assemblies}

@@ -7,14 +7,19 @@
 \alias{summarizeCircs,character-method}
 \title{load circRNA detection output to a SummarizedExperiment object}
 \usage{
-summarizeCircs(colData = NULL, keep.linear = TRUE, wobble = 5,
-  subs = "all", qualfilter = TRUE, keepCols = 1:6, ...)
+summarizeCircs(
+  colData = NULL,
+  keep.linear = TRUE,
+  wobble = 5,
+  subs = "all",
+  qualfilter = TRUE,
+  keepCols = 1:6,
+  ...
+)
 
-\S4method{summarizeCircs}{data.frame}(colData, keep.linear, wobble, subs,
-  qualfilter, keepCols)
+\S4method{summarizeCircs}{data.frame}(colData, keep.linear, wobble, subs, qualfilter, keepCols)
 
-\S4method{summarizeCircs}{character}(colData, keep.linear, wobble, subs,
-  qualfilter, keepCols)
+\S4method{summarizeCircs}{character}(colData, keep.linear, wobble, subs, qualfilter, keepCols)
 }
 \arguments{
 \item{colData}{A \code{data.frame} object that contains input files
